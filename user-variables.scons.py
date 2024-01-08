@@ -104,6 +104,9 @@ try:
   if os.environ.get("MPI_HOME") is not None:
     MPI_DIR = os.environ.get("MPI_HOME")
     
+  if os.environ.get("MPI_IGNORE_MPICC") is not None:
+    MPI_IGNORE_MPICC = os.environ.get("MPI_IGNORE_MPICC", "").lower() == "true"
+
   # for Travis CI, build MPI ourselves
   if os.environ.get("TRAVIS") is not None:
     print("Travis CI detected, del MPI_DIR")
