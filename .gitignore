@@ -26,7 +26,6 @@ out.py
 **/*.fls
 **/*.blg
 **/*.bbl
-**/*[conflicted*
 **/results/*
 **/*.tgz
 **/out.txt
@@ -43,8 +42,6 @@ prepare_arm.sh
 *.srct*
 solver_structure.txt
 *.json
-dependencies/*
-dependencies
 **/precice-*
 **/log_residual_norm*
 **/mappings_between_meshes_log.txt
