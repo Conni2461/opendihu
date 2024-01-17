@@ -38,7 +38,7 @@ check_example(){
     
   # measured duration
   END=$(date +%s.%N)
-  DIFF=$(python -c "print($END - $START)")
+  DIFF=$(python3 -c "print($END - $START)")
     
   # depending on success of compilation output message to log files
   if [ $RESULT -eq 0 ]; then
@@ -54,7 +54,7 @@ check_example(){
 # number of parallel jobs to build examples
 N=$(expr `nproc --all` / 2)
 i=0
-i_end=$(python -c "print($N-1)")    # i_end = N-1
+i_end=$(python3 -c "print($N-1)")    # i_end = N-1
 
 echo "Compile all examples in $EXAMPLE_PATH, using N=$N processes" | tee -a $WORKDIR/compile_examples_log.txt
 
@@ -69,7 +69,7 @@ for directory in `find $EXAMPLE_PATH -type d`; do
         wait
       fi
 
-      i=$(python -c "print(($i+1)%$N)")   # advance i by one and wrap around
+      i=$(python3 -c "print(($i+1)%$N)")   # advance i by one and wrap around
       
       # check if example in current directory compiles
       check_example "$directory" &
@@ -85,7 +85,7 @@ if [ $SUCCESS = "0" ]; then
 fi
 
 END_TOTAL=$(date +%s.%N)
-DIFF_TOTAL=$(python -c "print($END_TOTAL - $START_TOTAL)")
+DIFF_TOTAL=$(python3 -c "print($END_TOTAL - $START_TOTAL)")
 
 # output end message
 echo "done after $(date -u -d @$DIFF_TOTAL +%T)"
