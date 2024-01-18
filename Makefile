@@ -36,10 +36,10 @@ doc:
 	
 # the following targets are just for convenience and could also be deleted
 release_without_tests:
-	$(python) dependencies/scons/scons.py BUILD_TYPE=RELEASE no_tests=True -j $(shell expr `nproc --all` / 2)
+	$(python) dependencies/scons/scons.py BUILD_TYPE=RELEASE VERBOSE=1 no_tests=True -j $(shell expr `nproc --all` / 2)
 
 debug_without_tests:
-	$(python) dependencies/scons/scons.py BUILD_TYPE=DEBUG no_tests=True -j $(shell expr `nproc --all` / 2)
+	$(python) dependencies/scons/scons.py BUILD_TYPE=DEBUG VERBOSE=1 no_tests=True -j $(shell expr `nproc --all` / 2)
 
 travis_ci:
 	$(python) dependencies/scons/scons.py BUILD_TYPE=RELEASE no_tests=True travis_ci=True
