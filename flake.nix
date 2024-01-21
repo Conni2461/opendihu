@@ -15,6 +15,7 @@
         nativeBuildInputs = with pkgs; [
           gnumake42
           stdenv
+          gfortran11
           pkg-config
           valgrind
 
@@ -32,7 +33,13 @@
           flex
           blas
           lapack
+          liblapack
+          scalapack
           arpack
+          (scotch.overrideAttrs (_: {
+            buildFlags = [ "scotch ptscotch esmumps ptesmumps" ];
+            enableParallelBuilding = true;
+          }))
 
           # require for building custom python
           zlib
