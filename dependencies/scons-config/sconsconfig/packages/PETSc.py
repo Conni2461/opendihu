@@ -102,7 +102,7 @@ class PETSc(Package):
         'mkdir -p ${PREFIX}',
         '$rm -rf $(ls | grep "linux")',
         './configure --prefix=${PREFIX} --with-shared-libraries=1 --with-debugging=no  \
-          --download-fblaslapack=1 \
+          --with-blas=1 --with-lapack=1 \
           --download-mumps --download-scalapack --download-parmetis --download-metis --download-ptscotch --download-sundials --download-hypre \
           COPTFLAGS=-O3\
           CXXOPTFLAGS=-O3\
