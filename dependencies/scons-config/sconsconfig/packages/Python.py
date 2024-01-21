@@ -41,16 +41,19 @@ class Python(Package):
   def check(self, ctx):
     env = ctx.env
     ctx.Message('Checking for Python 3.9 ...    ')
-    
+    libs = " ".join(["zlib", "libffi", "expat", "libxcrypt"])
+    ldflags = subprocess.check_output(f"pkg-config --libs {libs}", shell=True).decode("utf-8").strip()
+    cflags = subprocess.check_output(f"pkg-config --cflags {libs}", shell=True).decode("utf-8").strip()
+
     # python 3.9
     self.libs = ["python3.9"]
     self.headers = ["Python.h"]
- 
+
     self.set_build_handler([
       'mkdir -p ${PREFIX}',
       'cd ${SOURCE_DIR} && chmod +x ./configure && ./configure --enable-shared --prefix=${PREFIX} \
-        LDFLAGS="-Wl,--rpath=${PREFIX}/lib -L${DEPENDENCIES_DIR}/bzip2/install/lib -L${DEPENDENCIES_DIR}/zlib/install/lib" \
-        CPPFLAGS="-I${DEPENDENCIES_DIR}/bzip2/install/include -I${DEPENDENCIES_DIR}/zlib/install/include" CXX=g++ CC=gcc \
+        LDFLAGS="-Wl,--rpath=${PREFIX}/lib ' + ldflags + '" \
+        CPPFLAGS="' + cflags + '" CXX=g++ CC=gcc \
         && make && make install',
       '$export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${PREFIX}/lib',
       'cd ${PREFIX}/include && echo "#define PYTHON_HOME_DIRECTORY \\"${PREFIX}\\"\n" > python_home.h',
