@@ -18,6 +18,8 @@
 #include <cstdlib>
 #include <cctype>
 
+#include <scr.h>
+
 #include "utility/python_utility.h"
 //#include "output_writer/paraview/paraview.h"
 #include "output_writer/python_callback/python_callback.h"
@@ -168,6 +170,10 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
     // initialize MPI, this is necessary to be able to call PetscFinalize
     // without MPI shutting down
     MPI_Init(&argc, &argv);
+
+    if (SCR_Init() != SCR_SUCCESS){
+      LOG(FATAL) << "Failed to initialize SCR";
+    }
 
     // the following three lines output the MPI version during compilation, use
     // for debugging
@@ -599,6 +605,8 @@ DihuContext::~DihuContext() {
       LOG(DEBUG) << "Petsc_Finalize";
       PetscErrorCode ierr = PetscFinalize();
       CHKERRV(ierr);
+
+      SCR_Finalize();
       MPI_Finalize();
     }
   }
