@@ -14,7 +14,7 @@ LoadBalancingBase<TimeStepping>::LoadBalancingBase(DihuContext context)
 template <typename TimeStepping>
 void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+    std::shared_ptr<Checkpointing::Manager> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")

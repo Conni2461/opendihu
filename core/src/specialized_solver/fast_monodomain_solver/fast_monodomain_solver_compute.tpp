@@ -14,7 +14,7 @@ template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
 void FastMonodomainSolverBase<nStates, nAlgebraics,
                               DiffusionTimeSteppingScheme>::
     advanceTimeSpan(bool withOutputWritersEnabled,
-                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+                    std::shared_ptr<Checkpointing::Manager> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   LOG(TRACE) << "FastMonodomainSolver::advanceTimeSpan";
@@ -52,7 +52,7 @@ void FastMonodomainSolverBase<nStates, nAlgebraics,
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
 void FastMonodomainSolverBase<nStates, nAlgebraics,
                               DiffusionTimeSteppingScheme>::
-    computeMonodomain(std::shared_ptr<Checkpointing::Generic> checkpointing) {
+    computeMonodomain(std::shared_ptr<Checkpointing::Manager> checkpointing) {
   if (!useVc_) {
     computeMonodomainGpu();
     return;

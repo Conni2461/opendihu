@@ -8,7 +8,7 @@ namespace Control {
 template <typename FunctionSpaceType, typename NestedSolverType>
 void MapDofs<FunctionSpaceType, NestedSolverType>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+    std::shared_ptr<Checkpointing::Manager> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   LOG(DEBUG) << "MapDofs::advanceTimeSpan, "

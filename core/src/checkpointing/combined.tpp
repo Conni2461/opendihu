@@ -1,11 +1,11 @@
-#include "checkpointing/generic.h"
+#include "checkpointing/combined.h"
 
 #include <scr.h>
 
 namespace Checkpointing {
 template <typename DataType>
-void Generic::createCheckpoint(DihuContext context, DataType &problemData,
-                               int timeStepNo, double currentTime) const {
+void Combined::createCheckpoint(DihuContext context, DataType &problemData,
+                                int timeStepNo, double currentTime) const {
   if (!writer_) {
     initWriter(context);
   }

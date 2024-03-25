@@ -32,7 +32,7 @@
 #include "control/diagnostic_tool/stimulation_logging.h"
 #include "control/diagnostic_tool/solver_structure_visualizer.h"
 #include "slot_connection/global_connections_by_slot_name.h"
-#include "checkpointing/generic.h"
+#include "checkpointing/manager.h"
 
 #include "easylogging++.h"
 #include "control/python_config/settings_file_name.h"
@@ -56,7 +56,7 @@ bool GLOBAL_DEBUG =
            // visible in certain conditions. Do not commit these hacks!
 
 // global singleton objects
-std::shared_ptr<Checkpointing::Generic> DihuContext::checkpointing_ = nullptr;
+std::shared_ptr<Checkpointing::Manager> DihuContext::checkpointing_ = nullptr;
 std::shared_ptr<MappingBetweenMeshes::Manager>
     DihuContext::mappingBetweenMeshesManager_ = nullptr;
 std::shared_ptr<Mesh::Manager> DihuContext::meshManager_ = nullptr;
@@ -386,7 +386,7 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
   }
 
   if (pythonConfig_.hasKey("checkpointing")) {
-    checkpointing_ = std::make_shared<Checkpointing::Generic>(
+    checkpointing_ = std::make_shared<Checkpointing::Manager>(
         PythonConfig(pythonConfig_, "checkpointing"));
 
     SCR_Configf("SCR_CHECKPOINT_INTERVAL=%d", checkpointing_->getInterval());
@@ -510,7 +510,7 @@ int DihuContext::ownRankNo() { return rankSubset_->ownRankNo(); }
 
 int DihuContext::nRanksCommWorld() { return nRanksCommWorld_; }
 
-std::shared_ptr<Checkpointing::Generic> DihuContext::getCheckpointing() {
+std::shared_ptr<Checkpointing::Manager> DihuContext::getCheckpointing() {
   return checkpointing_;
 }
 

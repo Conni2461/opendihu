@@ -3,7 +3,7 @@
 #include <Python.h> // has to be the first included header
 #include "control/dihu_context.h"
 #include "output_writer/manager.h"
-#include "checkpointing/generic.h"
+#include "checkpointing/manager.h"
 #include "interfaces/splittable.h"
 #include "interfaces/multipliable.h"
 
@@ -20,7 +20,7 @@ public:
   //! given numberTimeSteps
   virtual void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr) = 0;
+      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr) = 0;
 
   //! set a new time step width, gets transferred to numberTimeSteps_
   void setTimeStepWidth(double timeStepWidth);
