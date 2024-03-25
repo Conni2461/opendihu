@@ -47,7 +47,7 @@ MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 template <typename MeshType, typename Term, bool withLargeOutputFiles>
 void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
     advanceTimeSpan(bool withOutputWritersEnabled,
-                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+                    std::shared_ptr<Checkpointing::Manager> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // This method computes some time steps of the simulation by running a for
   // loop over the time steps. The number of steps, timestep width and current

@@ -30,7 +30,7 @@ DiffusionAdvectionSolver<FiniteElementMethod>::DiffusionAdvectionSolver(
 template <typename FiniteElementMethod>
 void DiffusionAdvectionSolver<FiniteElementMethod>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+    std::shared_ptr<Checkpointing::Manager> checkpointing) {
   // This method computes some time steps of the simulation by running a for
   // loop over the time steps. The number of steps, timestep width and current
   // time are all set by the parent class, TimeSteppingScheme. You shouldn't

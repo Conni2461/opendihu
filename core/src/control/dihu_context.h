@@ -23,7 +23,7 @@
 extern bool GLOBAL_DEBUG;
 // forward declaration
 namespace Checkpointing {
-class Generic;
+class Manager;
 }
 namespace Mesh {
 class Manager;
@@ -87,7 +87,7 @@ public:
                    std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   //! return the top-level python config object
-  static std::shared_ptr<Checkpointing::Generic> getCheckpointing();
+  static std::shared_ptr<Checkpointing::Manager> getCheckpointing();
 
   //! return the mesh manager object that contains all meshes
   static std::shared_ptr<Mesh::Manager> meshManager();
@@ -188,7 +188,7 @@ private:
                    // context is valid
 
   // global singletons
-  static std::shared_ptr<Checkpointing::Generic>
+  static std::shared_ptr<Checkpointing::Manager>
       checkpointing_; //< object that is used to create checkpoints
   static std::shared_ptr<Mesh::Manager>
       meshManager_; //< object that saves all meshes that are used
