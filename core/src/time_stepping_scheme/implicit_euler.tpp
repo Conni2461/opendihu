@@ -17,7 +17,7 @@ ImplicitEuler<DiscretizableInTimeType>::ImplicitEuler(DihuContext context)
 template <typename DiscretizableInTimeType>
 void ImplicitEuler<DiscretizableInTimeType>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+    std::shared_ptr<Checkpointing::Manager> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
