@@ -29,7 +29,7 @@ public:
   //! solution
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
 
   //! Returns the current time passed in the simulation. Used to trigger
   //! rebalancing

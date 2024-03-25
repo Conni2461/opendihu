@@ -23,7 +23,7 @@ public:
   //! solution
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
 
   //! precomputes the integration matrix A=I-dtM^(-1)K for the implicit euler
   //! scheme

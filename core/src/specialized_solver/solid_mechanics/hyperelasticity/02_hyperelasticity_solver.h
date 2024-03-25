@@ -106,7 +106,7 @@ public:
   //! afterwards new data is in solution
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
 
   //! dummy method, set endTime as current output time
   void setTimeSpan(double startTime, double endTime);
