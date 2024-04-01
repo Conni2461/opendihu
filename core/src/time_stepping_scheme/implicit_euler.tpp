@@ -90,8 +90,8 @@ void ImplicitEuler<DiscretizableInTimeType>::advanceTimeSpan(
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, *this->dataImplicit_,
-                                        timeStepNo, currentTime);
+        checkpointing->createCheckpoint(*this->dataImplicit_, timeStepNo,
+                                        currentTime);
       }
 
       if (checkpointing->shouldExit()) {

@@ -542,8 +542,7 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
-                                        currentTime);
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -567,7 +566,11 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::run() {
   // initialize everything
   initialize();
 
-  this->advanceTimeSpan(true, this->context_.getCheckpointing());
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+  this->advanceTimeSpan(true, checkpointing);
 }
 
 //! call the output writer on the data object, output files will contain

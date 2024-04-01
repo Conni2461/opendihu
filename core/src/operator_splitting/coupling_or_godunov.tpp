@@ -164,8 +164,7 @@ void CouplingOrGodunov<TimeStepping1, TimeStepping2>::advanceTimeSpan(
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
-                                        currentTime);
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {

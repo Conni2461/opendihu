@@ -9,17 +9,14 @@
 namespace Checkpointing {
 class Combined : public Generic {
 public:
-  Combined();
+  Combined(DihuContext context);
 
   template <typename DataType>
-  void createCheckpoint(DihuContext context, DataType &problemData,
-                        int timeStepNo = -1, double currentTime = 0.0) const;
-
-protected:
-  void initWriter(DihuContext context) const;
+  void createCheckpoint(DataType &problemData, int timeStepNo = -1,
+                        double currentTime = 0.0) const;
 
 private:
-  mutable std::unique_ptr<OutputWriter::HDF5> writer_;
+  std::unique_ptr<OutputWriter::HDF5> writer_;
 };
 } // namespace Checkpointing
 
