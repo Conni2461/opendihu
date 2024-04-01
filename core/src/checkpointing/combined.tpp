@@ -4,12 +4,8 @@
 
 namespace Checkpointing {
 template <typename DataType>
-void Combined::createCheckpoint(DihuContext context, DataType &problemData,
-                                int timeStepNo, double currentTime) const {
-  if (!writer_) {
-    initWriter(context);
-  }
-
+void Combined::createCheckpoint(DataType &problemData, int timeStepNo,
+                                double currentTime) const {
   Control::PerformanceMeasurement::start("durationWriteCheckpoint");
 
   char ckpt_name[SCR_MAX_FILENAME];

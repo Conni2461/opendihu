@@ -11,6 +11,9 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
   double currentTime = 0;
   auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
 
   // if precice coupling is disabled in settings, run the timestep of the nested
   // solver until endTimeIfCouplingDisabled_ is reached
@@ -38,7 +41,7 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
       if (checkpointing) {
         if (checkpointing->needCheckpoint()) {
-          checkpointing->createCheckpoint(this->context_, *this->dataImplicit_,
+          checkpointing->createCheckpoint(this->nestedSolver_.data(),
                                           timeStepNo, currentTime);
         }
 
@@ -117,8 +120,8 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, *this->dataImplicit_,
-                                        timeStepNo, currentTime);
+        checkpointing->createCheckpoint(this->nestedSolver_.data(), timeStepNo,
+                                        currentTime);
       }
 
       if (checkpointing->shouldExit()) {

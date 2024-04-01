@@ -126,8 +126,7 @@ void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
-                                        currentTime);
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -258,7 +257,11 @@ template <typename MeshType, typename Term, bool withLargeOutputFiles>
 void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::run() {
   initialize();
 
-  advanceTimeSpan(true, this->context_.getCheckpointing());
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename MeshType, typename Term, bool withLargeOutputFiles>

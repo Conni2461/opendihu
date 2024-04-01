@@ -11,9 +11,11 @@ class Manager {
 public:
   Manager(PythonConfig specificSettings);
 
+  void initialize(DihuContext context);
+
   template <typename DataType>
-  void createCheckpoint(DihuContext context, DataType &problemData,
-                        int timeStepNo = -1, double currentTime = 0.0) const;
+  void createCheckpoint(DataType &problemData, int timeStepNo = -1,
+                        double currentTime = 0.0) const;
 
   bool needCheckpoint();
   bool shouldExit();
