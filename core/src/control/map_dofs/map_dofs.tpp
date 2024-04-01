@@ -35,8 +35,13 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::run() {
   // initialize the solver
   initialize();
 
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+
   // advance one timestep
-  advanceTimeSpan(true, this->context_.getCheckpointing());
+  advanceTimeSpan(true, checkpointing);
 }
 
 //! reset state of this object, such that a new initialize() is necessary

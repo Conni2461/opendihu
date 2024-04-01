@@ -196,8 +196,13 @@ void OperatorSplitting<TimeStepping1, TimeStepping2>::run() {
 // Extrae_event(1337, 42);
 #endif
 
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+
   // run simulation
-  advanceTimeSpan(true, this->context_.getCheckpointing());
+  advanceTimeSpan(true, checkpointing);
 
 #ifdef HAVE_EXTRAE
   Extrae_restart();

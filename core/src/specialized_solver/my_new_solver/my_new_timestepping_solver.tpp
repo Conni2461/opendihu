@@ -104,8 +104,7 @@ void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
-                                        currentTime);
+        checkpointing->createCheckpoint(this->data_, timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -190,7 +189,11 @@ void MyNewTimesteppingSolver<TimeStepping>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan(true, context_.getCheckpointing());
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename TimeStepping>

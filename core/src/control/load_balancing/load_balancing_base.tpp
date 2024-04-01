@@ -51,8 +51,7 @@ void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->data(),
-                                        timeStepNo, currentTime);
+        checkpointing->createCheckpoint(this->data(), timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -80,7 +79,11 @@ void LoadBalancingBase<TimeStepping>::initialize() {
 template <typename TimeStepping> void LoadBalancingBase<TimeStepping>::run() {
   initialize();
 
-  advanceTimeSpan(true, this->context_.getCheckpointing());
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+  advanceTimeSpan(true, checkpointing);
 }
 
 template <typename TimeStepping> void LoadBalancingBase<TimeStepping>::reset() {
