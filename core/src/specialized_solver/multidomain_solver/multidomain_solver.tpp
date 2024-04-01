@@ -226,8 +226,8 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->dataMultidomain_,
-                                        timeStepNo, currentTime);
+        checkpointing->createCheckpoint(this->dataMultidomain_, timeStepNo,
+                                        currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -255,7 +255,11 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
   // initialize everything
   initialize();
 
-  this->advanceTimeSpan(true, this->context_.getCheckpointing());
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+  this->advanceTimeSpan(true, checkpointing);
 }
 
 template <typename FiniteElementMethodPotentialFlow,

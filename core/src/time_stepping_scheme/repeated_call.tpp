@@ -80,8 +80,8 @@ void RepeatedCall<Solver>::advanceTimeSpan(
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->context_, this->solver_.data(),
-                                        timeStepNo, currentTime);
+        checkpointing->createCheckpoint(this->solver_.data(), timeStepNo,
+                                        currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -97,7 +97,11 @@ void RepeatedCall<Solver>::advanceTimeSpan(
 
 template <typename Solver> void RepeatedCall<Solver>::run() {
   initialize();
-  advanceTimeSpan(true, this->context_.getCheckpointing());
+  auto checkpointing = this->context_.getCheckpointing();
+  if (checkpointing) {
+    checkpointing->initialize(this->context_);
+  }
+  advanceTimeSpan(true, checkpointing);
 }
 
 //! call the output writer on the data object, output files will contain
