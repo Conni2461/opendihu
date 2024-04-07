@@ -169,4 +169,11 @@ PrescribedValues<FunctionSpaceType, nComponents1,
                          this->fieldVariables2_);
 }
 
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+typename PrescribedValues<FunctionSpaceType, nComponents1,
+                          nComponents2>::FieldVariablesForCheckpointing
+PrescribedValues<FunctionSpaceType, nComponents1,
+                 nComponents2>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

@@ -90,4 +90,9 @@ OutputSurface<Data3D>::getFieldVariablesForOutputWriter() {
   return outputFieldVariables2D_;
 }
 
+template <typename Data3D>
+typename OutputSurface<Data3D>::FieldVariablesForCheckpointing
+OutputSurface<Data3D>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

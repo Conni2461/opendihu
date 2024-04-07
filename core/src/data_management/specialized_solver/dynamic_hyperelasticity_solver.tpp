@@ -121,4 +121,11 @@ DynamicHyperelasticitySolver<
           this->externalVirtualWorkDead_));
 }
 
+template <typename FunctionSpaceType>
+typename DynamicHyperelasticitySolver<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+DynamicHyperelasticitySolver<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

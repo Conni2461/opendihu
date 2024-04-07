@@ -349,4 +349,9 @@ Multidomain<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
                          relativeFactorTotal_, activeStressTotal_);
 }
 
+template <typename FunctionSpaceType>
+typename Multidomain<FunctionSpaceType>::FieldVariablesForCheckpointing
+Multidomain<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

@@ -45,6 +45,14 @@ OperatorSplitting<TimeStepping1,
 }
 
 template <typename TimeStepping1, typename TimeStepping2>
+typename OperatorSplitting<TimeStepping1,
+                           TimeStepping2>::FieldVariablesForCheckpointing
+OperatorSplitting<TimeStepping1,
+                  TimeStepping2>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
+
+template <typename TimeStepping1, typename TimeStepping2>
 bool OperatorSplitting<TimeStepping1, TimeStepping2>::restoreState(
     const InputReader::HDF5 &r) {
   // TODO(conni2461): restore timeStepping_2 ???

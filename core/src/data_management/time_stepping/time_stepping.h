@@ -72,6 +72,21 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<
+          FieldVariable::FieldVariable<FunctionSpaceType, 3>>, // geometry
+      std::shared_ptr<FieldVariableType>,                      // solution
+      std::vector<std::shared_ptr<ScalarFieldVariableType>> // additional field
+                                                            // variables that
+                                                            // are not computed
+                                                            // but transferred
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
   //! output the given data for debugging
   std::string getString(std::shared_ptr<SlotConnectorDataType> data);
 

@@ -182,4 +182,8 @@ QuasiStaticNonlinearElasticityFebio::getFieldVariablesForOutputWriter() {
       std::tuple<std::shared_ptr<FieldVariableType>>(this->relativeVolume_));
 }
 
+typename QuasiStaticNonlinearElasticityFebio::FieldVariablesForCheckpointing
+QuasiStaticNonlinearElasticityFebio::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

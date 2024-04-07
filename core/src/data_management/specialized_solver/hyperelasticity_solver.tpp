@@ -626,6 +626,17 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
 
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term, bool withLargeOutput, typename DummyForTraits>
+typename QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, withLargeOutput,
+    DummyForTraits>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, withLargeOutput,
+    DummyForTraits>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term, bool withLargeOutput, typename DummyForTraits>
 bool QuasiStaticHyperelasticity<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term, withLargeOutput,
     DummyForTraits>::restoreState(const InputReader::HDF5 &r) {
@@ -693,6 +704,19 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
       std::shared_ptr<
           FieldVariable::FieldVariable<DisplacementsFunctionSpace, 1>>(
           this->deformationGradientDeterminant_));
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term>
+typename QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, true,
+    std::enable_if_t<!Term::usesFiberDirection,
+                     Term>>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
+                           Term, true,
+                           std::enable_if_t<!Term::usesFiberDirection, Term>>::
+    getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
 }
 
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
@@ -789,6 +813,19 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
 
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term>
+typename QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, false,
+    std::enable_if_t<Term::usesFiberDirection,
+                     Term>>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
+                           Term, false,
+                           std::enable_if_t<Term::usesFiberDirection, Term>>::
+    getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term>
 bool QuasiStaticHyperelasticity<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term, false,
     std::enable_if_t<Term::usesFiberDirection,
@@ -867,6 +904,19 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
       std::shared_ptr<
           FieldVariable::FieldVariable<DisplacementsFunctionSpace, 1>>(
           this->deformationGradientDeterminant_));
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term>
+typename QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, true,
+    std::enable_if_t<Term::usesFiberDirection,
+                     Term>>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
+                           Term, true,
+                           std::enable_if_t<Term::usesFiberDirection, Term>>::
+    getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
 }
 
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
@@ -977,6 +1027,14 @@ QuasiStaticHyperelasticityPressureOutput<
       std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
           this->velocitiesLinearMesh_),
       std::tuple<std::shared_ptr<PressureFieldVariableType>>(this->pressure_));
+}
+
+template <typename PressureFunctionSpace>
+typename QuasiStaticHyperelasticityPressureOutput<
+    PressureFunctionSpace>::FieldVariablesForCheckpointing
+QuasiStaticHyperelasticityPressureOutput<
+    PressureFunctionSpace>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
 }
 
 template <typename PressureFunctionSpace>
