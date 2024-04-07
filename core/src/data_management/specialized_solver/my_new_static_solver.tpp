@@ -122,4 +122,9 @@ MyNewStaticSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
   );
 }
 
+template <typename FunctionSpaceType>
+typename MyNewStaticSolver<FunctionSpaceType>::FieldVariablesForCheckpointing
+MyNewStaticSolver<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

@@ -6,6 +6,7 @@ HDF5::HDF5(DihuContext context, PythonConfig settings,
     : Generic(context, settings, rankSubset) {
   combineFiles_ = settings.getOptionBool("combineFiles", false);
   writeMeta_ = settings.getOptionBool("writeMeta", true);
+  useCheckpointData_ = false;
 }
 
 //! constructor, initialize nPoints and nCells to 0
@@ -19,6 +20,7 @@ HDF5::Piece::Piece() {
 
 void HDF5::setCombineFiles(bool v) { combineFiles_ = v; }
 void HDF5::setWriteMeta(bool v) { writeMeta_ = v; }
+void HDF5::setUseCheckpointData(bool v) { useCheckpointData_ = v; }
 
 //! assign the correct values to firstScalarName and firstVectorName, only if
 //! properties has been set

@@ -348,4 +348,11 @@ FiniteElementsBase<FunctionSpaceType,
                                        negativeRhsNeumannBoundaryConditions_);
 }
 
+template <typename FunctionSpaceType, int nComponents>
+typename FiniteElementsBase<FunctionSpaceType,
+                            nComponents>::FieldVariablesForCheckpointing
+FiniteElementsBase<FunctionSpaceType,
+                   nComponents>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

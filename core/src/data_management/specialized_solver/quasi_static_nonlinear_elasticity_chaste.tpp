@@ -101,4 +101,11 @@ QuasiStaticNonlinearElasticityChaste<
           this->displacement_));
 }
 
+template <typename FunctionSpace>
+typename QuasiStaticNonlinearElasticityChaste<
+    FunctionSpace>::FieldVariablesForCheckpointing
+QuasiStaticNonlinearElasticityChaste<
+    FunctionSpace>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

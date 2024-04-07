@@ -77,4 +77,12 @@ MultidomainWithFat<FunctionSpaceType,
       std::make_tuple(geometryFieldFat, this->extraCellularPotentialFat_));
 }
 
+template <typename FunctionSpaceType, typename FunctionSpaceFatType>
+typename MultidomainWithFat<
+    FunctionSpaceType, FunctionSpaceFatType>::FieldVariablesForCheckpointing
+MultidomainWithFat<FunctionSpaceType,
+                   FunctionSpaceFatType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
+
 } // namespace Data

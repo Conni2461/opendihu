@@ -50,6 +50,8 @@ public:
   void setCombineFiles(bool v);
   //! Enable or disable write meta option
   void setWriteMeta(bool v);
+  //! Enable or disable use checkpointing data option
+  void setUseCheckpointData(bool v);
 
 protected:
   /** one Piece is the file output. It is created from one or multiple opendihu
@@ -104,6 +106,9 @@ private:
 
   bool combineFiles_; //< if set everything is combined into a single file
   bool writeMeta_;    //< if set, additional metadata is written to attributes
+  bool useCheckpointData_; //< if set the output writer uses
+                           // getFieldVariablesForCheckpointing rather than
+                           // getFieldVariablesForOutputWriter
 
   std::map<std::string, PolyDataPropertiesForMesh>
       meshPropertiesPolyDataFile_; //< mesh information for a data file, for 1D

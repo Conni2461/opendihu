@@ -194,4 +194,11 @@ DiffusionAdvectionSolver<
   );
 }
 
+template <typename FunctionSpaceType>
+typename DiffusionAdvectionSolver<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+DiffusionAdvectionSolver<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

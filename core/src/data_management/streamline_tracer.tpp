@@ -134,4 +134,11 @@ StreamlineTracer<FunctionSpaceType,
           fiberGeometry_));
 }
 
+template <typename FunctionSpaceType, typename BaseDataType>
+typename StreamlineTracer<FunctionSpaceType,
+                          BaseDataType>::FieldVariablesForCheckpointing
+StreamlineTracer<FunctionSpaceType,
+                 BaseDataType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

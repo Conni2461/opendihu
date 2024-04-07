@@ -8,5 +8,6 @@ Combined::Combined(DihuContext context)
                      context, PythonConfig(nullptr))) {
   writer_->setCombineFiles(true);
   writer_->setWriteMeta(false);
+  writer_->setUseCheckpointData(true);
 }
 } // namespace Checkpointing

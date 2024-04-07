@@ -131,4 +131,11 @@ MyNewTimesteppingSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
   );
 }
 
+template <typename FunctionSpaceType>
+typename MyNewTimesteppingSolver<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+MyNewTimesteppingSolver<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

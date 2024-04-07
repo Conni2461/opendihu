@@ -111,4 +111,11 @@ MapDofs<FunctionSpaceType,
   return std::make_tuple(additionalFieldVariables_);
 }
 
+template <typename FunctionSpaceType, typename NestedSolverType>
+typename MapDofs<FunctionSpaceType,
+                 NestedSolverType>::FieldVariablesForCheckpointing
+MapDofs<FunctionSpaceType,
+        NestedSolverType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data
