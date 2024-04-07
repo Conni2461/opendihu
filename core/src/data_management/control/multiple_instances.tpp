@@ -90,4 +90,11 @@ MultipleInstances<FunctionSpaceType,
   return std::make_tuple(instancesFieldVariablesForOutputWriter);
 }
 
+template <typename FunctionSpaceType, typename BaseDataType>
+typename MultipleInstances<FunctionSpaceType,
+                           BaseDataType>::FieldVariablesForCheckpointing
+MultipleInstances<FunctionSpaceType,
+                  BaseDataType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

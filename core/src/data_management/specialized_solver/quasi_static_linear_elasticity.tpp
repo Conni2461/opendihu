@@ -220,4 +220,11 @@ QuasiStaticLinearElasticity<
       std::tuple<std::shared_ptr<FieldVariableType>>(this->flowPotential_));
 }
 
+template <typename DataLinearElasticityType>
+typename QuasiStaticLinearElasticity<
+    DataLinearElasticityType>::FieldVariablesForCheckpointing
+QuasiStaticLinearElasticity<
+    DataLinearElasticityType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

@@ -541,4 +541,11 @@ CellmlAdapter<nStates, nAlgebraics,
   return std::make_tuple(geometryField, algebraics_, states_, parameters_);
 }
 
+template <int nStates, int nAlgebraics, typename FunctionSpaceType>
+typename CellmlAdapter<nStates, nAlgebraics,
+                       FunctionSpaceType>::FieldVariablesForCheckpointing
+CellmlAdapter<nStates, nAlgebraics,
+              FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

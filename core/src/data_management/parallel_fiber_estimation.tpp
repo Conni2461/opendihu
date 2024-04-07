@@ -124,4 +124,11 @@ ParallelFiberEstimation<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
           this->jacobianConditionNumber_));
 }
 
+template <typename FunctionSpaceType>
+typename ParallelFiberEstimation<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+ParallelFiberEstimation<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

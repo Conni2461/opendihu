@@ -168,6 +168,14 @@ TimeStepping<FunctionSpaceType,
       solution_, additionalFieldVariables_);
 }
 
+template <typename FunctionSpaceType, int nComponents>
+typename TimeStepping<FunctionSpaceType,
+                      nComponents>::FieldVariablesForCheckpointing
+TimeStepping<FunctionSpaceType,
+             nComponents>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
+
 //! output the given data for debugging
 template <typename FunctionSpaceType, int nComponents>
 std::string TimeStepping<FunctionSpaceType, nComponents>::getString(

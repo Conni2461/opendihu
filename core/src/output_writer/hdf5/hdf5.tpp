@@ -12,8 +12,13 @@ void HDF5::write(DataType &data, const char *filename, int timeStepNo,
                              callCountIncrement)) {
     return;
   }
-  this->innerWrite(data.getFieldVariablesForOutputWriter(), filename,
-                   timeStepNo, currentTime, callCountIncrement);
+  if (useCheckpointData_) {
+    this->innerWrite(data.getFieldVariablesForCheckpointing(), filename,
+                     timeStepNo, currentTime, callCountIncrement);
+  } else {
+    this->innerWrite(data.getFieldVariablesForOutputWriter(), filename,
+                     timeStepNo, currentTime, callCountIncrement);
+  }
 }
 
 template <typename FieldVariablesForOutputWriterType>
@@ -65,9 +70,15 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
 
     Control::PerformanceMeasurement::start("durationHDF51D");
 
-    LOG(DEBUG) << "FieldVariablesForOutputWriterType: "
-               << StringUtility::demangle(
-                      typeid(FieldVariablesForOutputWriterType).name());
+    if (useCheckpointData_) {
+      LOG(DEBUG) << "FieldVariablesForCheckpointing: "
+                 << StringUtility::demangle(
+                        typeid(FieldVariablesForOutputWriterType).name());
+    } else {
+      LOG(DEBUG) << "FieldVariablesForOutputWriter: "
+                 << StringUtility::demangle(
+                        typeid(FieldVariablesForOutputWriterType).name());
+    }
 
     // create a PolyData file that combines all 1D meshes into one file
     {
