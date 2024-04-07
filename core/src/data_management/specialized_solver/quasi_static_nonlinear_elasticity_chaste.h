@@ -52,6 +52,16 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<std::shared_ptr<FieldVariableType>,       // activation
+                     std::shared_ptr<StressFieldVariableType>, // active stress
+                     std::shared_ptr<VectorFieldVariableType>  // displacement
+                     >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
   bool restoreState(const InputReader::HDF5 &r);
 
 private:

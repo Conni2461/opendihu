@@ -55,6 +55,26 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<GradientFieldVariableType>, // geometry
+      std::shared_ptr<GradientFieldVariableType>, // fiberDirection
+      std::shared_ptr<FieldVariableType>, // solution of laplace potential flow
+      std::shared_ptr<FieldVariableType>, // extra-cellular potential
+      std::vector<
+          std::shared_ptr<FieldVariableType>>, // transmembranePotentials
+      std::vector<
+          std::shared_ptr<FieldVariableType>>, // compartmentRelativeFactors
+      std::shared_ptr<FieldVariableType>,      // relativeFactorTotal
+      std::shared_ptr<FieldVariableType>,      // activeStressTotal
+      std::shared_ptr<GeometryFieldVariableFatType>, // fat layer geometry
+      std::shared_ptr<FieldVariableFatType>          // fat layer phi_e
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
   bool restoreState(const InputReader::HDF5 &r);
 
 private:

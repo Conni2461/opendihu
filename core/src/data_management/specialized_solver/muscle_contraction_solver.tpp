@@ -236,4 +236,11 @@ MuscleContractionSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
   );
 }
 
+template <typename FunctionSpaceType>
+typename MuscleContractionSolver<
+    FunctionSpaceType>::FieldVariablesForCheckpointing
+MuscleContractionSolver<
+    FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

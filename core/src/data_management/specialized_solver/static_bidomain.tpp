@@ -214,4 +214,9 @@ StaticBidomain<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
                          jacobianConditionNumber_, additionalFieldVariables_);
 }
 
+template <typename FunctionSpaceType>
+typename StaticBidomain<FunctionSpaceType>::FieldVariablesForCheckpointing
+StaticBidomain<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
+  return this->getFieldVariablesForOutputWriter();
+}
 } // namespace Data

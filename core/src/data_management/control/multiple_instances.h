@@ -41,6 +41,16 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  // TODO(conni2461): check if this type is correct because we access
+  // FieldVariablesForOutputWriter from BaseDataType
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::vector<typename BaseDataType::FieldVariablesForOutputWriter>>
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
   bool restoreState(const InputReader::HDF5 &r);
 
 protected:

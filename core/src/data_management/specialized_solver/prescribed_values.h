@@ -68,6 +68,21 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  //! field variables that will be output by checkpointing
+  typedef std::tuple<
+      std::shared_ptr<FieldVariable::FieldVariable<
+          FunctionSpaceType, 3>>, // geometry, this always has to be the first
+                                  // field variable, such that the output writer
+                                  // knows the geometry of the mesh
+      std::vector<std::shared_ptr<FieldVariable1Type>>, // variable1,
+      std::vector<std::shared_ptr<FieldVariable2Type>>  // variable2
+      // ... add all field variables that you want to have in the output file
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
   bool restoreState(const InputReader::HDF5 &r);
 
 private:
