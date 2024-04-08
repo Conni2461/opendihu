@@ -103,12 +103,15 @@ public:
       std::shared_ptr<GradientFieldVariableType>, // fiberDirection
       std::shared_ptr<FieldVariableType>, // solution of laplace potential flow
       std::shared_ptr<FieldVariableType>, // extra-cellular potential
+      std::vector<std::shared_ptr<
+          FieldVariableType>>, // transmembranePotentialsSolution
       std::vector<
           std::shared_ptr<FieldVariableType>>, // transmembranePotentials
       std::vector<
           std::shared_ptr<FieldVariableType>>, // compartmentRelativeFactors
-      std::shared_ptr<FieldVariableType>,      // relativeFactorTotal
-      std::shared_ptr<FieldVariableType>       // activeStressTotal
+      std::vector<std::shared_ptr<FieldVariableType>>, // activeStress
+      std::shared_ptr<FieldVariableType>,              // relativeFactorTotal
+      std::shared_ptr<FieldVariableType>               // activeStressTotal
       >
       FieldVariablesForCheckpointing;
 
