@@ -6,7 +6,10 @@ namespace Checkpointing {
 Manager::Manager(PythonConfig specificSettings)
     : specificSettings_(specificSettings),
       interval_(specificSettings.getOptionInt("interval", 1)),
-      prefix_(specificSettings.getOptionString("directory", "state")) {}
+      prefix_(specificSettings.getOptionString("directory", "state")),
+      autoRestore_(specificSettings.getOptionBool("autoRestore", true)),
+      checkpointToRestore_(
+          specificSettings.getOptionString("checkpointToRestore", "")) {}
 
 void Manager::initialize(DihuContext context) {
   if (!checkpointing) {
@@ -30,4 +33,7 @@ bool Manager::shouldExit() {
 
 int32_t Manager::getInterval() const { return interval_; }
 const char *Manager::getPrefix() const { return prefix_.c_str(); }
+const std::string &Manager::getCheckpointToRestore() const {
+  return checkpointToRestore_;
+}
 } // namespace Checkpointing

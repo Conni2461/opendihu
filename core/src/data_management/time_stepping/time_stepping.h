@@ -77,6 +77,7 @@ public:
       std::shared_ptr<
           FieldVariable::FieldVariable<FunctionSpaceType, 3>>, // geometry
       std::shared_ptr<FieldVariableType>,                      // solution
+      std::shared_ptr<FieldVariableType>,                      // increment
       std::vector<std::shared_ptr<ScalarFieldVariableType>> // additional field
                                                             // variables that
                                                             // are not computed

@@ -15,8 +15,9 @@ public:
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,
                         double currentTime = 0.0) const;
   template <typename DataType>
-  bool restore(DataType &problemData, int &timeStepNo,
-               double &currentTime) const;
+  bool restore(DataType &problemData, int &timeStepNo, double &currentTime,
+               bool autoRestore,
+               const std::string &checkpointingToRestore) const;
 
 private:
   std::unique_ptr<OutputWriter::HDF5> writer_;
