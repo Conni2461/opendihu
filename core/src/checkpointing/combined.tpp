@@ -27,13 +27,28 @@ void Combined::createCheckpoint(DataType &data, int timeStepNo,
 }
 
 template <typename DataType>
-bool Combined::restore(DataType &data, int &timeStepNo,
-                       double &currentTime) const {
+bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
+                       bool autoRestore,
+                       const std::string &checkpointToRestore) const {
   bool restarted = false;
   bool found = false;
   while (!restarted) {
-    int32_t have_restart = 0;
+    if (!autoRestore) {
+      break;
+    }
+
     char ckpt_name[SCR_MAX_FILENAME];
+    if (checkpointToRestore != "") {
+      int32_t r = SCR_Current(checkpointToRestore.c_str());
+      if (r != SCR_SUCCESS) {
+        LOG(ERROR) << "Failed to specify specific checkpoint. Please check the "
+                      "name for typos. Return value"
+                   << r;
+        return false;
+      }
+    }
+
+    int32_t have_restart = 0;
     SCR_Have_restart(&have_restart, ckpt_name);
     if (!have_restart) {
       break;
@@ -44,7 +59,11 @@ bool Combined::restore(DataType &data, int &timeStepNo,
     SCR_Start_restart(checkpointing_dir);
 
     char scr_file[SCR_MAX_FILENAME];
-    SCR_Route_file(ckpt_name, scr_file);
+    if (checkpointToRestore != "") {
+      SCR_Route_file(checkpointToRestore.c_str(), scr_file);
+    } else {
+      SCR_Route_file(ckpt_name, scr_file);
+    }
 
     int valid = 1;
     InputReader::HDF5 r(scr_file);

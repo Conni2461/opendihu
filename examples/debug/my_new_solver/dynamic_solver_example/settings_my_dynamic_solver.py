@@ -8,6 +8,7 @@ config = {
   "checkpointing": {
     "interval": 10,
     "directory": "states",
+    "checkpointToRestore": "timestep.10",
   },
   "Solvers": {
     "linearSolver": {

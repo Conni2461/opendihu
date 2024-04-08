@@ -26,12 +26,15 @@ public:
 
   int32_t getInterval() const;
   const char *getPrefix() const;
+  const std::string &getCheckpointToRestore() const;
 
 private:
   PythonConfig specificSettings_; //< config for this object
 
   int32_t interval_;
   std::string prefix_;
+  bool autoRestore_; //! if set it restores if there is a checkpoint found
+  std::string checkpointToRestore_;
 
   std::shared_ptr<Generic> checkpointing;
 };
