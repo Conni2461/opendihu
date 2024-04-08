@@ -122,15 +122,14 @@ bool Multidomain<FunctionSpaceType>::restoreState(const InputReader::HDF5 &r) {
   compartmentRelativeFactor.reserve(nCompartments_);
   activeStress.reserve(nCompartments_);
   for (int k = 0; k < nCompartments_; k++) {
-    // TODO(conni2461): figure out if we need to serialize this
-    // {
-    //   std::vector<double> a;
-    //   if (!r.readDoubleVector(
-    //           this->transmembranePotentialSolution_[k]->name().c_str(), a)) {
-    //     return false;
-    //   }
-    //   transmembranePotentialSolution.push_back(std::move(a));
-    // }
+    {
+      std::vector<double> a;
+      if (!r.readDoubleVector(
+              this->transmembranePotentialSolution_[k]->name().c_str(), a)) {
+        return false;
+      }
+      transmembranePotentialSolution.push_back(std::move(a));
+    }
 
     {
       std::vector<double> a;
@@ -150,14 +149,13 @@ bool Multidomain<FunctionSpaceType>::restoreState(const InputReader::HDF5 &r) {
       compartmentRelativeFactor.push_back(std::move(a));
     }
 
-    // TODO(conni2461): figure out if we need to serialize this
-    // {
-    //   std::vector<double> a;
-    //   if (!r.readDoubleVector(this->activeStress_[k]->name().c_str(), a)) {
-    //     return false;
-    //   }
-    //   activeStress.push_back(std::move(a));
-    // }
+    {
+      std::vector<double> a;
+      if (!r.readDoubleVector(this->activeStress_[k]->name().c_str(), a)) {
+        return false;
+      }
+      activeStress.push_back(std::move(a));
+    }
   }
 
   this->flowPotential_->setValues(flowPotential);
@@ -167,14 +165,12 @@ bool Multidomain<FunctionSpaceType>::restoreState(const InputReader::HDF5 &r) {
   this->relativeFactorTotal_->setValues(relFactor);
   this->activeStressTotal_->setValues(activeStressTotal);
   for (int k = 0; k < nCompartments_; k++) {
-    // TODO
-    // this->transmembranePotentialSolution_[k]->setValues(
-    //     transmembranePotentialSolution[k]);
+    this->transmembranePotentialSolution_[k]->setValues(
+        transmembranePotentialSolution[k]);
     this->transmembranePotential_[k]->setValues(transmembranePotential[k]);
     this->compartmentRelativeFactor_[k]->setValues(
         compartmentRelativeFactor[k]);
-    // TODO
-    // this->activeStress_[k]->setValues(activeStress[k]);
+    this->activeStress_[k]->setValues(activeStress[k]);
   }
 
   // TODO(conni2461): restore geometry_
@@ -352,6 +348,42 @@ Multidomain<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
 template <typename FunctionSpaceType>
 typename Multidomain<FunctionSpaceType>::FieldVariablesForCheckpointing
 Multidomain<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  // these field variables will be written to output files
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  std::vector<std::shared_ptr<FieldVariableType>>
+      transmembranePotentialsSolution;
+  transmembranePotentialsSolution.reserve(nCompartments_);
+  for (int i = 0; i < nCompartments_; i++) {
+    transmembranePotentialsSolution.push_back(
+        transmembranePotentialSolution_[i]);
+  }
+
+  std::vector<std::shared_ptr<FieldVariableType>> transmembranePotentials;
+  transmembranePotentials.reserve(nCompartments_);
+  for (int i = 0; i < nCompartments_; i++) {
+    transmembranePotentials.push_back(transmembranePotential_[i]);
+  }
+
+  std::vector<std::shared_ptr<FieldVariableType>> compartmentRelativeFactors;
+  compartmentRelativeFactors.reserve(nCompartments_);
+  for (int i = 0; i < nCompartments_; i++) {
+    compartmentRelativeFactors.push_back(compartmentRelativeFactor_[i]);
+  }
+
+  std::vector<std::shared_ptr<FieldVariableType>> activeStress;
+  activeStress.reserve(nCompartments_);
+  for (int i = 0; i < nCompartments_; i++) {
+    activeStress.push_back(activeStress_[i]);
+  }
+
+  return std::make_tuple(
+      geometryField, this->fiberDirection_, this->flowPotential_,
+      extraCellularPotential_, transmembranePotentialsSolution,
+      transmembranePotentials, compartmentRelativeFactors, activeStress,
+      relativeFactorTotal_, activeStressTotal_);
 }
 } // namespace Data

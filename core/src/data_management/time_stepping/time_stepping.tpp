@@ -35,11 +35,15 @@ TimeStepping<FunctionSpaceType, nComponents>::~TimeStepping() {
 template <typename FunctionSpaceType, int nComponents>
 bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
     const InputReader::HDF5 &r) {
-  std::vector<double> solution;
+  std::vector<double> solution, increment;
   if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
     return false;
   }
+  if (!r.readDoubleVector(this->increment_->name().c_str(), increment)) {
+    return false;
+  }
   this->solution_->setValues(solution);
+  this->increment_->setValues(increment);
   // TODO(conni2461): restore geometry, increment, additionalFieldVariables_
   return true;
 }
@@ -173,7 +177,24 @@ typename TimeStepping<FunctionSpaceType,
                       nComponents>::FieldVariablesForCheckpointing
 TimeStepping<FunctionSpaceType,
              nComponents>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  // recover additional field variables from slotConnectorData_, they may have
+  // been changed by transfer
+  assert(slotConnectorData_->variable2.size() >=
+         additionalFieldVariables_.size());
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    LOG(DEBUG) << " Data::TimeStepping::getFieldVariablesForCheckpointing(), "
+               << " get field variable "
+               << slotConnectorData_->variable2[i].values << ", \""
+               << slotConnectorData_->variable2[i].values->name()
+               << "\" for additionalFieldVariables_[" << i << "]";
+    additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
+  }
+
+  // these field variables will be written to output files
+  return FieldVariablesForCheckpointing(
+      std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+          this->functionSpace_->geometryField()),
+      solution_, increment_, additionalFieldVariables_);
 }
 
 //! output the given data for debugging
