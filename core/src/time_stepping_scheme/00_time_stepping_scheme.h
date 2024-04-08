@@ -3,6 +3,7 @@
 #include <Python.h> // has to be the first included header
 #include "control/dihu_context.h"
 #include "output_writer/manager.h"
+#include "checkpointing/generic.h"
 #include "interfaces/splittable.h"
 #include "interfaces/multipliable.h"
 
@@ -79,6 +80,8 @@ protected:
                         // and solverManager
   OutputWriter::Manager
       outputWriterManager_;    //< manager object holding all output writer
+  std::unique_ptr<Checkpointing::Generic> checkpointing_;
+
   int timeStepOutputInterval_; //< time step number and time is output every
                                // timeStepOutputInterval_ time steps
 

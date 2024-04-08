@@ -171,7 +171,10 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
     // without MPI shutting down
     MPI_Init(&argc, &argv);
 
-    if (SCR_Init() != SCR_SUCCESS){
+    // TODO: figure out how to configure this correctly
+    SCR_Configf("SCR_CHECKPOINT_INTERVAL=%d", 5);
+    SCR_Configf("SCR_PREFIX=%s", "states");
+    if (SCR_Init() != SCR_SUCCESS) {
       LOG(FATAL) << "Failed to initialize SCR";
     }
 

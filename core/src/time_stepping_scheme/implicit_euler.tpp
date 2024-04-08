@@ -87,6 +87,17 @@ void ImplicitEuler<DiscretizableInTimeType>::advanceTimeSpan(
       this->outputWriterManager_.writeOutput(*this->dataImplicit_, timeStepNo,
                                              currentTime);
 
+    if (this->checkpointing_) {
+      if (this->checkpointing_->need_checkpoint()) {
+        this->checkpointing_->create_checkpoint(*this->dataImplicit_,
+                                                timeStepNo, currentTime);
+      }
+
+      if (this->checkpointing_->should_exit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);

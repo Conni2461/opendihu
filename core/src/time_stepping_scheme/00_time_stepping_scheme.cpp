@@ -79,6 +79,11 @@ void TimeSteppingScheme::initialize() {
   startTime_ = 0.0;
   endTime_ = 1.0;
 
+  if (specificSettings_.hasKey("checkpointing")) {
+    checkpointing_ = std::make_unique<Checkpointing::Generic>(
+        context_, PythonConfig(specificSettings_, "checkpointing"));
+  }
+
   VLOG(1) << "in TimeSteppingScheme::initalize, specificSettings_: "
           << specificSettings_;
   if (specificSettings_.hasKey("endTime"))
