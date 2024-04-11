@@ -31,11 +31,11 @@ void PythonFile::write(DataType &data, int timeStepNo, double currentTime,
   for (std::string meshName : meshNames) {
     // setup name of file
     std::stringstream filenameStart;
-    if (meshNames.size() == 1)
+    if (meshNames.size() == 1) {
       filenameStart << this->filename_;
-    else
-
+    } else {
       filenameStart << this->filename_ << "_" << meshName;
+    }
 
     // exelem file
     // determine file name

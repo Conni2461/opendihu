@@ -30,9 +30,9 @@ class Python<FunctionSpace::FunctionSpace<
              FieldVariablesForOutputWriterType>
     : public PythonBase<FieldVariablesForOutputWriterType> {
 public:
-  typedef FunctionSpace::FunctionSpace<
-      Mesh::StructuredRegularFixedOfDimension<D>, BasisFunctionType>
-      FunctionSpaceType;
+  using FunctionSpaceType =
+      FunctionSpace::FunctionSpace<Mesh::StructuredRegularFixedOfDimension<D>,
+                                   BasisFunctionType>;
 
   //! call python callback
   static PyObject *
@@ -49,9 +49,9 @@ class Python<FunctionSpace::FunctionSpace<
              FieldVariablesForOutputWriterType>
     : public PythonBase<FieldVariablesForOutputWriterType> {
 public:
-  typedef FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<D>,
-                                       BasisFunctionType>
-      FunctionSpaceType;
+  using FunctionSpaceType =
+      FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<D>,
+                                   BasisFunctionType>;
 
   //! call python callback
   static PyObject *
@@ -70,9 +70,9 @@ class Python<FunctionSpace::FunctionSpace<Mesh::CompositeOfDimension<D>,
 public:
   // the function space is StructuredDeformable whereas the FunctionSpace of the
   // class is CompositeOfDimension
-  typedef FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<D>,
-                                       BasisFunctionType>
-      FunctionSpaceType;
+  using FunctionSpaceType =
+      FunctionSpace::FunctionSpace<Mesh::StructuredDeformableOfDimension<D>,
+                                   BasisFunctionType>;
 
   //! call python callback
   static PyObject *
@@ -89,9 +89,9 @@ class Python<FunctionSpace::FunctionSpace<
              FieldVariablesForOutputWriterType>
     : public PythonBase<FieldVariablesForOutputWriterType> {
 public:
-  typedef FunctionSpace::FunctionSpace<
-      Mesh::UnstructuredDeformableOfDimension<D>, BasisFunctionType>
-      FunctionSpaceType;
+  using FunctionSpaceType =
+      FunctionSpace::FunctionSpace<Mesh::UnstructuredDeformableOfDimension<D>,
+                                   BasisFunctionType>;
 
   //! call python callback
   static PyObject *
