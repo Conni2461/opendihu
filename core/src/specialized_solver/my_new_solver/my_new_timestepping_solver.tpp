@@ -1,5 +1,7 @@
 #include "specialized_solver/my_new_solver/my_new_timestepping_solver.h"
 
+#include "control/diagnostic_tool/timing_measurement.h"
+
 #include <omp.h>
 #include <sstream>
 
@@ -91,7 +93,9 @@ void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
     // ...
 
     // advance simulation time
+    Control::TimingMeasurement::stop(timeStepNo);
     timeStepNo++;
+    Control::TimingMeasurement::start(timeStepNo);
 
     // compute new current simulation time
     currentTime = this->startTime_ +

@@ -33,6 +33,7 @@
 #include "control/diagnostic_tool/solver_structure_visualizer.h"
 #include "slot_connection/global_connections_by_slot_name.h"
 #include "checkpointing/manager.h"
+#include "control/diagnostic_tool/timing_measurement.h"
 
 #include "easylogging++.h"
 #include "control/python_config/settings_file_name.h"
@@ -610,6 +611,8 @@ DihuContext::~DihuContext() {
       if (megamolThread_)
         megamolThread_->join();
 #endif
+
+      Control::TimingMeasurement::writeCSV();
 
       // global barrier
       MPI_Barrier(MPI_COMM_WORLD);
