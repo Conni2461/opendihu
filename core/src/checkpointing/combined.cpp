@@ -3,9 +3,10 @@
 #include <scr.h>
 
 namespace Checkpointing {
-Combined::Combined(DihuContext context)
+Combined::Combined(DihuContext context,
+                   std::shared_ptr<Partition::RankSubset> rankSubset)
     : Generic(), writer_(std::make_unique<OutputWriter::HDF5>(
-                     context, PythonConfig(nullptr))) {
+                     context, PythonConfig(nullptr), rankSubset)) {
   writer_->setCombineFiles(true);
   writer_->setWriteMeta(false);
   writer_->setUseCheckpointData(true);
