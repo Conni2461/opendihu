@@ -3,6 +3,11 @@
 #include <scr.h>
 #include "input_reader/hdf5.h"
 
+inline bool file_exists(const char *file) {
+  struct stat buffer;
+  return (stat(file, &buffer) == 0);
+}
+
 namespace Checkpointing {
 template <typename DataType>
 void Combined::createCheckpoint(DataType &data, int timeStepNo,
@@ -63,6 +68,10 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
       SCR_Route_file(checkpointToRestore.c_str(), scr_file);
     } else {
       SCR_Route_file(ckpt_name, scr_file);
+    }
+
+    if (!file_exists(scr_file)) {
+      break;
     }
 
     int valid = 1;
