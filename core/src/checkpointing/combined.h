@@ -9,7 +9,8 @@
 namespace Checkpointing {
 class Combined : public Generic {
 public:
-  Combined(DihuContext context);
+  Combined(DihuContext context,
+           std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   template <typename DataType>
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,

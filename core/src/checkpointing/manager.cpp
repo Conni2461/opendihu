@@ -13,7 +13,7 @@ Manager::Manager(PythonConfig specificSettings)
 
 void Manager::initialize(DihuContext context) {
   if (!checkpointing) {
-    checkpointing = std::make_shared<Combined>(context);
+    checkpointing = std::make_shared<Combined>(context, context.rankSubset());
   }
 }
 
