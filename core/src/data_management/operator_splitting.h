@@ -42,7 +42,11 @@ public:
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
   //! field variables that will be output by checkpointing
-  typedef typename TimeStepping1::Data::FieldVariablesForCheckpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<
+          typename TimeStepping1::Data::FieldVariablesForCheckpointing>(),
+      std::declval<
+          typename TimeStepping2::Data::FieldVariablesForCheckpointing>()))
       FieldVariablesForCheckpointing;
 
   //! get pointers to all field variables that can be written by checkpointing
