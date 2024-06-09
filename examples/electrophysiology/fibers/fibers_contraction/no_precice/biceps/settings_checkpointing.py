@@ -495,6 +495,12 @@ config = {
   }
 }
 
+config["checkpointing"] = {
+    "interval": 10,
+    "directory": "states",
+    "autoRestore": False,
+}
+
 # stop timer and calculate how long parsing lasted
 if rank_no == 0:
   t_stop_script = timeit.default_timer()
