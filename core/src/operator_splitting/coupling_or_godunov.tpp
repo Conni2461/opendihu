@@ -3,6 +3,7 @@
 #include "utility/python_utility.h"
 #include "data_management/time_stepping/time_stepping.h"
 #include "slot_connection/slot_connector_data_transfer.h"
+#include "control/diagnostic_tool/timing_measurement.h"
 
 namespace OperatorSplitting {
 
@@ -163,7 +164,9 @@ void CouplingOrGodunov<TimeStepping1, TimeStepping2>::advanceTimeSpan(
     }
 
     // advance simulation time
+    Control::TimingMeasurement::stop(timeStepNo);
     timeStepNo++;
+    Control::TimingMeasurement::start(timeStepNo);
     currentTime = this->startTime_ +
                   double(timeStepNo) / this->numberTimeSteps_ * timeSpan;
 
