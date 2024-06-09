@@ -33,6 +33,7 @@ private:
 
   int32_t interval_;
   std::string prefix_;
+  std::string type_;
   bool autoRestore_; //! if set it restores if there is a checkpoint found
   std::string checkpointToRestore_;
 
