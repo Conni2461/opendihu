@@ -29,7 +29,12 @@ void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_; timeStepNo++) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data(), timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_; timeStepNo++) {
     currentTime = this->startTime_ +
                   double(timeStepNo) / this->numberTimeSteps_ * timeSpan;
 

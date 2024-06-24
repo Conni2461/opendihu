@@ -752,6 +752,33 @@ void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
   }
 }
 
+//! set values for all dofs
+template <typename FunctionSpaceType, int nComponents>
+void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
+    const std::vector<double> &values) {
+  // get number of dofs
+  assert(this->functionSpace_);
+  const dof_no_t nDofs = this->functionSpace_->nDofsLocalWithGhosts();
+  if (nDofs == values.size()) {
+    for (int componentIndex = 0; componentIndex < nComponents;
+         componentIndex++) {
+      this->setValuesWithGhosts(componentIndex, values, INSERT_VALUES);
+    }
+  } else if (values.size() >= (nDofs * nComponents)) {
+    for (int componentIndex = 0; componentIndex < nComponents;
+         componentIndex++) {
+      std::vector<double> t;
+      t.resize(nDofs);
+      for (size_t i = 0; i < nDofs; i++) {
+        t[i] = values[(i * nComponents) + componentIndex];
+      }
+      this->setValuesWithGhosts(componentIndex, t, INSERT_VALUES);
+    }
+  } else {
+    assert(false);
+  }
+}
+
 //! set values for the specified component for all local dofs, after all calls
 //! to setValue(s), finishGhostManipulation has to be called to apply the cached
 //! changes

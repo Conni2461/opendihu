@@ -40,8 +40,12 @@ void CrankNicolson<DiscretizableInTimeType>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
 
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >

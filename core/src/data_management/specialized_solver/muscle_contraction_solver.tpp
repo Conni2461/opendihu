@@ -48,6 +48,56 @@ void MuscleContractionSolver<FunctionSpaceType>::initialize() {
 }
 
 template <typename FunctionSpaceType>
+bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> lambda, lambdaDot, gamma, displacements, velocities,
+      activePK2Stress, pK2Stress, fiberDirection, materialTraction;
+  if (!r.readDoubleVector(this->gamma_->name().c_str(), gamma)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->lambda_->name().c_str(), lambda)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->lambdaDot_->name().c_str(), lambdaDot)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activePK2Stress_->name().c_str(),
+                          activePK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK2Stress_->name().c_str(), pK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->materialTraction_->name().c_str(),
+                          materialTraction)) {
+    return false;
+  }
+
+  this->lambda_->setValues(lambda);
+  this->lambdaDot_->setValues(lambdaDot);
+  this->gamma_->setValues(gamma);
+  this->displacements_->setValues(displacements);
+  this->velocities_->setValues(velocities);
+  this->activePK2Stress_->setValues(activePK2Stress);
+  this->pK2Stress_->setValues(pK2Stress);
+  this->fiberDirection_->setValues(fiberDirection);
+  this->materialTraction_->setValues(materialTraction);
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void MuscleContractionSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 

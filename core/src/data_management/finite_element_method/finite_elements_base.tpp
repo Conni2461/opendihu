@@ -96,6 +96,31 @@ void FiniteElementsBase<FunctionSpaceType, nComponents>::
 }
 
 template <typename FunctionSpaceType, int nComponents>
+bool FiniteElementsBase<FunctionSpaceType, nComponents>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> rhs, solution, negativeRhsNeumannBoundaryConditions;
+  if (!r.readDoubleVector(this->rhs_->name().c_str(), rhs)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->negativeRhsNeumannBoundaryConditions_->name().c_str(),
+          negativeRhsNeumannBoundaryConditions)) {
+    return false;
+  }
+
+  this->rhs_->setValues(rhs);
+  this->solution_->setValues(solution);
+  this->negativeRhsNeumannBoundaryConditions_->setValues(
+      negativeRhsNeumannBoundaryConditions);
+  // TODO(conni2461): restore geometry, stiffnessMatrix,
+  // stiffnessMatrixWithoutBc
+  return true;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 void FiniteElementsBase<FunctionSpaceType, nComponents>::createPetscObjects() {
   LOG(TRACE) << "FiniteElements::createPetscObjects";
 

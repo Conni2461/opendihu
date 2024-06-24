@@ -156,6 +156,10 @@ void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
 
   // calculate current time
   double currentTime = this->startTime_;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
+
   LOG(DEBUG) << "New timeSpan started. Current time: " << currentTime;
 
   // update current time for returning method

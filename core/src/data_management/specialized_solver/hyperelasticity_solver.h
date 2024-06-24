@@ -239,6 +239,8 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::HDF5 &r);
 };
 
 // withLargeOutput = true, Term::usesFiberDirection = false
@@ -284,6 +286,8 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::HDF5 &r);
 };
 
 // withLargeOutput = false, Term::usesFiberDirection = true
@@ -319,6 +323,8 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::HDF5 &r);
 };
 
 // withLargeOutput = true, Term::usesFiberDirection = true
@@ -366,6 +372,8 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::HDF5 &r);
 };
 
 // ------------------------------------------------------------------------------------------------------
@@ -406,6 +414,8 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::HDF5 &r);
 
   //! initialize the internal pressure and displacements variables
   void initialize(std::shared_ptr<PressureFieldVariableType> pressure,

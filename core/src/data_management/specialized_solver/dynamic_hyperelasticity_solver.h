@@ -61,6 +61,8 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  bool restoreState(const InputReader::HDF5 &r);
+
 protected:
   //! initializes the vectors with size
   void createPetscObjects() override;

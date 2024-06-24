@@ -92,6 +92,8 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  bool restoreState(const InputReader::HDF5 &r);
+
   //! set field variables that were created outside of this object
   //! @param setGeometryFieldForTransfer: if the geometry field should be
   //! transferred via the connector slots

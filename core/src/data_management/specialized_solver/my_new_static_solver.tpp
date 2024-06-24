@@ -44,6 +44,23 @@ void MyNewStaticSolver<FunctionSpaceType>::initialize() {
 }
 
 template <typename FunctionSpaceType>
+bool MyNewStaticSolver<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> solution, fieldVariableB;
+  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fieldVariableB_->name().c_str(),
+                          fieldVariableB)) {
+    return false;
+  }
+  this->solution_->setValues(solution);
+  this->fieldVariableB_->setValues(fieldVariableB);
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void MyNewStaticSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 
