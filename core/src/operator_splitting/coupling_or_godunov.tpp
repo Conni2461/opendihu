@@ -8,7 +8,8 @@ namespace OperatorSplitting {
 
 template <typename TimeStepping1, typename TimeStepping2>
 void CouplingOrGodunov<TimeStepping1, TimeStepping2>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
@@ -160,6 +161,17 @@ void CouplingOrGodunov<TimeStepping1, TimeStepping2>::advanceTimeSpan(
     timeStepNo++;
     currentTime = this->startTime_ +
                   double(timeStepNo) / this->numberTimeSteps_ * timeSpan;
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
 
     // store the current simulation in case the program gets interrupted, then
     // the last time gets logged

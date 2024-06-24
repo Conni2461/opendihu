@@ -16,7 +16,8 @@ CrankNicolson<DiscretizableInTimeType>::CrankNicolson(DihuContext context)
 
 template <typename DiscretizableInTimeType>
 void CrankNicolson<DiscretizableInTimeType>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
@@ -82,6 +83,17 @@ void CrankNicolson<DiscretizableInTimeType>::advanceTimeSpan(
     if (withOutputWritersEnabled)
       this->outputWriterManager_.writeOutput(*this->data_, timeStepNo,
                                              currentTime);
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, *this->data_,
+                                        timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
 
     // start duration measurement
     if (this->durationLogKey_ != "")

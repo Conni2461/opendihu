@@ -14,7 +14,9 @@ public:
   Strang(DihuContext context);
 
   //! advance time stepping by span
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 };
 
 } // namespace OperatorSplitting

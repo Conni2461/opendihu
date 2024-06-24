@@ -5,6 +5,10 @@ n = 5   # number of elements
 
 config = {
   "logFormat": "csv",
+  "checkpointing": {
+    "interval": 10,
+    "directory": "states",
+  },
   "Solvers": {
     "linearSolver": {
       "solverType": "gmres",          # the solver type, refer to PETSc documentation about implemented solvers and preconditioners (https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/KSP/KSPType.html)
@@ -19,10 +23,6 @@ config = {
   "MyNewTimesteppingSolver": {        # this is the name of the solver, as given in the constructor to the timestepping object
     "myOption": 42,                   # example option that is parsed in the constructor
     "option1": "blabla",              # another example option that is parsed in the data object
-    "checkpointing": {
-      "interval": 10,
-      "directory": "states",
-    },
 
     # option for the timestepping of MyNewTimesteppingSolver
     "endTime": 60.0,                  # end time of the simulation

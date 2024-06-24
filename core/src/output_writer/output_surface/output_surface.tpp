@@ -160,8 +160,10 @@ void OutputSurface<Solver>::initializeSampledPoints() {
 }
 
 template <typename Solver>
-void OutputSurface<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
-  solver_.advanceTimeSpan(withOutputWritersEnabled);
+void OutputSurface<Solver>::advanceTimeSpan(
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
+  solver_.advanceTimeSpan(withOutputWritersEnabled, checkpointing);
 
   LOG(DEBUG) << "OutputSurface: writeOutput, ownRankInvolvedInOutput_: "
              << ownRankInvolvedInOutput_;

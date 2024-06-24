@@ -6,7 +6,9 @@ Dummy::Dummy(DihuContext context)
     : Runnable(), ::TimeSteppingScheme::TimeSteppingScheme(context),
       data_(this->context_) {}
 
-void Dummy::advanceTimeSpan(bool withOutputWritersEnabled) {}
+void Dummy::advanceTimeSpan(
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {}
 
 void Dummy::initialize() {
   // initialize() will be called before the simulation starts.

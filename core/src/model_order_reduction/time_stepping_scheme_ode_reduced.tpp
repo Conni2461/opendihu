@@ -170,7 +170,7 @@ void TimeSteppingSchemeOdeReduced<TimeSteppingType>::run() {
   this->initialize();
 
   // do simulations
-  this->advanceTimeSpan();
+  this->advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 template <typename TimeSteppingType>

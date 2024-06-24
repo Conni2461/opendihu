@@ -96,7 +96,8 @@ template <typename FiniteElementMethodPotentialFlow,
           typename FiniteElementMethodDiffusion>
 void MultidomainSolver<FiniteElementMethodPotentialFlow,
                        FiniteElementMethodDiffusion>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -223,6 +224,17 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
     if (withOutputWritersEnabled)
       callOutputWriter(timeStepNo, currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->dataMultidomain_,
+                                        timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -243,7 +255,7 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
   // initialize everything
   initialize();
 
-  this->advanceTimeSpan();
+  this->advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 template <typename FiniteElementMethodPotentialFlow,

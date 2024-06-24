@@ -197,7 +197,7 @@ void OperatorSplitting<TimeStepping1, TimeStepping2>::run() {
 #endif
 
   // run simulation
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 
 #ifdef HAVE_EXTRAE
   Extrae_restart();

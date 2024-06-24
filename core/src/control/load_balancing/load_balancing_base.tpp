@@ -13,7 +13,8 @@ LoadBalancingBase<TimeStepping>::LoadBalancingBase(DihuContext context)
 
 template <typename TimeStepping>
 void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")
@@ -48,6 +49,17 @@ void LoadBalancingBase<TimeStepping>::advanceTimeSpan(
     // advance the simulation by the specified time span
     timeSteppingScheme_.advanceTimeSpan(withOutputWritersEnabled);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data(),
+                                        timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // check if the dofs can be rebalanced
     rebalance();
   }
@@ -68,7 +80,7 @@ void LoadBalancingBase<TimeStepping>::initialize() {
 template <typename TimeStepping> void LoadBalancingBase<TimeStepping>::run() {
   initialize();
 
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 template <typename TimeStepping> void LoadBalancingBase<TimeStepping>::reset() {

@@ -428,7 +428,8 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput,
 
 template <typename Term, bool withLargeOutput, typename MeshType>
 void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
@@ -539,6 +540,17 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::
     // volume
     computeBearingForcesAndMoments(currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -555,7 +567,7 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::run() {
   // initialize everything
   initialize();
 
-  this->advanceTimeSpan();
+  this->advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 //! call the output writer on the data object, output files will contain

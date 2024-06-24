@@ -33,7 +33,9 @@ public:
   MapDofs(DihuContext context);
 
   //! advance simulation by the given time span
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 
   //! initialize field variables and everything needed for the dofs mapping
   void initialize();
