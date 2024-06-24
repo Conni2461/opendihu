@@ -31,7 +31,9 @@ public:
   PrescribedValues(DihuContext context);
 
   //! advance simulation by the given time span [startTime_, endTime_]
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 
   //! initialize time span from specificSettings_
   void initialize();

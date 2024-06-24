@@ -47,7 +47,9 @@ public:
 
   //! advance simulation by the given time span, data in solution is used,
   //! afterwards new data is in solution
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 
   //! initialize components of the simulation
   void initialize();

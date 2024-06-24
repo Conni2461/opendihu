@@ -45,7 +45,9 @@ public:
   DynamicHyperelasticitySolver(DihuContext context);
 
   //! advance simulation by the given time span
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 
   //! initialize everything for the simulation
   void initialize();

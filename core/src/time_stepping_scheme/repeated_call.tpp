@@ -40,7 +40,9 @@ template <typename Solver> void RepeatedCall<Solver>::initialize() {
 }
 
 template <typename Solver>
-void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
+void RepeatedCall<Solver>::advanceTimeSpan(
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")
@@ -75,6 +77,17 @@ void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
     timeStepNo++;
     currentTime = this->startTime_ +
                   double(timeStepNo) / this->numberTimeSteps_ * timeSpan;
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->solver_.data(),
+                                        timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
   }
 
   // stop duration measurement
@@ -84,7 +97,7 @@ void RepeatedCall<Solver>::advanceTimeSpan(bool withOutputWritersEnabled) {
 
 template <typename Solver> void RepeatedCall<Solver>::run() {
   initialize();
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 //! call the output writer on the data object, output files will contain

@@ -105,7 +105,7 @@ void TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::run() {
   this->initialize();
 
   // do simulations
-  this->advanceTimeSpan();
+  this->advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 //! call the output writer on the data object, output files will contain

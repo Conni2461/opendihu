@@ -11,6 +11,7 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
   this->initialize();
 
   double currentTime = 0;
+  auto checkpointing = this->context_.getCheckpointing();
 
   // if precice coupling is disabled in settings, run the timestep of the nested
   // solver until endTimeIfCouplingDisabled_ is reached
@@ -35,6 +36,17 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
       // call the nested solver to proceed with the simulation for the assigned
       // time span
       this->nestedSolver_.advanceTimeSpan();
+
+      if (checkpointing) {
+        if (checkpointing->needCheckpoint()) {
+          checkpointing->createCheckpoint(this->context_, *this->dataImplicit_,
+                                          timeStepNo, currentTime);
+        }
+
+        if (checkpointing->shouldExit()) {
+          break;
+        }
+      }
 
       // increase current simulation time
       currentTime += this->timeStepWidth_;
@@ -103,6 +115,17 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
     this->preciceWriteData(this->nestedSolver_, this->preciceParticipant_,
                            this->preciceSurfaceData_, this->preciceVolumeData_,
                            this->scalingFactor_);
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, *this->dataImplicit_,
+                                        timeStepNo, currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
 
     // increase current simulation time
     currentTime += timeStepWidth;

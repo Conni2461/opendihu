@@ -28,7 +28,9 @@ public:
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps, data in solution is used, afterwards new data is in
   //! solution
-  virtual void advanceTimeSpan(bool withOutputWritersEnabled = true) = 0;
+  virtual void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr) = 0;
 
   virtual void initialize();
 

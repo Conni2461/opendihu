@@ -30,7 +30,8 @@ MyNewTimesteppingSolver<TimeStepping>::MyNewTimesteppingSolver(
 
 template <typename TimeStepping>
 void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // This method computes some time steps of the simulation by running a for
@@ -101,13 +102,13 @@ void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
 
-    if (this->checkpointing_) {
-      if (this->checkpointing_->need_checkpoint()) {
-        this->checkpointing_->create_checkpoint(this->data_, timeStepNo,
-                                                currentTime);
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
+                                        currentTime);
       }
 
-      if (this->checkpointing_->should_exit()) {
+      if (checkpointing->shouldExit()) {
         break;
       }
     }
@@ -189,7 +190,7 @@ void MyNewTimesteppingSolver<TimeStepping>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan();
+  advanceTimeSpan(true, context_.getCheckpointing());
 }
 
 template <typename TimeStepping>

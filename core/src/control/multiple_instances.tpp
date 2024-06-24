@@ -252,7 +252,8 @@ MultipleInstances<TimeSteppingScheme>::MultipleInstances(DihuContext context)
 
 template <typename TimeSteppingScheme>
 void MultipleInstances<TimeSteppingScheme>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement
@@ -263,7 +264,7 @@ void MultipleInstances<TimeSteppingScheme>::advanceTimeSpan(
   // needed when this MultipleInstances object is part of a parent control
   // element, like a coupling to 3D model.
   for (int i = 0; i < nInstancesLocal_; i++) {
-    instancesLocal_[i].advanceTimeSpan(withOutputWritersEnabled);
+    instancesLocal_[i].advanceTimeSpan(withOutputWritersEnabled, checkpointing);
   }
 
   // stop duration measurement

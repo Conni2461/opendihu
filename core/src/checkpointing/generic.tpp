@@ -4,8 +4,12 @@
 
 namespace Checkpointing {
 template <typename DataType>
-void Generic::create_checkpoint(DataType &problemData, int timeStepNo,
-                                double currentTime) const {
+void Generic::createCheckpoint(DihuContext context, DataType &problemData,
+                               int timeStepNo, double currentTime) const {
+  if (!writer_) {
+    initWriter(context);
+  }
+
   Control::PerformanceMeasurement::start("durationWriteCheckpoint");
 
   char ckpt_name[SCR_MAX_FILENAME];
@@ -18,7 +22,7 @@ void Generic::create_checkpoint(DataType &problemData, int timeStepNo,
   char scr_file[SCR_MAX_FILENAME];
   SCR_Route_file(checkpoint_file, scr_file);
 
-  writer_.write(problemData, scr_file, timeStepNo, currentTime);
+  writer_->write(problemData, scr_file, timeStepNo, currentTime);
 
   SCR_Complete_output(1);
 

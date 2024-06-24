@@ -59,7 +59,8 @@ NonlinearElasticitySolverFebio::NonlinearElasticitySolverFebio(
 }
 
 void NonlinearElasticitySolverFebio::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
