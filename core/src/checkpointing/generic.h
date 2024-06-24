@@ -8,21 +8,25 @@
 namespace Checkpointing {
 class Generic {
 public:
-  Generic(DihuContext context, PythonConfig specificSettings);
+  Generic(PythonConfig specificSettings);
 
-  bool need_checkpoint();
+  bool needCheckpoint();
 
   template <typename DataType>
-  void create_checkpoint(DataType &problemData, int timeStepNo = -1,
-                         double currentTime = 0.0) const;
-  bool should_exit();
+  void createCheckpoint(DihuContext context, DataType &problemData,
+                        int timeStepNo = -1, double currentTime = 0.0) const;
+  bool shouldExit();
+
+  int32_t getInterval() const;
+  const char *getPrefix() const;
+
+protected:
+  void initWriter(DihuContext context) const;
 
 private:
-  DihuContext
-      context_; //< the context object that holds the config for this class
   PythonConfig specificSettings_; //< config for this object
 
-  mutable OutputWriter::HDF5 writer_;
+  mutable std::unique_ptr<OutputWriter::HDF5> writer_;
 
   int32_t interval_;
   std::string prefix_;

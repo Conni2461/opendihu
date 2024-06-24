@@ -6,7 +6,7 @@
 
 namespace Checkpointing {
 class Config {
-  public:
-    Config(DihuContext context, PythonConfig specificSettings);
+public:
+  Config(DihuContext context, PythonConfig specificSettings);
 };
-}
+} // namespace Checkpointing

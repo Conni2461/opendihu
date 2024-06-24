@@ -7,7 +7,8 @@ namespace Control {
 //! advance simulation by the given time span
 template <typename FunctionSpaceType, typename NestedSolverType>
 void MapDofs<FunctionSpaceType, NestedSolverType>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   LOG(DEBUG) << "MapDofs::advanceTimeSpan, "
@@ -21,7 +22,7 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::advanceTimeSpan(
   performMappings(mappingsBeforeComputation_, nestedSolver_.startTime());
 
   // compute the simulation in the current time span with the nested solver
-  nestedSolver_.advanceTimeSpan(withOutputWritersEnabled);
+  nestedSolver_.advanceTimeSpan(withOutputWritersEnabled, checkpointing);
 
   LOG(DEBUG) << "MapDofs::performMappings afterComputation";
   // perform mapping from settings "afterComputation"
@@ -35,7 +36,7 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::run() {
   initialize();
 
   // advance one timestep
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 //! reset state of this object, such that a new initialize() is necessary

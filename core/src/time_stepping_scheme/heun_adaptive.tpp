@@ -93,7 +93,8 @@ HeunAdaptive<DiscretizableInTime>::~HeunAdaptive() {
 
 template <typename DiscretizableInTime>
 void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -436,6 +437,17 @@ void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
         this->outputWriterManager_.writeOutput(*this->data_, timeStepNo,
                                                currentTime);
 
+      if (checkpointing) {
+        if (checkpointing->needCheckpoint()) {
+          checkpointing->createCheckpoint(this->context_, *this->data_,
+                                          timeStepNo, currentTime);
+        }
+
+        if (checkpointing->shouldExit()) {
+          break;
+        }
+      }
+
       // start duration measurement
       if (this->durationLogKey_ != "")
         Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -630,6 +642,17 @@ void HeunAdaptive<DiscretizableInTime>::advanceTimeSpan(
       if (withOutputWritersEnabled)
         this->outputWriterManager_.writeOutput(*this->data_, timeStepNo,
                                                currentTime);
+
+      if (checkpointing) {
+        if (checkpointing->needCheckpoint()) {
+          checkpointing->createCheckpoint(this->context_, *this->data_,
+                                          timeStepNo, currentTime);
+        }
+
+        if (checkpointing->shouldExit()) {
+          break;
+        }
+      }
 
       // start duration measurement
       if (this->durationLogKey_ != "")

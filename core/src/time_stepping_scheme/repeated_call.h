@@ -18,7 +18,9 @@ public:
 
   //! advance simulation by the given time span [startTime_, endTime_] with
   //! given numberTimeSteps
-  virtual void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  virtual void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 
   //! initialize solver
   void initialize();

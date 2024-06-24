@@ -32,6 +32,7 @@
 #include "control/diagnostic_tool/stimulation_logging.h"
 #include "control/diagnostic_tool/solver_structure_visualizer.h"
 #include "slot_connection/global_connections_by_slot_name.h"
+#include "checkpointing/generic.h"
 
 #include "easylogging++.h"
 #include "control/python_config/settings_file_name.h"
@@ -55,6 +56,7 @@ bool GLOBAL_DEBUG =
            // visible in certain conditions. Do not commit these hacks!
 
 // global singleton objects
+std::shared_ptr<Checkpointing::Generic> DihuContext::checkpointing_ = nullptr;
 std::shared_ptr<MappingBetweenMeshes::Manager>
     DihuContext::mappingBetweenMeshesManager_ = nullptr;
 std::shared_ptr<Mesh::Manager> DihuContext::meshManager_ = nullptr;
@@ -170,13 +172,6 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
     // initialize MPI, this is necessary to be able to call PetscFinalize
     // without MPI shutting down
     MPI_Init(&argc, &argv);
-
-    // TODO: figure out how to configure this correctly
-    SCR_Configf("SCR_CHECKPOINT_INTERVAL=%d", 5);
-    SCR_Configf("SCR_PREFIX=%s", "states");
-    if (SCR_Init() != SCR_SUCCESS) {
-      LOG(FATAL) << "Failed to initialize SCR";
-    }
 
     // the following three lines output the MPI version during compilation, use
     // for debugging
@@ -390,6 +385,17 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
         std::make_shared<GlobalConnectionsBySlotName>(pythonConfig_);
   }
 
+  if (pythonConfig_.hasKey("checkpointing")) {
+    checkpointing_ = std::make_shared<Checkpointing::Generic>(
+        PythonConfig(pythonConfig_, "checkpointing"));
+
+    SCR_Configf("SCR_CHECKPOINT_INTERVAL=%d", checkpointing_->getInterval());
+    SCR_Configf("SCR_PREFIX=%s", checkpointing_->getPrefix());
+    if (SCR_Init() != SCR_SUCCESS) {
+      LOG(FATAL) << "Failed to initialize SCR";
+    }
+  }
+
   // initialize regularization parameters
   if (pythonConfig_.hasKey("regularization")) {
     if (pythonConfig_.isEmpty("regularization")) {
@@ -504,6 +510,10 @@ int DihuContext::ownRankNo() { return rankSubset_->ownRankNo(); }
 
 int DihuContext::nRanksCommWorld() { return nRanksCommWorld_; }
 
+std::shared_ptr<Checkpointing::Generic> DihuContext::getCheckpointing() {
+  return checkpointing_;
+}
+
 std::shared_ptr<Mesh::Manager> DihuContext::meshManager() {
   return meshManager_;
 }
@@ -609,7 +619,9 @@ DihuContext::~DihuContext() {
       PetscErrorCode ierr = PetscFinalize();
       CHKERRV(ierr);
 
-      SCR_Finalize();
+      if (checkpointing_) {
+        SCR_Finalize();
+      }
       MPI_Finalize();
     }
   }
