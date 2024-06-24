@@ -4,6 +4,9 @@
 
 namespace Data {
 
+// TODO(conni2461): check if we want to serialize everything for checkpointing
+// and restore everything. We could do this by implementing this for the base
+// class
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term, bool withLargeOutput>
 QuasiStaticHyperelasticityBase<
@@ -621,6 +624,35 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
   */
 }
 
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term, bool withLargeOutput, typename DummyForTraits>
+bool QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, withLargeOutput,
+    DummyForTraits>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<double> displacements, velocities, materialTraction, pK2Stress;
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->materialTraction_->name().c_str(),
+                          materialTraction)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK2Stress_->name().c_str(), pK2Stress)) {
+    return false;
+  }
+
+  this->displacements_->setValues(displacements);
+  this->velocities_->setValues(velocities);
+  this->materialTraction_->setValues(materialTraction);
+  this->pK2Stress_->setValues(pK2Stress);
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
 // withLargeOutput = true, Term::usesFiberDirection = false
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term>
@@ -663,6 +695,68 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
           this->deformationGradientDeterminant_));
 }
 
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term>
+bool QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, true,
+    std::enable_if_t<!Term::usesFiberDirection,
+                     Term>>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<double> displacements, velocities, traction, materialTraction,
+      pK2Stress, deformationGradient, deformationGradientTimeDerivative,
+      pK1Stress, cauchyStress, deformationGradientDeterminant;
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->traction_->name().c_str(), traction)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->materialTraction_->name().c_str(),
+                          materialTraction)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK2Stress_->name().c_str(), pK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->deformationGradient_->name().c_str(),
+                          deformationGradient)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->deformationGradientTimeDerivative_->name().c_str(),
+          deformationGradientTimeDerivative)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK1Stress_->name().c_str(), pK1Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->cauchyStress_->name().c_str(), cauchyStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->deformationGradientDeterminant_->name().c_str(),
+                          deformationGradientDeterminant)) {
+    return false;
+  }
+
+  this->displacements_->setValues(displacements);
+  this->velocities_->setValues(velocities);
+  this->traction_->setValues(traction);
+  this->materialTraction_->setValues(materialTraction);
+  this->pK2Stress_->setValues(pK2Stress);
+  this->deformationGradient_->setValues(deformationGradient);
+  this->deformationGradientTimeDerivative_->setValues(
+      deformationGradientTimeDerivative);
+  this->pK1Stress_->setValues(pK1Stress);
+  this->cauchyStress_->setValues(cauchyStress);
+  this->deformationGradientDeterminant_->setValues(
+      deformationGradientDeterminant);
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
 // withLargeOutput = false, Term::usesFiberDirection = true
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term>
@@ -691,6 +785,47 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
       std::shared_ptr<DisplacementsFieldVariableType>(this->materialTraction_)
 
   );
+}
+
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term>
+bool QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, false,
+    std::enable_if_t<Term::usesFiberDirection,
+                     Term>>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<double> displacements, velocities, pK2Stress, activePK2Stress,
+      fiberDirection, materialTraction;
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK2Stress_->name().c_str(), pK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activePK2Stress_->name().c_str(),
+                          activePK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->materialTraction_->name().c_str(),
+                          materialTraction)) {
+    return false;
+  }
+
+  this->displacements_->setValues(displacements);
+  this->velocities_->setValues(velocities);
+  this->pK2Stress_->setValues(pK2Stress);
+  this->activePK2Stress_->setValues(activePK2Stress);
+  this->fiberDirection_->setValues(fiberDirection);
+  this->materialTraction_->setValues(materialTraction);
+  // TODO(conni2461): restore geometry
+  return true;
 }
 
 // withLargeOutput = true, Term::usesFiberDirection = true
@@ -734,6 +869,79 @@ QuasiStaticHyperelasticity<PressureFunctionSpace, DisplacementsFunctionSpace,
           this->deformationGradientDeterminant_));
 }
 
+template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
+          typename Term>
+bool QuasiStaticHyperelasticity<
+    PressureFunctionSpace, DisplacementsFunctionSpace, Term, true,
+    std::enable_if_t<Term::usesFiberDirection,
+                     Term>>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<double> displacements, velocities, traction, materialTraction,
+      pK2Stress, activePK2Stress, fiberDirection, deformationGradient,
+      deformationGradientTimeDerivative, pK1Stress, cauchyStress,
+      deformationGradientDeterminant;
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->traction_->name().c_str(), traction)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->materialTraction_->name().c_str(),
+                          materialTraction)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK2Stress_->name().c_str(), pK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activePK2Stress_->name().c_str(),
+                          activePK2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->deformationGradient_->name().c_str(),
+                          deformationGradient)) {
+    return false;
+  }
+  if (!r.readDoubleVector(
+          this->deformationGradientTimeDerivative_->name().c_str(),
+          deformationGradientTimeDerivative)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pK1Stress_->name().c_str(), pK1Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->cauchyStress_->name().c_str(), cauchyStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->deformationGradientDeterminant_->name().c_str(),
+                          deformationGradientDeterminant)) {
+    return false;
+  }
+
+  this->displacements_->setValues(displacements);
+  this->velocities_->setValues(velocities);
+  this->pK2Stress_->setValues(pK2Stress);
+  this->activePK2Stress_->setValues(activePK2Stress);
+  this->fiberDirection_->setValues(fiberDirection);
+  this->traction_->setValues(traction);
+  this->materialTraction_->setValues(materialTraction);
+  this->deformationGradient_->setValues(deformationGradient);
+  this->deformationGradientTimeDerivative_->setValues(
+      deformationGradientTimeDerivative);
+  this->pK1Stress_->setValues(pK1Stress);
+  this->cauchyStress_->setValues(cauchyStress);
+  this->deformationGradientDeterminant_->setValues(
+      deformationGradientDeterminant);
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
 // --------------------------------
 // QuasiStaticHyperelasticityPressureOutput
 
@@ -769,6 +977,29 @@ QuasiStaticHyperelasticityPressureOutput<
       std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
           this->velocitiesLinearMesh_),
       std::tuple<std::shared_ptr<PressureFieldVariableType>>(this->pressure_));
+}
+
+template <typename PressureFunctionSpace>
+bool QuasiStaticHyperelasticityPressureOutput<
+    PressureFunctionSpace>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<double> displacementsLinearMesh, velocitiesLinearMesh, pressure;
+  if (!r.readDoubleVector(this->displacementsLinearMesh_->name().c_str(),
+                          displacementsLinearMesh)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocitiesLinearMesh_->name().c_str(),
+                          velocitiesLinearMesh)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pressure_->name().c_str(), pressure)) {
+    return false;
+  }
+
+  this->displacementsLinearMesh_->setValues(displacementsLinearMesh);
+  this->velocitiesLinearMesh_->setValues(velocitiesLinearMesh);
+  this->pressure_->setValues(pressure);
+  // TODO(conni2461): restore geometry
+  return true;
 }
 
 } // namespace Data

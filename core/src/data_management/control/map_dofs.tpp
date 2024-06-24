@@ -53,6 +53,23 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::initialize(
 }
 
 template <typename FunctionSpaceType, typename NestedSolverType>
+bool MapDofs<FunctionSpaceType, NestedSolverType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<std::vector<double>> stateData;
+  stateData.resize(additionalFieldVariables_.size());
+  for (size_t i = 0; i < additionalFieldVariables_.size(); i++) {
+    if (!r.readDoubleVector(additionalFieldVariables_[i]->name().c_str(),
+                            stateData[i])) {
+      return false;
+    }
+  }
+  for (size_t i = 0; i < additionalFieldVariables_.size(); i++) {
+    additionalFieldVariables_[i]->setValues(stateData[i]);
+  }
+  return true;
+}
+
+template <typename FunctionSpaceType, typename NestedSolverType>
 void MapDofs<FunctionSpaceType, NestedSolverType>::createPetscObjects() {
   for (int i = 0; i < nAdditionalFieldVariables_; i++) {
     std::stringstream name;

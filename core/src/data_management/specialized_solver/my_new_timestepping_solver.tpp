@@ -52,6 +52,31 @@ void MyNewTimesteppingSolver<FunctionSpaceType>::initialize() {
 }
 
 template <typename FunctionSpaceType>
+bool MyNewTimesteppingSolver<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> a, b;
+  // std::vector<std::array<double, 3>> geometry;
+  if (!r.readDoubleVector(this->fieldVariableA_->name().c_str(), a)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fieldVariableB_->name().c_str(), b)) {
+    return false;
+  }
+  // if (!r.readNestedDoubleVector<3>(
+  //         this->functionSpace_->geometryField().name().c_str(), geometry)) {
+  //   return false;
+  // }
+
+  this->fieldVariableA_->setValues(a);
+  this->fieldVariableB_->setValues(b);
+  // this->functionSpace_->geometryField().setValuesWithoutGhosts(geometry);
+  // this->functionSpace_->geometryField().zeroGhostBuffer();
+  // this->functionSpace_->geometryField().setRepresentationGlobal();
+  // this->functionSpace_->geometryField().startGhostManipulation();
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void MyNewTimesteppingSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 

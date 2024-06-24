@@ -36,6 +36,32 @@ void ParallelFiberEstimation<FunctionSpaceType>::setProblem(
 }
 
 template <typename FunctionSpaceType>
+bool ParallelFiberEstimation<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> gradient;
+  std::vector<double> dirichletValues;
+  std::vector<double> jacobianConditionNumber;
+  if (!r.readDoubleVector(this->gradient_->name().c_str(), gradient)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->dirichletValues_->name().c_str(),
+                          dirichletValues)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->jacobianConditionNumber_->name().c_str(),
+                          jacobianConditionNumber)) {
+    return false;
+  }
+
+  this->gradient_->setValues(gradient);
+  this->dirichletValues_->setValues(dirichletValues);
+  this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
+
+  // TODO(conni2461): restore problem_
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG)
       << "ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects()"

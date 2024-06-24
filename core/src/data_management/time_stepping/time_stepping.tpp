@@ -33,6 +33,18 @@ TimeStepping<FunctionSpaceType, nComponents>::~TimeStepping() {
 }
 
 template <typename FunctionSpaceType, int nComponents>
+bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> solution;
+  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+    return false;
+  }
+  this->solution_->setValues(solution);
+  // TODO(conni2461): restore geometry, increment, additionalFieldVariables_
+  return true;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
   LOG(DEBUG)
       << "TimeStepping<FunctionSpaceType,nComponents>::createPetscObjects("

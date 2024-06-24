@@ -136,6 +136,9 @@ public:
   //! set all values to a specific value
   virtual void setValues(double value) = 0;
 
+  //! set all values to a specific buffer
+  virtual void setValues(const std::vector<double> &values) = 0;
+
   //! set all entries to 0.0
   virtual void zeroEntries() = 0;
 

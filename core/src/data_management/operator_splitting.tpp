@@ -44,4 +44,11 @@ OperatorSplitting<TimeStepping1,
   return timeStepping1_->data().getFieldVariablesForOutputWriter();
 }
 
+template <typename TimeStepping1, typename TimeStepping2>
+bool OperatorSplitting<TimeStepping1, TimeStepping2>::restoreState(
+    const InputReader::HDF5 &r) {
+  // TODO(conni2461): restore timeStepping_2 ???
+  return timeStepping1_->data().restoreState(r);
+}
+
 } // namespace Data

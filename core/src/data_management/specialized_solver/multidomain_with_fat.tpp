@@ -21,6 +21,19 @@ MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::MultidomainWithFat(
     : Data<FunctionSpaceType>::Data(context) {}
 
 template <typename FunctionSpaceType, typename FunctionSpaceFatType>
+bool MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> phi_b;
+  if (!r.readDoubleVector(extraCellularPotentialFat_->name().c_str(), phi_b)) {
+    return false;
+  }
+
+  this->extraCellularPotentialFat_->setValues(phi_b);
+  // TODO(conni2461): restore dataMultidomain_
+  return true;
+}
+
+template <typename FunctionSpaceType, typename FunctionSpaceFatType>
 void MultidomainWithFat<FunctionSpaceType,
                         FunctionSpaceFatType>::createPetscObjects() {
   LOG(DEBUG) << "MultidomainWithFat::createPetscObjects";
