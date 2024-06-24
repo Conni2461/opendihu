@@ -27,6 +27,50 @@ void QuasiStaticNonlinearElasticityFebio::initialize() {
   slotConnectorData_->slotNames.resize(slotConnectorData_->nSlots());
 }
 
+bool QuasiStaticNonlinearElasticityFebio::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> activation, displacements, reactionForce, cauchyStress,
+      pk2Stress, greenLagrangeStrain, relativeVolume;
+  if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->reactionForce_->name().c_str(),
+                          reactionForce)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->cauchyStress_->name().c_str(), cauchyStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->pk2Stress_->name().c_str(), pk2Stress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->greenLagrangeStrain_->name().c_str(),
+                          greenLagrangeStrain)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->relativeVolume_->name().c_str(),
+                          relativeVolume)) {
+    return false;
+  }
+
+  this->activation_->setValues(activation);
+  this->displacements_->setValues(displacements);
+  this->reactionForce_->setValues(reactionForce);
+  this->cauchyStress_->setValues(cauchyStress);
+  this->pk2Stress_->setValues(pk2Stress);
+  this->greenLagrangeStrain_->setValues(greenLagrangeStrain);
+  this->relativeVolume_->setValues(relativeVolume);
+
+  // TODO(conni2461): restore geometry
+  this->referenceGeometry_ = std::make_shared<FieldVariableTypeVector>(
+      this->functionSpace_->geometryField(), "referenceGeometry");
+  return true;
+}
+
 void QuasiStaticNonlinearElasticityFebio::createPetscObjects() {
   LOG(DEBUG) << "QuasiStaticNonlinearElasticityFebio::createPetscObjects";
 

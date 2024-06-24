@@ -27,7 +27,12 @@ void CouplingOrGodunov<TimeStepping1, TimeStepping2>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data_, timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >

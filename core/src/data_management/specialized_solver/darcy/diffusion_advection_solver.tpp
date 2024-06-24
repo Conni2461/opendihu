@@ -92,6 +92,23 @@ void DiffusionAdvectionSolver<FunctionSpaceType>::getPetscMemoryParameters(
 }
 
 template <typename FunctionSpaceType>
+bool DiffusionAdvectionSolver<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> solution, increment;
+  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->increment_->name().c_str(), increment)) {
+    return false;
+  }
+  this->solution_->setValues(solution);
+  this->increment_->setValues(increment);
+
+  // TODO(conni2461): restore geometry, vMatrix (???)
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void DiffusionAdvectionSolver<FunctionSpaceType>::createPetscObjects() {
   assert(this->functionSpace_);
 

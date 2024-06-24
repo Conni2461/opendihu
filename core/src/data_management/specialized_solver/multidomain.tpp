@@ -87,6 +87,101 @@ void Multidomain<FunctionSpaceType>::initialize(int nCompartments) {
 }
 
 template <typename FunctionSpaceType>
+bool Multidomain<FunctionSpaceType>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<double> flowPotential, fiberDirection, phi_e, zero, relFactor,
+      activeStressTotal;
+  if (!r.readDoubleVector(this->flowPotential_->name().c_str(),
+                          flowPotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->extraCellularPotential_->name().c_str(),
+                          phi_e)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->zero_->name().c_str(), zero)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->relativeFactorTotal_->name().c_str(),
+                          relFactor)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activeStressTotal_->name().c_str(),
+                          activeStressTotal)) {
+    return false;
+  }
+
+  std::vector<std::vector<double>> transmembranePotentialSolution,
+      transmembranePotential, compartmentRelativeFactor, activeStress;
+
+  transmembranePotentialSolution.reserve(nCompartments_);
+  transmembranePotential.reserve(nCompartments_);
+  compartmentRelativeFactor.reserve(nCompartments_);
+  activeStress.reserve(nCompartments_);
+  for (int k = 0; k < nCompartments_; k++) {
+    // TODO(conni2461): figure out if we need to serialize this
+    // {
+    //   std::vector<double> a;
+    //   if (!r.readDoubleVector(
+    //           this->transmembranePotentialSolution_[k]->name().c_str(), a)) {
+    //     return false;
+    //   }
+    //   transmembranePotentialSolution.push_back(std::move(a));
+    // }
+
+    {
+      std::vector<double> a;
+      if (!r.readDoubleVector(this->transmembranePotential_[k]->name().c_str(),
+                              a)) {
+        return false;
+      }
+      transmembranePotential.push_back(std::move(a));
+    }
+
+    {
+      std::vector<double> a;
+      if (!r.readDoubleVector(
+              this->compartmentRelativeFactor_[k]->name().c_str(), a)) {
+        return false;
+      }
+      compartmentRelativeFactor.push_back(std::move(a));
+    }
+
+    // TODO(conni2461): figure out if we need to serialize this
+    // {
+    //   std::vector<double> a;
+    //   if (!r.readDoubleVector(this->activeStress_[k]->name().c_str(), a)) {
+    //     return false;
+    //   }
+    //   activeStress.push_back(std::move(a));
+    // }
+  }
+
+  this->flowPotential_->setValues(flowPotential);
+  this->fiberDirection_->setValues(fiberDirection);
+  this->extraCellularPotential_->setValues(phi_e);
+  this->zero_->setValues(zero);
+  this->relativeFactorTotal_->setValues(relFactor);
+  this->activeStressTotal_->setValues(activeStressTotal);
+  for (int k = 0; k < nCompartments_; k++) {
+    // TODO
+    // this->transmembranePotentialSolution_[k]->setValues(
+    //     transmembranePotentialSolution[k]);
+    this->transmembranePotential_[k]->setValues(transmembranePotential[k]);
+    this->compartmentRelativeFactor_[k]->setValues(
+        compartmentRelativeFactor[k]);
+    // TODO
+    // this->activeStress_[k]->setValues(activeStress[k]);
+  }
+
+  // TODO(conni2461): restore geometry_
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void Multidomain<FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG) << "Multidomain::createPetscObject for " << nCompartments_
              << " compartments.";

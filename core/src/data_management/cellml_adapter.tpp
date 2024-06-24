@@ -269,6 +269,28 @@ void CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::
 }
 
 template <int nStates, int nAlgebraics, typename FunctionSpaceType>
+bool CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> algebraics, states, parameters;
+  if (!r.readDoubleVector(this->algebraics_->name().c_str(), algebraics)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->states_->name().c_str(), states)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->parameters_->name().c_str(), parameters)) {
+    return false;
+  }
+
+  this->algebraics_->setValues(algebraics);
+  this->states_->setValues(states);
+  this->parameters_->setValues(parameters);
+
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
+template <int nStates, int nAlgebraics, typename FunctionSpaceType>
 void CellmlAdapter<nStates, nAlgebraics,
                    FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG) << "CellmlAdapter::createPetscObjects";

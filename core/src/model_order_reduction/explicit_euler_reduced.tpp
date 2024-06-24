@@ -41,6 +41,11 @@ void ExplicitEulerReduced<TimeSteppingExplicitType>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->data_, timeStepNo, currentTime);
+  }
+
   for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->fullTimestepping_.timeStepOutputInterval() == 0) {
       std::stringstream threadNumberMessage;

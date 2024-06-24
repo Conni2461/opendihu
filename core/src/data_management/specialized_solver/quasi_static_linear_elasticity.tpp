@@ -43,6 +43,44 @@ void QuasiStaticLinearElasticity<DataLinearElasticityType>::initialize() {
 }
 
 template <typename DataLinearElasticityType>
+bool QuasiStaticLinearElasticity<DataLinearElasticityType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> activation, activeStress, strain, rightHandSideActive,
+      fiberDirection, flowPotential;
+  if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activeStress_->name().c_str(), activeStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->strain_->name().c_str(), strain)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->rightHandSideActive_->name().c_str(),
+                          rightHandSideActive)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->flowPotential_->name().c_str(),
+                          flowPotential)) {
+    return false;
+  }
+
+  activation_->setValues(activation);
+  activeStress_->setValues(activeStress);
+  strain_->setValues(strain);
+  rightHandSideActive_->setValues(rightHandSideActive);
+  fiberDirection_->setValues(fiberDirection);
+  flowPotential_->setValues(flowPotential);
+
+  // TODO(conni2461): restore dataLinearElasticity_
+  return true;
+}
+
+template <typename DataLinearElasticityType>
 void QuasiStaticLinearElasticity<
     DataLinearElasticityType>::createPetscObjects() {
   LOG(DEBUG) << "QuasiStaticLinearElasticity::createPetscObject";

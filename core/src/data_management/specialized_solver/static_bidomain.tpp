@@ -52,6 +52,50 @@ void StaticBidomain<FunctionSpaceType>::initialize() {
 }
 
 template <typename FunctionSpaceType>
+bool StaticBidomain<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> transmembraneFlow, transmembranePotential, flowPotential,
+      fiberDirection, extraCellularPotential, zero, jacobianConditionNumber;
+  if (!r.readDoubleVector(this->transmembraneFlow_->name().c_str(),
+                          transmembraneFlow)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->transmembranePotential_->name().c_str(),
+                          transmembranePotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->flowPotential_->name().c_str(),
+                          flowPotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+                          fiberDirection)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->extraCellularPotential_->name().c_str(),
+                          extraCellularPotential)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->zero_->name().c_str(), zero)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->jacobianConditionNumber_->name().c_str(),
+                          jacobianConditionNumber)) {
+    return false;
+  }
+
+  this->transmembraneFlow_->setValues(transmembraneFlow);
+  this->transmembranePotential_->setValues(transmembranePotential);
+  this->flowPotential_->setValues(flowPotential);
+  this->fiberDirection_->setValues(fiberDirection);
+  this->extraCellularPotential_->setValues(extraCellularPotential);
+  this->zero_->setValues(zero);
+  this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
+  // TODO(conni2461): restore geometry, additionalFieldVariables_
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void StaticBidomain<FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG) << "StaticBidomain::createPetscObject";
 

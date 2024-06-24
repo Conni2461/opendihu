@@ -40,6 +40,8 @@ public:
   //! by the slot_connector_data_transfer class
   std::shared_ptr<SlotConnectorDataType> getSlotConnectorData();
 
+  bool restoreState(const InputReader::HDF5 &r);
+
 protected:
   //! initializes the vectors with size
   virtual void createPetscObjects();

@@ -116,9 +116,13 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
   double currentTime = this->startTime_;
 
   static int globalTimeStepCounter = 0;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->dataMultidomain_, timeStepNo, currentTime);
+  }
 
   // loop over time steps
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  for (; timeStepNo < this->numberTimeSteps_;) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >

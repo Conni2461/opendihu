@@ -59,6 +59,8 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
 
+  bool restoreState(const InputReader::HDF5 &r);
+
 private:
   std::vector<Mesh::face_t>
       faces_; //< one of Mesh::face_t::face2Minus and Mesh::face_t::face2Plus,

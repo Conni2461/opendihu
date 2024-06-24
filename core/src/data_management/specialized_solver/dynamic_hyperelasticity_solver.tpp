@@ -8,6 +8,41 @@ DynamicHyperelasticitySolver<FunctionSpaceType>::DynamicHyperelasticitySolver(
     : Data<FunctionSpaceType>::Data(context) {}
 
 template <typename FunctionSpaceType>
+bool DynamicHyperelasticitySolver<FunctionSpaceType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> displacements, velocities, internalVirtualWork,
+      accelerationTerm, externalVirtualWorkDead;
+  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+                          displacements)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->internalVirtualWork_->name().c_str(),
+                          internalVirtualWork)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->accelerationTerm_->name().c_str(),
+                          accelerationTerm)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->externalVirtualWorkDead_->name().c_str(),
+                          externalVirtualWorkDead)) {
+    return false;
+  }
+
+  displacements_->setValues(displacements);
+  velocities_->setValues(velocities);
+  internalVirtualWork_->setValues(internalVirtualWork);
+  accelerationTerm_->setValues(accelerationTerm);
+  externalVirtualWorkDead_->setValues(externalVirtualWorkDead);
+
+  // TODO(conni2461): restore geometry_
+  return true;
+}
+
+template <typename FunctionSpaceType>
 void DynamicHyperelasticitySolver<FunctionSpaceType>::createPetscObjects() {
   LOG(DEBUG) << "DynamicHyperelasticitySolver::createPetscObjects";
 

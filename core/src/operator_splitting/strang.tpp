@@ -43,8 +43,12 @@ void Strang<TimeStepping1, TimeStepping2>::advanceTimeSpan(
   // loop over time steps
   double currentTime = this->startTime_;
   double midTime = 0.0;
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data_, timeStepNo, currentTime);
+  }
 
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  for (; timeStepNo < this->numberTimeSteps_;) {
     // compute midTime once per step to reuse it. [currentTime,
     // midTime=currentTime+0.5*timeStepWidth, currentTime+timeStepWidth]
     midTime = currentTime + 0.5 * this->timeStepWidth_;
