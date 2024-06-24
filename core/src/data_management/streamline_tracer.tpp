@@ -39,6 +39,18 @@ void StreamlineTracer<FunctionSpaceType, BaseDataType>::setBaseData(
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>
+bool StreamlineTracer<FunctionSpaceType, BaseDataType>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> gradient;
+  if (!r.readDoubleVector(this->gradient_->name().c_str(), gradient)) {
+    return false;
+  }
+  this->gradient_->setValues(gradient);
+  // TODO(conni2461): restore baseData_ and fiberGeometry_
+  return true;
+}
+
+template <typename FunctionSpaceType, typename BaseDataType>
 void StreamlineTracer<FunctionSpaceType, BaseDataType>::createPetscObjects() {
   LOG(DEBUG) << "StreamlineTracer<FunctionSpaceType,BaseDataType>::"
                 "createPetscObjects()"

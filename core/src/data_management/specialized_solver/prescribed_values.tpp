@@ -64,6 +64,34 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+bool PrescribedValues<FunctionSpaceType, nComponents1,
+                      nComponents2>::restoreState(const InputReader::HDF5 &r) {
+  std::vector<std::vector<double>> data1;
+  data1.resize(fieldVariables1_.size());
+  std::vector<std::vector<double>> data2;
+  data2.resize(fieldVariables2_.size());
+  for (size_t i = 0; i < fieldVariables1_.size(); i++) {
+    if (!r.readDoubleVector(fieldVariables1_[i]->name().c_str(), data1[i])) {
+      return false;
+    }
+  }
+  for (size_t i = 0; i < fieldVariables2_.size(); i++) {
+    if (!r.readDoubleVector(fieldVariables2_[i]->name().c_str(), data2[i])) {
+      return false;
+    }
+  }
+
+  for (size_t i = 0; i < fieldVariables1_.size(); i++) {
+    fieldVariables1_[i]->setValues(data1[i]);
+  }
+  for (size_t i = 0; i < fieldVariables2_.size(); i++) {
+    fieldVariables2_[i]->setValues(data2[i]);
+  }
+  // TODO(conni2461): restore geometry
+  return true;
+}
+
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 void PrescribedValues<FunctionSpaceType, nComponents1,
                       nComponents2>::createPetscObjects() {
   assert(this->functionSpace_);

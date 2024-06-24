@@ -43,6 +43,12 @@ template <typename Data3D> void OutputSurface<Data3D>::setData(Data3D &data3d) {
   this->data3d_ = std::make_shared<Data3D>(data3d);
 }
 
+template <typename Data3D>
+bool OutputSurface<Data3D>::restoreState(const InputReader::HDF5 &r) {
+  // TODO(conni2461): restore state
+  return false;
+}
+
 template <typename Data3D> void OutputSurface<Data3D>::createPetscObjects() {}
 
 template <typename Data3D> void OutputSurface<Data3D>::print() {}

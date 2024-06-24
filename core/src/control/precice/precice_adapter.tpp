@@ -21,7 +21,12 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
   if (!this->couplingEnabled_) {
     const int nTimeSteps =
         this->endTimeIfCouplingDisabled_ / this->timeStepWidth_;
-    for (int timeStepNo = 0; timeStepNo < nTimeSteps; timeStepNo++) {
+    int timeStepNo = 0;
+    if (checkpointing) {
+      checkpointing->restore(*this->dataImplicit_, timeStepNo, currentTime);
+    }
+
+    for (; timeStepNo < nTimeSteps; timeStepNo++) {
       if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
           (this->timeStepOutputInterval_ <= 10 ||
            timeStepNo > 0)) // show first timestep only if
@@ -76,9 +81,14 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
   // assert that precice is properly initialized and the interface is available
   assert(this->preciceParticipant_);
 
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(*this->dataImplicit_, timeStepNo, currentTime);
+  }
+
+  // perform the computation of this solver
   // main simulation loop of adapter
-  for (int timeStepNo = 0; this->preciceParticipant_->isCouplingOngoing();
-       timeStepNo++) {
+  for (; this->preciceParticipant_->isCouplingOngoing(); timeStepNo++) {
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
         (this->timeStepOutputInterval_ <= 10 ||
          timeStepNo >

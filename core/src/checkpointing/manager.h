@@ -17,6 +17,10 @@ public:
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,
                         double currentTime = 0.0) const;
 
+  template <typename DataType>
+  bool restore(DataType &problemData, int &timeStepNo,
+               double &currentTime) const;
+
   bool needCheckpoint();
   bool shouldExit();
 

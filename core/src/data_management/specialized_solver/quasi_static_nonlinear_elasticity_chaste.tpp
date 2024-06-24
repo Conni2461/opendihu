@@ -27,6 +27,25 @@ void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::initialize() {
 }
 
 template <typename FunctionSpace>
+bool QuasiStaticNonlinearElasticityChaste<FunctionSpace>::restoreState(
+    const InputReader::HDF5 &r) {
+  std::vector<double> activation, activeStress, displacement;
+  if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->activeStress_->name().c_str(), activeStress)) {
+    return false;
+  }
+  if (!r.readDoubleVector(this->displacement_->name().c_str(), displacement)) {
+    return false;
+  }
+  this->activation_->setValues(activation);
+  this->activeStress_->setValues(activeStress);
+  this->displacement_->setValues(displacement);
+  return true;
+}
+
+template <typename FunctionSpace>
 void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::createPetscObjects() {
   LOG(DEBUG) << "QuasiStaticNonlinearElasticityChaste::createPetscObjects";
 

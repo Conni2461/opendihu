@@ -54,7 +54,12 @@ void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
 
   // loop over time steps
   double currentTime = this->startTime_;
-  for (int timeStepNo = 0; timeStepNo < this->numberTimeSteps_;) {
+  int timeStepNo = 0;
+  if (checkpointing) {
+    checkpointing->restore(this->data_, timeStepNo, currentTime);
+  }
+
+  for (; timeStepNo < this->numberTimeSteps_;) {
     // in defined intervals (settings "timeStepOutputInterval") print out the
     // current timestep
     if (timeStepNo % this->timeStepOutputInterval_ == 0 &&
