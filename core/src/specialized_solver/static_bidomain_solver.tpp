@@ -40,7 +40,8 @@ template <typename FiniteElementMethodPotentialFlow,
           typename FiniteElementMethodDiffusion>
 void StaticBidomainSolver<FiniteElementMethodPotentialFlow,
                           FiniteElementMethodDiffusion>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by

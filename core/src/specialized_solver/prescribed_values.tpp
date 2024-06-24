@@ -26,7 +26,8 @@ PrescribedValues<FunctionSpaceType, nComponents1,
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by
@@ -74,6 +75,17 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
     if (withOutputWritersEnabled)
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
+
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
 
     // start duration measurement
     if (this->durationLogKey_ != "")
@@ -326,7 +338,7 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>

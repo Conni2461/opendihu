@@ -29,7 +29,8 @@ DiffusionAdvectionSolver<FiniteElementMethod>::DiffusionAdvectionSolver(
 
 template <typename FiniteElementMethod>
 void DiffusionAdvectionSolver<FiniteElementMethod>::advanceTimeSpan(
-    bool withOutputWritersEnabled) {
+    bool withOutputWritersEnabled,
+    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   // This method computes some time steps of the simulation by running a for
   // loop over the time steps. The number of steps, timestep width and current
   // time are all set by the parent class, TimeSteppingScheme. You shouldn't
@@ -135,6 +136,17 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::advanceTimeSpan(
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -228,7 +240,7 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::run() {
   // enclosing solver will call initialize() and advanceTimeSpan().
   initialize();
 
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 template <typename FiniteElementMethod>

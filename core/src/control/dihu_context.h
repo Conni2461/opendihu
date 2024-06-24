@@ -22,6 +22,9 @@
 
 extern bool GLOBAL_DEBUG;
 // forward declaration
+namespace Checkpointing {
+class Generic;
+}
 namespace Mesh {
 class Manager;
 }
@@ -82,6 +85,9 @@ public:
   DihuContext
   createSubContext(PythonConfig config,
                    std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
+
+  //! return the top-level python config object
+  static std::shared_ptr<Checkpointing::Generic> getCheckpointing();
 
   //! return the mesh manager object that contains all meshes
   static std::shared_ptr<Mesh::Manager> meshManager();
@@ -182,6 +188,8 @@ private:
                    // context is valid
 
   // global singletons
+  static std::shared_ptr<Checkpointing::Generic>
+      checkpointing_; //< object that is used to create checkpoints
   static std::shared_ptr<Mesh::Manager>
       meshManager_; //< object that saves all meshes that are used
   static std::shared_ptr<MappingBetweenMeshes::Manager>

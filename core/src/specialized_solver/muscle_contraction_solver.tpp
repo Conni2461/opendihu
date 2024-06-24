@@ -46,7 +46,8 @@ MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 
 template <typename MeshType, typename Term, bool withLargeOutputFiles>
 void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
-    advanceTimeSpan(bool withOutputWritersEnabled) {
+    advanceTimeSpan(bool withOutputWritersEnabled,
+                    std::shared_ptr<Checkpointing::Generic> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // This method computes some time steps of the simulation by running a for
   // loop over the time steps. The number of steps, timestep width and current
@@ -123,6 +124,17 @@ void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
       this->outputWriterManager_.writeOutput(this->data_, timeStepNo,
                                              currentTime);
 
+    if (checkpointing) {
+      if (checkpointing->needCheckpoint()) {
+        checkpointing->createCheckpoint(this->context_, this->data_, timeStepNo,
+                                        currentTime);
+      }
+
+      if (checkpointing->shouldExit()) {
+        break;
+      }
+    }
+
     // start duration measurement
     if (this->durationLogKey_ != "")
       Control::PerformanceMeasurement::start(this->durationLogKey_);
@@ -138,9 +150,9 @@ void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::
 #if 0
   std::vector<Vec3> materialTractionValues;
   dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction()->getValuesWithoutGhosts(materialTractionValues);
-  
-  LOG(INFO) << "end of muscle contraction solver, materialTraction \"" 
-    << dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction()->name() << "\" (" 
+
+  LOG(INFO) << "end of muscle contraction solver, materialTraction \""
+    << dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction()->name() << "\" ("
     << dynamicHyperelasticitySolver_->hyperelasticitySolver()->data().materialTraction() << ") Values: " << materialTractionValues;
 #endif
 }
@@ -246,7 +258,7 @@ template <typename MeshType, typename Term, bool withLargeOutputFiles>
 void MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::run() {
   initialize();
 
-  advanceTimeSpan();
+  advanceTimeSpan(true, this->context_.getCheckpointing());
 }
 
 template <typename MeshType, typename Term, bool withLargeOutputFiles>

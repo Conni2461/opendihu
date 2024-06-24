@@ -42,7 +42,9 @@ public:
   //! advance simulation by the given time span [startTime_, endTime_] (set by
   //! setTimeSpan(), take a look at
   //! time_stepping_scheme/00_time_stepping_scheme.h)
-  void advanceTimeSpan(bool withOutputWritersEnabled = true);
+  void advanceTimeSpan(
+      bool withOutputWritersEnabled = true,
+      std::shared_ptr<Checkpointing::Generic> checkpointing = nullptr);
 
   //! initialize time span from specificSettings_
   void initialize();
