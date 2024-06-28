@@ -1,4 +1,4 @@
-
+case_name = "default"
 # scenario name for log file
 scenario_name = "muscle"
 precice_config_file ="precice_config_file.xml"
@@ -66,12 +66,14 @@ output_timestep_fibers = int(dt_3D/dt_splitting)*output_timestep   # [ms] timest
 output_timestep_big = 1.0            # [ms] timestep for output big files of 3D EMG, 100
 
 # input files
-fiber_file = "../../../../input/left_biceps_brachii_9x9fibers.bin"
-#fiber_file = "../../../../input/left_biceps_brachii_13x13fibers.bin"
+import os
+input_directory   = os.path.join(os.environ["OPENDIHU_HOME"], "examples/electrophysiology/input")
+
+fiber_file = input_directory + "/left_biceps_brachii_9x9fibers.bin"
 fat_mesh_file = fiber_file + "_fat.bin"
-firing_times_file = "../../../../input/MU_firing_times_always.txt"    # use setSpecificStatesCallEnableBegin and setSpecificStatesCallFrequency
-fiber_distribution_file = "../../../../input/MU_fibre_distribution_10MUs.txt"
-cellml_file             = "../../../../input/new_slow_TK_2014_12_08.c"
+firing_times_file = input_directory + "/MU_firing_times_always.txt"
+fiber_distribution_file = input_directory + "/MU_fibre_distribution_10MUs.txt"
+cellml_file = input_directory + "/new_slow_TK_2014_12_08.cellml"
 
 # stride for sampling the 3D elements from the fiber data
 # a higher number leads to less 3D elements
@@ -115,3 +117,23 @@ def get_specific_states_frequency_jitter(fiber_no, mu_no):
 
 def get_specific_states_call_enable_begin(fiber_no, mu_no):
   return motor_units[mu_no % len(motor_units)]["activation_start_time"]
+
+# solvers
+# -------
+diffusion_solver_type = "cg"        # solver and preconditioner for the diffusion part of the Monodomain equation
+diffusion_preconditioner_type = "none"      # preconditioner
+potential_flow_solver_type = "gmres"        # solver and preconditioner for an initial Laplace flow on the domain, from which fiber directions are determined
+potential_flow_preconditioner_type = "none" # preconditioner
+emg_solver_type = "cg"              # solver and preconditioner for the 3D static Bidomain equation that solves the intra-muscular EMG signal
+emg_preconditioner_type = "none"    # preconditioner
+emg_initial_guess_nonzero = False   # If the initial guess for the emg linear system should be set to the previous solution
+
+enable_coupling = True
+generate_linear_3d_mesh = False
+generate_quadratic_3d_mesh = True
+states_output = False
+stimulation_frequency = 1000*1e-3   # [ms^-1] sampling frequency of stimuli in firing_times_file, in stimulations per ms, number before 1e-3 factor is in Hertz.
+enable_force_length_relation = True
+lambda_dot_scaling_factor = 1
+output_timestep_3D_emg = 1e0        # [ms] timestep for output files
+

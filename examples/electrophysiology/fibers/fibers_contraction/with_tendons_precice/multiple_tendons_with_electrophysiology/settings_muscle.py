@@ -16,7 +16,6 @@ n_ranks = (int)(sys.argv[-1])
 
 # add variables subfolder to python path where the variables script is located
 script_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, script_path)
 sys.path.insert(0, os.path.join(script_path,'variables'))
 
 import variables              # file variables.py, defined default values for all parameters, you can set the parameters there  
@@ -44,8 +43,8 @@ else:
 # define command line arguments
 mbool = lambda x:bool(distutils.util.strtobool(x))   # function to parse bool arguments
 parser = argparse.ArgumentParser(description='muscle')
-parser.add_argument('--case_name',                       help='The name to identify this run in the log.',   default=variables.case_name)
-parser.add_argument('--precice_config_file',                       help='The name to identify this run in the log.',   default=variables.precice_config_file)
+parser.add_argument('--case_name',                           help='The name to identify this run in the log.',   default=variables.case_name)
+parser.add_argument('--precice_config_file',                 help='The name to identify this run in the log.',   default=variables.precice_config_file)
 parser.add_argument('--n_subdomains', nargs=3,               help='Number of subdomains in x,y,z direction.',    type=int)
 parser.add_argument('--n_subdomains_x', '-x',                help='Number of subdomains in x direction.',        type=int, default=variables.n_subdomains_x)
 parser.add_argument('--n_subdomains_y', '-y',                help='Number of subdomains in y direction.',        type=int, default=variables.n_subdomains_y)
@@ -120,7 +119,6 @@ if rank_no == 0:
   print("dt_1D:           {:0.0e}, potential_flow_solver_type: {}".format(variables.dt_1D, variables.potential_flow_solver_type))
   print("dt_splitting:    {:0.0e}, emg_solver_type:            {}, emg_initial_guess_nonzero: {}".format(variables.dt_splitting, variables.emg_solver_type, variables.emg_initial_guess_nonzero))
   print("dt_3D:           {:0.0e}, paraview_output: {}".format(variables.dt_3D, variables.paraview_output))
-  print("output_timestep: {:0.0e}  stimulation_frequency: {} 1/ms = {} Hz".format(variables.output_timestep, variables.stimulation_frequency, variables.stimulation_frequency*1e3))
   print("fiber_file:              {}".format(variables.fiber_file))
   print("cellml_file:             {}".format(variables.cellml_file))
   print("fiber_distribution_file: {}".format(variables.fiber_distribution_file))
@@ -199,7 +197,7 @@ config = {
     "timeStepOutputInterval":   100,                        # interval in which to display current timestep and time in console
     "timestepWidth":            1,                          # coupling time step width, must match the value in the precice config
     "couplingEnabled":          variables.enable_coupling,  # if the precice coupling is enabled, if not, it simply calls the nested solver, for debugging
-    "preciceConfigFilename":    "precice_config_muscle_dirichlet_tendon_neumann_implicit_coupling_multiple_tendons.xml",    # the preCICE configuration file
+    "preciceConfigFilename":    variables.precice_config_file,    # the preCICE configuration file
     "preciceParticipantName":   "Muscle",             # name of the own precice participant, has to match the name given in the precice xml config file
     "scalingFactor":            1,                          # a factor to scale the exchanged data, prior to communication
     "outputOnlyConvergedTimeSteps": True,                   # if the output writers should be called only after a time window of precice is complete, this means the timestep has converged
@@ -333,9 +331,7 @@ config = {
                         "meshName":                               "MeshFiber_{}".format(fiber_no),                # reference to the fiber mesh
                         "stimulationLogFilename":                 "out/stimulation.log",                          # a file that will contain the times of stimulations
                       },      
-                      "OutputWriter" : [
-                        # {"format": "Paraview", "outputInterval": 1, "filename": "out/" + variables.scenario_name + "/0D_states({},{})".format(fiber_in_subdomain_coordinate_x,fiber_in_subdomain_coordinate_y), "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
-                      ] if variables.states_output else []
+                      "OutputWriter" : [] 
                       
                     },
                   } for fiber_in_subdomain_coordinate_y in range(n_fibers_in_subdomain_y(subdomain_coordinate_y)) \
@@ -389,57 +385,6 @@ config = {
                   ],
                 },
               },
-            },
-            
-            # this is for biceps_contraction_no_cell, i.e. PrescribedValues instead of fibers
-            "GodunovSplitting": {   # this splitting scheme is only needed to replicate the solver structure as with the fibers
-              "timeStepWidth":          variables.dt_3D,
-              "logTimeStepWidthAsKey":  "dt_splitting",
-              "durationLogKey":         "duration_prescribed_values",
-              "timeStepOutputInterval": 100,
-              "endTime":                variables.dt_3D,
-              "connectedSlotsTerm1To2": [],
-              "connectedSlotsTerm2To1": [],   # transfer the same back, this avoids data copy
-
-              "Term1": {
-                "MultipleInstances": {
-                  "logKey":             "duration_subdomains_z",
-                  "nInstances":         n_fibers_in_subdomain_x(subdomain_coordinate_x)*n_fibers_in_subdomain_y(subdomain_coordinate_y),
-                  "instances": 
-                  [{
-                    "ranks":                          list(range(variables.n_subdomains_z)),   # these rank nos are local nos to the outer instance of MultipleInstances, i.e. from 0 to number of ranks in z direction
-                    "PrescribedValues": {
-                      "meshName":               "MeshFiber_{}".format(fiber_no),               # reference to the fiber mesh
-                      "numberTimeSteps":        1,             # number of timesteps to call the callback functions subsequently, this is usually 1 for prescribed values, because it is enough to set the reaction term only once per time step
-                      "timeStepOutputInterval": 20,            # if the time step should be written to console, a value > 10 produces no output
-                      "slotNames":              [],            # names of the data connector slots
-                      
-                      # a list of field variables that will get values assigned in every timestep, by the provided callback function
-                      "fieldVariables1": [
-                        {"name": "Vm",     "callback": None},
-                        {"name": "stress", "callback": set_stress_values},
-                      ],
-                      "fieldVariables2":     [],
-                      "additionalArgument":  fiber_no,         # a custom argument to the fieldVariables callback functions, this will be passed on as the last argument
-                      
-                      "OutputWriter" : [
-                        {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/prescribed_fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
-                      ]
-                    },      
-                  } for fiber_in_subdomain_coordinate_y in range(n_fibers_in_subdomain_y(subdomain_coordinate_y)) \
-                      for fiber_in_subdomain_coordinate_x in range(n_fibers_in_subdomain_x(subdomain_coordinate_x)) \
-                        for fiber_no in [get_fiber_no(subdomain_coordinate_x, subdomain_coordinate_y, fiber_in_subdomain_coordinate_x, fiber_in_subdomain_coordinate_y)] \
-                          for motor_unit_no in [get_motor_unit_no(fiber_no)]],
-                          
-                  #"OutputWriter" : variables.output_writer_fibers,
-                  "OutputWriter": [
-                    {"format": "Paraview", "outputInterval": int(1./variables.dt_3D*variables.output_timestep_fibers), "filename": "out/fibers", "binary": True, "fixedFormat": False, "combineFiles": True, "fileNumbering": "incremental"}
-                  ]
-                }
-              },
-              
-              # term2 is unused, it is needed to be similar to the actual fiber solver structure
-              "Term2": {}
             }
               
           } if (subdomain_coordinate_x,subdomain_coordinate_y) == (variables.own_subdomain_coordinate_x,variables.own_subdomain_coordinate_y) else None

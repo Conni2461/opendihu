@@ -25,13 +25,13 @@ int main(int argc, char *argv[]) {
                                                 // reaction
                                                 // term
                           CellmlAdapter<
-                              44, 19, // nStates,nAlgebraics: 57,71 = Shorten,
+                              57, 71, // nStates,nAlgebraics: 57,71 = Shorten,
                                       // 4,9 = Hodgkin Huxley
                               FunctionSpace::FunctionSpace<
                                   Mesh::StructuredDeformableOfDimension<1>,
                                   BasisFunction::LagrangeOfOrder<1>>>>>,
                   Control::MultipleInstances<
-                      TimeSteppingScheme::CrankNicolson< // fiber diffusion
+                      TimeSteppingScheme::ImplicitEuler< // fiber diffusion
                           SpatialDiscretization::FiniteElementMethod<
                               Mesh::StructuredDeformableOfDimension<1>,
                               BasisFunction::LagrangeOfOrder<1>,
