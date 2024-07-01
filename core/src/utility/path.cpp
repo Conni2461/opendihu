@@ -21,4 +21,9 @@ int mkpath(const char *dir, mode_t mode) {
 
   return mkdir(dir, mode);
 }
+
+bool fileExists(const char *file) {
+  struct stat buffer;
+  return (stat(file, &buffer) == 0);
+}
 } // namespace Path
