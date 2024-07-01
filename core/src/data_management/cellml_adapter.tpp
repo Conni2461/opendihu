@@ -270,7 +270,7 @@ void CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::
 
 template <int nStates, int nAlgebraics, typename FunctionSpaceType>
 bool CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> algebraics, states, parameters;
   if (!r.readDoubleVector(this->algebraics_->name().c_str(), algebraics)) {
     return false;

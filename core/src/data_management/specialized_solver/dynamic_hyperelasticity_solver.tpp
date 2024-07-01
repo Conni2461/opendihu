@@ -9,7 +9,7 @@ DynamicHyperelasticitySolver<FunctionSpaceType>::DynamicHyperelasticitySolver(
 
 template <typename FunctionSpaceType>
 bool DynamicHyperelasticitySolver<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> displacements, velocities, internalVirtualWork,
       accelerationTerm, externalVirtualWorkDead;
   if (!r.readDoubleVector(this->displacements_->name().c_str(),

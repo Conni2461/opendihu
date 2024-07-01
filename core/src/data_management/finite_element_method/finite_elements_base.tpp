@@ -97,7 +97,7 @@ void FiniteElementsBase<FunctionSpaceType, nComponents>::
 
 template <typename FunctionSpaceType, int nComponents>
 bool FiniteElementsBase<FunctionSpaceType, nComponents>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> rhs, solution, negativeRhsNeumannBoundaryConditions;
   if (!r.readDoubleVector(this->rhs_->name().c_str(), rhs)) {
     return false;

@@ -28,7 +28,7 @@ void QuasiStaticNonlinearElasticityFebio::initialize() {
 }
 
 bool QuasiStaticNonlinearElasticityFebio::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> activation, displacements, reactionForce, cauchyStress,
       pk2Stress, greenLagrangeStrain, relativeVolume;
   if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {

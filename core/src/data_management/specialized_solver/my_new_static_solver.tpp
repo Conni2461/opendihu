@@ -45,7 +45,7 @@ void MyNewStaticSolver<FunctionSpaceType>::initialize() {
 
 template <typename FunctionSpaceType>
 bool MyNewStaticSolver<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> solution, fieldVariableB;
   if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
     return false;

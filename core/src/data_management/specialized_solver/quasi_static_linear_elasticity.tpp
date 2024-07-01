@@ -44,7 +44,7 @@ void QuasiStaticLinearElasticity<DataLinearElasticityType>::initialize() {
 
 template <typename DataLinearElasticityType>
 bool QuasiStaticLinearElasticity<DataLinearElasticityType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> activation, activeStress, strain, rightHandSideActive,
       fiberDirection, flowPotential;
   if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {

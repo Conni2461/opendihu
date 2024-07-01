@@ -5,35 +5,20 @@
 #include "control/types.h"
 #include "control/dihu_context.h"
 
+#include "input_reader/generic.h"
+#include "input_reader/hdf5/utility.h"
+
 namespace InputReader {
-//! Helper objects that are used to cache Datasets
-struct Object {
-  //! Construct a new Object with a given name and type
-  Object(const char *name, H5O_type_t type);
-
-  std::string name; //< name of the object
-  H5O_type_t type;  //< type of the object
-};
-
-//! Helper objects that are used to cache Attributes
-struct Attribute {
-  //! Construct a new attribute with a given name, cset and size
-  Attribute(const char *name, H5T_cset_t cset, hsize_t size);
-
-  std::string name; //< name of the attribute
-  H5T_cset_t cset;  //< cset of the attribute
-  hsize_t size;     //< size of the attribute, useful if we have a string
-};
-
+namespace HDF5 {
 //! HDF5 File abstraction that automatically opens and closes a file, extracts
 //! all written datasets and caches them as well as provide a simple interface
 //! for accessing anything within the hdf5 file.
-class HDF5 {
+class File : public Generic {
 public:
   //! constructor that opens a HDF5 file
-  HDF5(const char *file);
+  File(const char *file);
   //! closes the open file
-  ~HDF5();
+  virtual ~File();
 
   //! Check if the file has a attribute on the root node with a given name
   bool hasAttribute(const char *name) const;
@@ -49,19 +34,15 @@ public:
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
-  bool readIntVector(const char *name, std::vector<int32_t> &out) const;
+  virtual bool readIntVector(const char *name, std::vector<int32_t> &out) const;
   //! Read a dataset of doubles in a flat vector passed in using an out variable
-  bool readDoubleVector(const char *name, std::vector<double> &out) const;
+  virtual bool readDoubleVector(const char *name,
+                                std::vector<double> &out) const;
 
-  //! Read a dataset of doubles in a nested vector given a specific amount of
-  //! components
-  template <int nComponents>
-  bool readNestedDoubleVector(
-      const char *name,
-      std::vector<std::array<double, nComponents>> &out) const;
-
-private:
+protected:
   //! construct the full dataset name based on a given suffix
+  //! It returns a pointer of a dataset name within the `datasets_` vector, so
+  //! this does not need to be deleted.
   const std::string *getFullDatasetName(const char *name) const;
 
   hid_t fileID_; //< id of open file
@@ -69,6 +50,5 @@ private:
   std::vector<Object> datasets_;      //< cached datasets
   std::vector<Attribute> attributes_; //< cached attributes
 };
+} // namespace HDF5
 } // namespace InputReader
-
-#include "input_reader/hdf5.tpp"

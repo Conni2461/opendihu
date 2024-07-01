@@ -1,7 +1,7 @@
 #include "checkpointing/independent.h"
 
 #include <scr.h>
-#include "input_reader/hdf5.h"
+#include "input_reader/hdf5/full_dataset.h"
 #include "utility/path.h"
 
 namespace Checkpointing {

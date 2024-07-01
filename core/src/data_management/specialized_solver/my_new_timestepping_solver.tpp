@@ -53,7 +53,7 @@ void MyNewTimesteppingSolver<FunctionSpaceType>::initialize() {
 
 template <typename FunctionSpaceType>
 bool MyNewTimesteppingSolver<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> a, b;
   // std::vector<std::array<double, 3>> geometry;
   if (!r.readDoubleVector(this->fieldVariableA_->name().c_str(), a)) {

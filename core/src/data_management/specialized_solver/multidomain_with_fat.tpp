@@ -22,7 +22,7 @@ MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::MultidomainWithFat(
 
 template <typename FunctionSpaceType, typename FunctionSpaceFatType>
 bool MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> phi_b;
   if (!r.readDoubleVector(extraCellularPotentialFat_->name().c_str(), phi_b)) {
     return false;

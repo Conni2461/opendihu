@@ -40,7 +40,7 @@ void StreamlineTracer<FunctionSpaceType, BaseDataType>::setBaseData(
 
 template <typename FunctionSpaceType, typename BaseDataType>
 bool StreamlineTracer<FunctionSpaceType, BaseDataType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> gradient;
   if (!r.readDoubleVector(this->gradient_->name().c_str(), gradient)) {
     return false;
