@@ -54,7 +54,7 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::initialize(
 
 template <typename FunctionSpaceType, typename NestedSolverType>
 bool MapDofs<FunctionSpaceType, NestedSolverType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<std::vector<double>> stateData;
   stateData.resize(additionalFieldVariables_.size());
   for (size_t i = 0; i < additionalFieldVariables_.size(); i++) {

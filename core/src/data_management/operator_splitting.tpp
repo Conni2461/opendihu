@@ -56,7 +56,7 @@ OperatorSplitting<TimeStepping1,
 
 template <typename TimeStepping1, typename TimeStepping2>
 bool OperatorSplitting<TimeStepping1, TimeStepping2>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   bool a = timeStepping1_->data().restoreState(r);
   bool b = timeStepping2_->data().restoreState(r);
   return a && b;

@@ -91,7 +91,7 @@ public:
   //! output the given data for debugging
   std::string getString(std::shared_ptr<SlotConnectorDataType> data);
 
-  bool restoreState(const InputReader::HDF5 &r);
+  bool restoreState(const InputReader::Generic &r);
 
 protected:
   //! initializes the vectors with size

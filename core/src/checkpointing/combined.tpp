@@ -1,7 +1,7 @@
 #include "checkpointing/combined.h"
 
 #include <scr.h>
-#include "input_reader/hdf5.h"
+#include "input_reader/hdf5/partial.h"
 
 inline bool file_exists(const char *file) {
   struct stat buffer;
@@ -75,7 +75,7 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
     }
 
     int valid = 1;
-    InputReader::HDF5 r(scr_file);
+    InputReader::HDF5::Partial r(scr_file);
 
     int32_t step;
     double newTime;

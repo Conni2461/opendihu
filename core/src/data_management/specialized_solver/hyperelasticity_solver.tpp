@@ -639,7 +639,7 @@ template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
           typename Term, bool withLargeOutput, typename DummyForTraits>
 bool QuasiStaticHyperelasticity<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term, withLargeOutput,
-    DummyForTraits>::restoreState(const InputReader::HDF5 &r) {
+    DummyForTraits>::restoreState(const InputReader::Generic &r) {
   std::vector<double> displacements, velocities, materialTraction, pK2Stress;
   if (!r.readDoubleVector(this->displacements_->name().c_str(),
                           displacements)) {
@@ -724,7 +724,7 @@ template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
 bool QuasiStaticHyperelasticity<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term, true,
     std::enable_if_t<!Term::usesFiberDirection,
-                     Term>>::restoreState(const InputReader::HDF5 &r) {
+                     Term>>::restoreState(const InputReader::Generic &r) {
   std::vector<double> displacements, velocities, traction, materialTraction,
       pK2Stress, deformationGradient, deformationGradientTimeDerivative,
       pK1Stress, cauchyStress, deformationGradientDeterminant;
@@ -829,7 +829,7 @@ template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
 bool QuasiStaticHyperelasticity<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term, false,
     std::enable_if_t<Term::usesFiberDirection,
-                     Term>>::restoreState(const InputReader::HDF5 &r) {
+                     Term>>::restoreState(const InputReader::Generic &r) {
   std::vector<double> displacements, velocities, pK2Stress, activePK2Stress,
       fiberDirection, materialTraction;
   if (!r.readDoubleVector(this->displacements_->name().c_str(),
@@ -924,7 +924,7 @@ template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
 bool QuasiStaticHyperelasticity<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term, true,
     std::enable_if_t<Term::usesFiberDirection,
-                     Term>>::restoreState(const InputReader::HDF5 &r) {
+                     Term>>::restoreState(const InputReader::Generic &r) {
   std::vector<double> displacements, velocities, traction, materialTraction,
       pK2Stress, activePK2Stress, fiberDirection, deformationGradient,
       deformationGradientTimeDerivative, pK1Stress, cauchyStress,
@@ -1039,7 +1039,7 @@ QuasiStaticHyperelasticityPressureOutput<
 
 template <typename PressureFunctionSpace>
 bool QuasiStaticHyperelasticityPressureOutput<
-    PressureFunctionSpace>::restoreState(const InputReader::HDF5 &r) {
+    PressureFunctionSpace>::restoreState(const InputReader::Generic &r) {
   std::vector<double> displacementsLinearMesh, velocitiesLinearMesh, pressure;
   if (!r.readDoubleVector(this->displacementsLinearMesh_->name().c_str(),
                           displacementsLinearMesh)) {

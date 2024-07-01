@@ -93,7 +93,7 @@ void DiffusionAdvectionSolver<FunctionSpaceType>::getPetscMemoryParameters(
 
 template <typename FunctionSpaceType>
 bool DiffusionAdvectionSolver<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> solution, increment;
   if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
     return false;

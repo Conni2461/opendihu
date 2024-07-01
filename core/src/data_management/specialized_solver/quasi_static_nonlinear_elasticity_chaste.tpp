@@ -28,7 +28,7 @@ void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::initialize() {
 
 template <typename FunctionSpace>
 bool QuasiStaticNonlinearElasticityChaste<FunctionSpace>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> activation, activeStress, displacement;
   if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
     return false;

@@ -93,7 +93,7 @@ public:
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
 
-  bool restoreState(const InputReader::HDF5 &r);
+  bool restoreState(const InputReader::Generic &r);
 
 private:
   //! create all field variables with their respective sizes, this will be
