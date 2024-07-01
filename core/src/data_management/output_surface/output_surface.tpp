@@ -44,7 +44,7 @@ template <typename Data3D> void OutputSurface<Data3D>::setData(Data3D &data3d) {
 }
 
 template <typename Data3D>
-bool OutputSurface<Data3D>::restoreState(const InputReader::HDF5 &r) {
+bool OutputSurface<Data3D>::restoreState(const InputReader::Generic &r) {
   // TODO(conni2461): restore state
   return false;
 }

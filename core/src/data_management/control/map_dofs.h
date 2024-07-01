@@ -47,7 +47,7 @@ public:
   //! by the slot_connector_data_transfer class
   std::shared_ptr<SlotConnectorDataType> getSlotConnectorData();
 
-  bool restoreState(const InputReader::HDF5 &r);
+  bool restoreState(const InputReader::Generic &r);
 
 protected:
   //! initializes the vectors with size

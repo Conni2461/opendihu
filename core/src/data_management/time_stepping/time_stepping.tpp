@@ -34,7 +34,7 @@ TimeStepping<FunctionSpaceType, nComponents>::~TimeStepping() {
 
 template <typename FunctionSpaceType, int nComponents>
 bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> solution, increment;
   if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
     return false;

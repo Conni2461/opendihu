@@ -64,8 +64,8 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
-bool PrescribedValues<FunctionSpaceType, nComponents1,
-                      nComponents2>::restoreState(const InputReader::HDF5 &r) {
+bool PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
+    restoreState(const InputReader::Generic &r) {
   std::vector<std::vector<double>> data1;
   data1.resize(fieldVariables1_.size());
   std::vector<std::vector<double>> data2;

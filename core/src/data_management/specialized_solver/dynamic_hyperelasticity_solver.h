@@ -76,7 +76,7 @@ public:
   //! get pointers to all field variables that can be written by checkpointing
   FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
 
-  bool restoreState(const InputReader::HDF5 &r);
+  bool restoreState(const InputReader::Generic &r);
 
 protected:
   //! initializes the vectors with size

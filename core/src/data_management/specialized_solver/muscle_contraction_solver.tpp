@@ -49,7 +49,7 @@ void MuscleContractionSolver<FunctionSpaceType>::initialize() {
 
 template <typename FunctionSpaceType>
 bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> lambda, lambdaDot, gamma, displacements, velocities,
       activePK2Stress, pK2Stress, fiberDirection, materialTraction;
   if (!r.readDoubleVector(this->gamma_->name().c_str(), gamma)) {
