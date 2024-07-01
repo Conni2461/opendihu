@@ -45,12 +45,83 @@ template <typename DataType>
 bool Independent::restore(DataType &data, int &timeStepNo, double &currentTime,
                           bool autoRestore,
                           const std::string &checkpointToRestore) const {
+  int32_t ownRank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &ownRank);
+
   bool restarted = false;
   bool found = false;
   while (!restarted) {
     if (!autoRestore) {
       break;
     }
+
+    char ckpt_name[SCR_MAX_FILENAME];
+    if (checkpointToRestore != "") {
+      int32_t r = SCR_Current(checkpointToRestore.c_str());
+      if (r != SCR_SUCCESS) {
+        LOG(ERROR) << "Failed to specify specific checkpoint. Please check the "
+                      "name for typos. Return value"
+                   << r;
+        return false;
+      }
+    }
+
+    int32_t have_restart = 0;
+    SCR_Have_restart(&have_restart, ckpt_name);
+    if (!have_restart) {
+      break;
+    }
+
+    found = true;
+    char checkpointDir[SCR_MAX_FILENAME];
+    SCR_Start_restart(checkpointDir);
+
+    std::stringstream checkpointFile;
+    if (checkpointToRestore != "") {
+      checkpointFile << checkpointToRestore << "/rank_" << ownRank << ".ckpt";
+    } else {
+      checkpointFile << checkpointDir << "/rank_" << ownRank << ".ckpt";
+    }
+
+    char scr_file[SCR_MAX_FILENAME];
+    SCR_Route_file(checkpointFile.str().c_str(), scr_file);
+
+    bool exists = Path::fileExists(scr_file);
+    bool all_exists = false;
+    MPIUtility::handleReturnValue(MPI_Allreduce(&exists, &all_exists, 1,
+                                                MPI_C_BOOL, MPI_LAND,
+                                                MPI_COMM_WORLD),
+                                  "MPI_Allreduce");
+    if (all_exists) {
+      break;
+    }
+
+    int valid = 1;
+    InputReader::HDF5::FullDataset r(scr_file);
+
+    int32_t step;
+    double newTime;
+    if (r.hasAttribute("timeStepNo")) {
+      step = r.template readAttr<int32_t>("timeStepNo");
+    } else {
+      break;
+    }
+    if (r.hasAttribute("currentTime")) {
+      newTime = r.template readAttr<double>("currentTime");
+    } else {
+      break;
+    }
+    if (!data.restoreState(r)) {
+      break;
+    }
+
+    LOG(DEBUG) << "Successfully restored checkpointing timeStepNo: " << step
+               << " | currentTime: " << newTime;
+    timeStepNo = step;
+    currentTime = newTime;
+
+    int rc = SCR_Complete_restart(valid);
+    restarted = (rc == SCR_SUCCESS);
   }
 
   if (!restarted && found) {
