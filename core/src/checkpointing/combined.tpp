@@ -2,11 +2,7 @@
 
 #include <scr.h>
 #include "input_reader/hdf5/partial.h"
-
-inline bool file_exists(const char *file) {
-  struct stat buffer;
-  return (stat(file, &buffer) == 0);
-}
+#include "utility/path.h"
 
 namespace Checkpointing {
 template <typename DataType>
@@ -70,7 +66,7 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
       SCR_Route_file(ckpt_name, scr_file);
     }
 
-    if (!file_exists(scr_file)) {
+    if (!Path::fileExists(scr_file)) {
       break;
     }
 
