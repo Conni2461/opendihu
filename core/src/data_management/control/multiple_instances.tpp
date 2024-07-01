@@ -57,7 +57,7 @@ void MultipleInstances<FunctionSpaceType, BaseTimesteppingType>::
 
 template <typename FunctionSpaceType, typename BaseDataType>
 bool MultipleInstances<FunctionSpaceType, BaseDataType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   // TODO(conni2461): restore state
   return false;
 }

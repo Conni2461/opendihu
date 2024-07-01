@@ -8,7 +8,7 @@
 #include "arg.h"
 #include "opendihu.h"
 #include "../utility.h"
-#include "input_reader/hdf5.h"
+#include "input_reader/hdf5/full_dataset.h"
 
 TEST(LaplaceTest, Structured2DLinear) {
   std::string pythonConfig = R"(
@@ -98,7 +98,7 @@ config = {
     assertFileMatchesContent("out2d_p2.0.py", referenceOutput0);
     assertFileMatchesContent("out2d_p2.1.py", referenceOutput1);
 
-    InputReader::HDF5 r("out2d_p2_c.h5");
+    InputReader::HDF5::FullDataset r("out2d_p2_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     std::vector<double> geometry, solution;
@@ -195,7 +195,7 @@ config = {
   if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out2d_p1.py", referenceOutput0);
 
-    InputReader::HDF5 r("out2d_p2_c.h5");
+    InputReader::HDF5::FullDataset r("out2d_p2_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     std::vector<double> geometry, solution;
@@ -400,7 +400,7 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5 r("out8_c.h5");
+    InputReader::HDF5::FullDataset r("out8_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     ASSERT_TRUE(r.hasDataset("solution"));
@@ -520,7 +520,7 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5 r("out9_c.h5");
+    InputReader::HDF5::FullDataset r("out9_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     ASSERT_TRUE(r.hasDataset("solution"));
@@ -741,7 +741,7 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5 r("out10_c.h5");
+    InputReader::HDF5::FullDataset r("out10_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     ASSERT_TRUE(r.hasDataset("solution"));
@@ -877,7 +877,7 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5 r("out11_c.h5");
+    InputReader::HDF5::FullDataset r("out11_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     ASSERT_TRUE(r.hasDataset("solution"));
@@ -999,7 +999,7 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5 r("out12_c.h5");
+    InputReader::HDF5::FullDataset r("out12_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     ASSERT_TRUE(r.hasDataset("solution"));
@@ -1226,7 +1226,7 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5 r("out13_c.h5");
+    InputReader::HDF5::FullDataset r("out13_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     ASSERT_TRUE(r.hasDataset("solution"));

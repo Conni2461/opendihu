@@ -87,7 +87,8 @@ void Multidomain<FunctionSpaceType>::initialize(int nCompartments) {
 }
 
 template <typename FunctionSpaceType>
-bool Multidomain<FunctionSpaceType>::restoreState(const InputReader::HDF5 &r) {
+bool Multidomain<FunctionSpaceType>::restoreState(
+    const InputReader::Generic &r) {
   std::vector<double> flowPotential, fiberDirection, phi_e, zero, relFactor,
       activeStressTotal;
   if (!r.readDoubleVector(this->flowPotential_->name().c_str(),

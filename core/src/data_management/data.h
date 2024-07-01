@@ -10,7 +10,7 @@
 #include "field_variable/field_variable.h"
 #include "control/dihu_context.h"
 #include "partition/rank_subset.h"
-#include "input_reader/hdf5.h"
+#include "input_reader/generic.h"
 
 namespace Data {
 
@@ -53,7 +53,7 @@ public:
   DihuContext &context();
 
   //! restore from Reader, by default return false, because nothing is restored
-  virtual bool restoreState(const InputReader::HDF5 &r) { return false; }
+  virtual bool restoreState(const InputReader::Generic &r) { return false; }
 
 protected:
   //! initializes the vectors and stiffness matrix with size

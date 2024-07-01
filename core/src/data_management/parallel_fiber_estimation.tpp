@@ -37,7 +37,7 @@ void ParallelFiberEstimation<FunctionSpaceType>::setProblem(
 
 template <typename FunctionSpaceType>
 bool ParallelFiberEstimation<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> gradient;
   std::vector<double> dirichletValues;
   std::vector<double> jacobianConditionNumber;

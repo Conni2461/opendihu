@@ -8,7 +8,7 @@
 #include "arg.h"
 #include "opendihu.h"
 #include "../utility.h"
-#include "input_reader/hdf5.h"
+#include "input_reader/hdf5/full_dataset.h"
 
 TEST(LaplaceTest, Structured1DLinear) {
   std::string pythonConfig = R"(
@@ -85,7 +85,7 @@ config = {
     assertFileMatchesContent("out4.0.py", referenceOutput0);
     assertFileMatchesContent("out4.1.py", referenceOutput1);
 
-    InputReader::HDF5 r("out4_c.h5");
+    InputReader::HDF5::FullDataset r("out4_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     std::vector<double> geometry, solution;
@@ -178,7 +178,7 @@ config = {
     assertFileMatchesContent("out5.0.py", referenceOutput0);
     assertFileMatchesContent("out5.1.py", referenceOutput1);
 
-    InputReader::HDF5 r("out5_c.h5");
+    InputReader::HDF5::FullDataset r("out5_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     std::vector<double> geometry, solution;
@@ -268,7 +268,7 @@ config = {
     assertFileMatchesContent("out6.0.py", referenceOutput0);
     assertFileMatchesContent("out6.1.py", referenceOutput1);
 
-    InputReader::HDF5 r("out6_c.h5");
+    InputReader::HDF5::FullDataset r("out6_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     std::vector<double> geometry, solution;
@@ -358,7 +358,7 @@ config = {
     assertFileMatchesContent("out7.0.py", referenceOutput0);
     assertFileMatchesContent("out7.1.py", referenceOutput1);
 
-    InputReader::HDF5 r("out7_c.h5");
+    InputReader::HDF5::FullDataset r("out7_c.h5");
     ASSERT_TRUE(r.hasAttribute("timeStepNo"));
     ASSERT_TRUE(r.hasAttribute("currentTime"));
     std::vector<double> geometry, solution;

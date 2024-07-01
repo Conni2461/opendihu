@@ -53,7 +53,7 @@ void StaticBidomain<FunctionSpaceType>::initialize() {
 
 template <typename FunctionSpaceType>
 bool StaticBidomain<FunctionSpaceType>::restoreState(
-    const InputReader::HDF5 &r) {
+    const InputReader::Generic &r) {
   std::vector<double> transmembraneFlow, transmembranePotential, flowPotential,
       fiberDirection, extraCellularPotential, zero, jacobianConditionNumber;
   if (!r.readDoubleVector(this->transmembraneFlow_->name().c_str(),
