@@ -6,6 +6,7 @@
 #include "output_writer/exfile/exfile.h"
 #include "output_writer/megamol/megamol.h"
 #include "output_writer/hdf5/hdf5.h"
+#include "output_writer/json/json.h"
 #include "control/diagnostic_tool/performance_measurement.h"
 
 namespace OutputWriter {
@@ -80,6 +81,16 @@ void Manager::writeOutput(DataType &problemData, int timeStepNo,
                               callCountIncrement);
 
       Control::PerformanceMeasurement::stop("durationWriteOutputHDF5");
+    } else if (std::dynamic_pointer_cast<Json>(outputWriter) != nullptr) {
+      LogScope s("WriteOutputJson");
+      Control::PerformanceMeasurement::start("durationWriteOutputJson");
+
+      std::shared_ptr<Json> writer =
+          std::static_pointer_cast<Json>(outputWriter);
+      writer->write<DataType>(problemData, nullptr, timeStepNo, currentTime,
+                              callCountIncrement);
+
+      Control::PerformanceMeasurement::stop("durationWriteOutputJson");
     }
   }
 

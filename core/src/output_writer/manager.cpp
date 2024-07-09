@@ -9,6 +9,7 @@
 #include "output_writer/exfile/exfile.h"
 #include "output_writer/megamol/megamol.h"
 #include "output_writer/hdf5/hdf5.h"
+#include "output_writer/json/json.h"
 
 namespace OutputWriter {
 
@@ -105,10 +106,14 @@ void Manager::createOutputWriterFromSettings(
     } else if (typeString == "HDF5") {
       outputWriter_.push_back(
           std::make_shared<HDF5>(context, settings, rankSubset));
+    } else if (typeString == "Json") {
+      outputWriter_.push_back(
+          std::make_shared<Json>(context, settings, rankSubset));
     } else {
-      LOG(WARNING) << "Unknown output writer type \"" << typeString << "\". "
-                   << "Valid options are: \"Paraview\", \"PythonCallback\", "
-                      "\"PythonFile\", \"Exfile\", \"MegaMol\", \"HDF5\"";
+      LOG(WARNING)
+          << "Unknown output writer type \"" << typeString << "\". "
+          << "Valid options are: \"Paraview\", \"PythonCallback\", "
+             "\"PythonFile\", \"Exfile\", \"MegaMol\", \"HDF5\", \"Json\"";
     }
   }
 }
