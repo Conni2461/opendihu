@@ -1,10 +1,11 @@
-#include "checkpointing/independent.h"
+#include "checkpointing/hdf5/independent.h"
 
 #include <scr.h>
 #include "input_reader/hdf5/full_dataset.h"
 #include "utility/path.h"
 
 namespace Checkpointing {
+namespace HDF5 {
 template <typename DataType>
 void Independent::createCheckpoint(DataType &data, int timeStepNo,
                                    double currentTime) const {
@@ -131,4 +132,5 @@ bool Independent::restore(DataType &data, int &timeStepNo, double &currentTime,
 
   return restarted;
 }
+} // namespace HDF5
 } // namespace Checkpointing
