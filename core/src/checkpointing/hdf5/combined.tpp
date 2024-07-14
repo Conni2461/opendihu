@@ -1,10 +1,11 @@
-#include "checkpointing/combined.h"
+#include "checkpointing/hdf5/combined.h"
 
 #include <scr.h>
 #include "input_reader/hdf5/partial.h"
 #include "utility/path.h"
 
 namespace Checkpointing {
+namespace HDF5 {
 template <typename DataType>
 void Combined::createCheckpoint(DataType &data, int timeStepNo,
                                 double currentTime) const {
@@ -105,4 +106,5 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
 
   return restarted;
 }
+} // namespace HDF5
 } // namespace Checkpointing
