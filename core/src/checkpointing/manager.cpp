@@ -2,6 +2,8 @@
 
 #include "checkpointing/hdf5/combined.h"
 #include "checkpointing/hdf5/independent.h"
+#include "checkpointing/json/combined.h"
+#include "checkpointing/json/independent.h"
 
 namespace Checkpointing {
 Manager::Manager(PythonConfig specificSettings)
@@ -21,10 +23,17 @@ void Manager::initialize(DihuContext context) {
     } else if (type_ == "hdf5-independent") {
       checkpointing = std::make_shared<HDF5::Independent>(
           context, context.rankSubset(), this->prefix_);
+    } else if (type_ == "json-combined") {
+      checkpointing =
+          std::make_shared<Json::Combined>(context, context.rankSubset());
+    } else if (type_ == "json-independent") {
+      checkpointing = std::make_shared<Json::Independent>(
+          context, context.rankSubset(), this->prefix_);
     } else {
       LOG(ERROR) << "checkpointing type: " << type_
                  << " is not a valid type. Make sure to either configure it "
-                    "with the type 'hdf5-combined' or 'hdf5-independent'";
+                    "with the type 'hdf5-combined', 'hdf5-independent', "
+                    "'json-combined' or 'json-independent'";
     }
   }
 }
