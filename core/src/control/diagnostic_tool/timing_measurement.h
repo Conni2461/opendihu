@@ -14,11 +14,11 @@ namespace Control {
 class TimingMeasurement {
 public:
   //! start timing measurement for a given keyword
-  static void start(int32_t timestep);
+  static void start(int32_t timestep, const char *name = "all");
 
   //! stop timing measurement for a given keyword, the counter of number of time
   //! spans is increased by numberAccumulated
-  static void stop(int32_t timestep);
+  static void stop(int32_t timestep, const char *name = "all");
 
   static void writeCSV(const char *filename = "timings");
 
@@ -29,6 +29,6 @@ private:
     bool set;
   };
 
-  static std::map<int32_t, Measurement> measurements_;
+  static std::map<int32_t, std::map<std::string, Measurement>> measurements_;
 };
 } // namespace Control
