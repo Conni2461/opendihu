@@ -4,11 +4,13 @@
 #include "checkpointing/hdf5/independent.h"
 #include "checkpointing/json/combined.h"
 #include "checkpointing/json/independent.h"
+#include "control/diagnostic_tool/timing_measurement.h"
 
 namespace Checkpointing {
 template <typename DataType>
 void Manager::createCheckpoint(DataType &problemData, int timeStepNo,
                                double currentTime) const {
+  Control::TimingMeasurement::start(timeStepNo, "checkpointing");
   if (std::dynamic_pointer_cast<HDF5::Combined>(checkpointing) != nullptr) {
     LogScope s("WriteCheckpointHDF5Combined");
     std::shared_ptr<HDF5::Combined> obj =
@@ -33,6 +35,7 @@ void Manager::createCheckpoint(DataType &problemData, int timeStepNo,
         std::static_pointer_cast<Json::Independent>(checkpointing);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
   }
+  Control::TimingMeasurement::stop(timeStepNo, "checkpointing");
 }
 
 template <typename DataType>
