@@ -1,11 +1,11 @@
-#include "checkpointing/hdf5/independent.h"
+#include "checkpointing/json/independent.h"
 
 namespace Checkpointing {
-namespace HDF5 {
+namespace Json {
 Independent::Independent(DihuContext context,
                          std::shared_ptr<Partition::RankSubset> rankSubset,
                          const std::string &prefix)
-    : Generic(), writer_(std::make_unique<OutputWriter::HDF5>(
+    : Generic(), writer_(std::make_unique<OutputWriter::Json>(
                      context, PythonConfig(nullptr), rankSubset)),
       prefix_(prefix) {
   if (prefix_ == "") {
@@ -16,5 +16,5 @@ Independent::Independent(DihuContext context,
   writer_->setWriteMeta(false);
   writer_->setUseCheckpointData(true);
 }
-} // namespace HDF5
+} // namespace Json
 } // namespace Checkpointing
