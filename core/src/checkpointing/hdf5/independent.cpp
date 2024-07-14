@@ -1,8 +1,9 @@
-#include "checkpointing/independent.h"
+#include "checkpointing/hdf5/independent.h"
 
 #include <scr.h>
 
 namespace Checkpointing {
+namespace HDF5 {
 Independent::Independent(DihuContext context,
                          std::shared_ptr<Partition::RankSubset> rankSubset,
                          const std::string &prefix)
@@ -17,4 +18,5 @@ Independent::Independent(DihuContext context,
   writer_->setWriteMeta(false);
   writer_->setUseCheckpointData(true);
 }
+} // namespace HDF5
 } // namespace Checkpointing

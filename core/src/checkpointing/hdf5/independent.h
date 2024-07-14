@@ -7,10 +7,12 @@
 #include "output_writer/hdf5/hdf5.h"
 
 namespace Checkpointing {
-class Combined : public Generic {
+namespace HDF5 {
+class Independent : public Generic {
 public:
-  Combined(DihuContext context,
-           std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
+  Independent(DihuContext context,
+              std::shared_ptr<Partition::RankSubset> rankSubset = nullptr,
+              const std::string &prefix = ".");
 
   template <typename DataType>
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,
@@ -22,7 +24,10 @@ public:
 
 private:
   std::unique_ptr<OutputWriter::HDF5> writer_;
+
+  std::string prefix_;
 };
+} // namespace HDF5
 } // namespace Checkpointing
 
-#include "checkpointing/combined.tpp"
+#include "checkpointing/hdf5/independent.tpp"
