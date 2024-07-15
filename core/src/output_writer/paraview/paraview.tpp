@@ -15,7 +15,7 @@ namespace OutputWriter {
 
 template <typename DataType>
 void Paraview::write(DataType &data, int timeStepNo, double currentTime,
-                     int callCountIncrement) {
+                     int callCountIncrement, const char *filename) {
   // check if output should be written in this timestep and prepare filename
   if (!Generic::prepareWrite(data, timeStepNo, currentTime,
                              callCountIncrement)) {
@@ -38,7 +38,7 @@ void Paraview::write(DataType &data, int timeStepNo, double currentTime,
 
     // create a PolyData file that combines all 1D meshes into one file
     writePolyDataFile<typename DataType::FieldVariablesForOutputWriter>(
-        data.getFieldVariablesForOutputWriter(), combined1DMeshes);
+        data.getFieldVariablesForOutputWriter(), combined1DMeshes, filename);
 
     Control::PerformanceMeasurement::stop("durationParaview1D");
     Control::PerformanceMeasurement::start("durationParaview3D");
@@ -46,7 +46,8 @@ void Paraview::write(DataType &data, int timeStepNo, double currentTime,
     // create an UnstructuredMesh file that combines all 3D meshes into one file
     writeCombinedUnstructuredGridFile<
         typename DataType::FieldVariablesForOutputWriter>(
-        data.getFieldVariablesForOutputWriter(), combined3DMeshes, true);
+        data.getFieldVariablesForOutputWriter(), combined3DMeshes, true,
+        filename);
 
     Control::PerformanceMeasurement::stop("durationParaview3D");
     Control::PerformanceMeasurement::start("durationParaview2D");
@@ -54,7 +55,8 @@ void Paraview::write(DataType &data, int timeStepNo, double currentTime,
     // create an UnstructuredMesh file that combines all 2D meshes into one file
     writeCombinedUnstructuredGridFile<
         typename DataType::FieldVariablesForOutputWriter>(
-        data.getFieldVariablesForOutputWriter(), combined2DMeshes, false);
+        data.getFieldVariablesForOutputWriter(), combined2DMeshes, false,
+        filename);
 
     Control::PerformanceMeasurement::stop("durationParaview2D");
   }

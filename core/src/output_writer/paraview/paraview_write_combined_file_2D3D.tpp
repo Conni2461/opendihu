@@ -21,7 +21,8 @@ namespace OutputWriter {
 template <typename FieldVariablesForOutputWriterType>
 void Paraview::writeCombinedUnstructuredGridFile(
     const FieldVariablesForOutputWriterType &fieldVariables,
-    std::set<std::string> &meshNames, bool output3DMeshes) {
+    std::set<std::string> &meshNames, bool output3DMeshes,
+    const char *filename) {
   // output a *.vtu file which contains 3D (if output3DMeshes==true) or 2D
   // meshes (if output3DMeshes==false), if there are any
 
@@ -173,15 +174,19 @@ void Paraview::writeCombinedUnstructuredGridFile(
     if (vtkPiece3D_.properties.dimensionality == targetDimensionality) {
       meshNames = vtkPiece3D_.meshNamesCombinedMeshes;
 
-      std::stringstream filename;
-      filename << this->filenameBaseWithNo_ << ".vtu";
+      std::stringstream ss;
+      if (filename) {
+        ss << filename << ".vtu";
+      } else {
+        ss << this->filenameBaseWithNo_ << ".vtu";
+      }
 
       // write actual file
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
           fieldVariables, vtkPiece3D_.properties,
           meshPropertiesUnstructuredGridFile_,
           vtkPiece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized,
-          callIdentifier, filename.str());
+          callIdentifier, ss.str());
       callIdentifier++;
     } else {
       VLOG(1) << "skip meshes " << vtkPiece3D_.meshNamesCombinedMeshes
@@ -210,7 +215,7 @@ void Paraview::writeCombinedUnstructuredGridFile(
     if (meshNames.find(meshPropertiesIter->first) != meshNames.end())
       continue;
 
-    std::stringstream filename;
+    std::stringstream ss;
     if (meshPropertiesUnstructuredGridFile_.size() > 1) {
       // split the current filename into base part and number part, e.g.
       // "output_0000010" -> "output" + "_0000010"
@@ -226,17 +231,24 @@ void Paraview::writeCombinedUnstructuredGridFile(
         filenamePartBase = this->filenameBaseWithNo_;
       }
 
-      // add mesh name in filename
-      filename << filenamePartBase << "_" << meshPropertiesIter->first
-               << filenamePartNumber << ".vtu";
+      // add mesh name in ss
+      if (filename) {
+        ss << filename << "_" << meshPropertiesIter->first << ".vtu";
+      } else {
+        ss << filenamePartBase << "_" << meshPropertiesIter->first
+           << filenamePartNumber << ".vtu";
+      }
     } else {
-      std::stringstream filename;
-      filename << this->filenameBaseWithNo_ << ".vtu";
+      if (filename) {
+        ss << filename << ".vtu";
+      } else {
+        ss << this->filenameBaseWithNo_ << ".vtu";
+      }
     }
 
     LOG(DEBUG) << "meshNames: " << meshNames
                << ", next mesh to write: " << meshPropertiesIter->first
-               << ", filename: " << filename.str();
+               << ", filename: " << ss.str();
 
     // write actual file
     std::vector<std::string> currentMesh;
@@ -246,7 +258,7 @@ void Paraview::writeCombinedUnstructuredGridFile(
     writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
         fieldVariables, polyDataPropertiesForMesh,
         meshPropertiesUnstructuredGridFile_, currentMesh,
-        meshPropertiesInitialized, callIdentifier, filename.str());
+        meshPropertiesInitialized, callIdentifier, ss.str());
     callIdentifier++;
 
     // for the next meshes, reinitialize, the initialized information can only

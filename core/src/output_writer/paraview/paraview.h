@@ -21,7 +21,7 @@ public:
   //! will be part of the filename
   template <typename DataType>
   void write(DataType &data, int timeStepNo = -1, double currentTime = -1,
-             int callCountIncrement = 1);
+             int callCountIncrement = 1, const char *filename = nullptr);
 
   //! write the given field variable as VTK <DataArray> element to file, if
   //! onlyParallelDatasetElement write the <PDataArray> element
@@ -45,7 +45,8 @@ public:
   template <typename FieldVariablesForOutputWriterType>
   void
   writePolyDataFile(const FieldVariablesForOutputWriterType &fieldVariables,
-                    std::set<std::string> &combinedMeshesOut);
+                    std::set<std::string> &combinedMeshesOut,
+                    const char *filename = nullptr);
 
   //! write a single *.vtu file that contains all data of all 3D or 2D field
   //! variables (depending on output3DMeshes). This is uses MPI IO. It can be
@@ -54,7 +55,8 @@ public:
   template <typename FieldVariablesForOutputWriterType>
   void writeCombinedUnstructuredGridFile(
       const FieldVariablesForOutputWriterType &fieldVariables,
-      std::set<std::string> &combinedMeshesOut, bool output3DMeshes);
+      std::set<std::string> &combinedMeshesOut, bool output3DMeshes,
+      const char *filename = nullptr);
 
   //! encode a Petsc vector in Base64,
   //! @param withEncodedSizePrefix if the length of the vector should be added
@@ -98,6 +100,9 @@ public:
 
   //! return a reference to the series writer
   static SeriesWriter &seriesWriter();
+
+  //! Enable or disable combine files option
+  void setCombineFiles(bool v);
 
 protected:
   /** one VTKPiece is the XML element that will be output as <Piece></Piece>. It
