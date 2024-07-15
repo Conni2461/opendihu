@@ -28,6 +28,8 @@ Paraview::Paraview(DihuContext context, PythonConfig settings,
   combineFiles_ = settings.getOptionBool("combineFiles", false);
 }
 
+void Paraview::setCombineFiles(bool v) { combineFiles_ = v; }
+
 std::string Paraview::encodeBase64Vec(const Vec &vector,
                                       bool withEncodedSizePrefix) {
   PetscInt vectorSize = 0;
