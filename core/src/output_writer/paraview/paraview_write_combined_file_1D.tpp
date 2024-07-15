@@ -21,7 +21,7 @@ namespace OutputWriter {
 template <typename FieldVariablesForOutputWriterType>
 void Paraview::writePolyDataFile(
     const FieldVariablesForOutputWriterType &fieldVariables,
-    std::set<std::string> &meshNames) {
+    std::set<std::string> &meshNames, const char *filename) {
   // output a *.vtp file which contains 1D meshes, if there are any
 
   bool meshPropertiesInitialized = !meshPropertiesPolyDataFile_.empty();
@@ -203,9 +203,13 @@ void Paraview::writePolyDataFile(
   }
 
   // determine filename, broadcast from rank 0
-  std::stringstream filename;
-  filename << this->filenameBaseWithNo_ << ".vtp";
-  int filenameLength = filename.str().length();
+  std::stringstream ss;
+  if (filename) {
+    ss << filename << ".vtp";
+  } else {
+    ss << this->filenameBaseWithNo_ << ".vtp";
+  }
+  int filenameLength = ss.str().length();
 
   // broadcast length of filename
   MPIUtility::handleReturnValue(MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
@@ -213,7 +217,7 @@ void Paraview::writePolyDataFile(
                                 "MPI_Bcast (3)");
 
   std::vector<char> receiveBuffer(filenameLength + 1, char(0));
-  strcpy(receiveBuffer.data(), filename.str().c_str());
+  strcpy(receiveBuffer.data(), ss.str().c_str());
   MPIUtility::handleReturnValue(MPI_Bcast(receiveBuffer.data(), filenameLength,
                                           MPI_CHAR, 0,
                                           this->rankSubset_->mpiCommunicator()),
@@ -337,7 +341,7 @@ void Paraview::writePolyDataFile(
       vtkPiece1D_ = VTKPiece();
 
       // recursively call this method
-      writePolyDataFile(fieldVariables, meshNames);
+      writePolyDataFile(fieldVariables, meshNames, filename);
 
       return;
     }
