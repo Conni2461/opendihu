@@ -51,9 +51,10 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
           MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
                     this->rankSubset_->mpiCommunicator()),
           "MPI_Bcast");
-      file = std::make_unique<HDF5Utils::File>(receiveBuffer.data(), true);
+      file =
+          std::make_unique<HDF5Utils::File>(receiveBuffer.data(), true, async_);
     } else {
-      file = std::make_unique<HDF5Utils::File>(filename, true);
+      file = std::make_unique<HDF5Utils::File>(filename, true, async_);
     }
 
     herr_t err;
@@ -178,15 +179,25 @@ namespace HDF5Utils {
 template <typename T, std::enable_if_t<std::is_same<T, int>::value, bool>>
 herr_t File::writeAttr(const char *key, const T &v) const {
   std::array<int32_t, 1> data = {(int32_t)v};
-  return writeAttribute(fileID_, H5T_STD_I32LE, H5T_NATIVE_INT, 1, key,
-                        data.data());
+  if (async_) {
+    return writeAttributeAsync(fileID_, H5T_STD_I32LE, H5T_NATIVE_INT, 1, key,
+                               data.data(), esID_);
+  } else {
+    return writeAttribute(fileID_, H5T_STD_I32LE, H5T_NATIVE_INT, 1, key,
+                          data.data());
+  }
 }
 
 template <typename T, std::enable_if_t<std::is_same<T, double>::value, bool>>
 herr_t File::writeAttr(const char *key, const T &v) const {
   std::array<double, 1> data = {(double)v};
-  return writeAttribute(fileID_, H5T_IEEE_F64LE, H5T_NATIVE_DOUBLE, 1, key,
-                        data.data());
+  if (async_) {
+    return writeAttributeAsync(fileID_, H5T_IEEE_F64LE, H5T_NATIVE_DOUBLE, 1,
+                               key, data.data(), esID_);
+  } else {
+    return writeAttribute(fileID_, H5T_IEEE_F64LE, H5T_NATIVE_DOUBLE, 1, key,
+                          data.data());
+  }
 }
 
 template <typename T,
@@ -206,7 +217,12 @@ herr_t File::writeAttr(const char *key, const T &v) const {
     return err;
   }
 
-  return writeAttribute(fileID_, filetype, memtype, 1, key, value.c_str());
+  if (async_) {
+    return writeAttributeAsync(fileID_, filetype, memtype, 1, key,
+                               value.c_str(), esID_);
+  } else {
+    return writeAttribute(fileID_, filetype, memtype, 1, key, value.c_str());
+  }
 }
 
 template <typename T>

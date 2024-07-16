@@ -2,6 +2,7 @@ from .clock import clock
 from .MPI import MPI
 from .GSL import GSL
 from .HDF5 import HDF5
+from .HDF5VolAsync import HDF5VolAsync
 from .nlohmannjson import NlohmannJson
 from .FFTW import FFTW
 from .FFTW3 import FFTW3

@@ -77,6 +77,8 @@ int main(int argc, char* argv[]) {
             cmake -DCMAKE_BUILD_TYPE=RELEASE \
                   -DHDF5_BUILD_CPP_LIB=OFF \
                   -DHDF5_ENABLE_PARALLEL=ON \
+                  -DHDF5_ENABLE_THREADSAFE=ON \
+                  -DALLOW_UNSUPPORTED=ON \
                   -DBUILD_SHARED_LIBS=ON \
                   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
                   CC=mpicc \

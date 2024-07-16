@@ -30,6 +30,8 @@
           # required for building petsc
           bison
           cmake
+          automake
+          libtool
           flex
           blas
           lapack

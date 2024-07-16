@@ -22,6 +22,9 @@ void Manager::initialize(DihuContext context) {
     if (type_ == "hdf5-combined") {
       checkpointing =
           std::make_shared<HDF5::Combined>(context, context.rankSubset());
+    } else if (type_ == "hdf5-combined-async") {
+      checkpointing =
+          std::make_shared<HDF5::Combined>(context, context.rankSubset(), true);
     } else if (type_ == "hdf5-independent") {
       checkpointing = std::make_shared<HDF5::Independent>(
           context, context.rankSubset(), this->prefix_);
