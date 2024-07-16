@@ -52,6 +52,8 @@ public:
   void setWriteMeta(bool v);
   //! Enable or disable use checkpointing data option
   void setUseCheckpointData(bool v);
+  //! Enable or disable combine files option
+  void setAsync(bool v);
 
 protected:
   /** one Piece is the file output. It is created from one or multiple opendihu
@@ -109,6 +111,8 @@ private:
   bool useCheckpointData_; //< if set the output writer uses
                            // getFieldVariablesForCheckpointing rather than
                            // getFieldVariablesForOutputWriter
+  bool async_; //< if set will use hdf5 async mode but only if the files are
+               // combined
 
   std::map<std::string, PolyDataPropertiesForMesh>
       meshPropertiesPolyDataFile_; //< mesh information for a data file, for 1D
@@ -146,10 +150,12 @@ class File {
 public:
   //! Constructor opens a new file with a given filename, either with mpiio or
   //! not
-  File(const char *filename, bool mpiio);
+  File(const char *filename, bool mpiio, bool async = false);
   //! Close the file and cleanup everything else still open
   ~File();
 
+  //! Returns the HDF5 EsID
+  hid_t getEsID() const;
   //! Get the HDF5 File ID
   hid_t getFileID() const;
   //! Get the own rank, this value is cached
@@ -158,6 +164,8 @@ public:
   int32_t getWorldSize() const;
   //! Returns true if the file was opened with MPIIO, false if not
   bool isMPIIO() const;
+  //! Returns true if the file was opened with MPIIO and async, false if not
+  bool isAsync() const;
 
   //! Create a new group with a given name
   Group newGroup(const char *name) const;
@@ -178,6 +186,8 @@ public:
 private:
   std::string filename_; //< filename in which is been written
   const bool mpiio_;     //< stored value if the file was opened with mpiio
+  bool async_;           //< stored value if the file was opened with mpiio
+  hid_t esID_;           //< stored esID, only used if async_ is true
   hid_t fileID_;         //< stored fileID
   int32_t ownRank_;      //< own rank cached
   int32_t worldSize_;    //< world size cached
@@ -213,6 +223,13 @@ private:
                           size_t dsize);
 
   //! inner write method, that writes a dataset with a specific name to the
+  //! current group with a specific typeId and memTypeId to a mpiio file with
+  //! async
+  herr_t writeVectorAsync(const void *data, const std::string &dsname,
+                          const size_t dataSize, hid_t typeId, hid_t memTypeId,
+                          size_t dsize);
+
+  //! inner write method, that writes a dataset with a specific name to the
   //! current group with a specific typeId and memTypeId to a regular file
   herr_t writeVector(const void *data, const std::string &dsname,
                      const size_t dataSize, hid_t typeId, hid_t memTypeId,
@@ -242,6 +259,9 @@ static herr_t writePartitionFieldVariable(Group &group,
 
 herr_t writeAttribute(hid_t dest, hid_t filetype, hid_t memtype, hsize_t dims,
                       const char *key, const void *buf);
+herr_t writeAttributeAsync(hid_t dest, hid_t filetype, hid_t memtype,
+                           hsize_t dims, const char *key, const void *buf,
+                           hid_t esID);
 } // namespace HDF5Utils
 } // namespace OutputWriter
 
