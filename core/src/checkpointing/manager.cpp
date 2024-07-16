@@ -5,6 +5,7 @@
 #include "checkpointing/json/combined.h"
 #include "checkpointing/json/independent.h"
 #include "checkpointing/paraview/combined.h"
+#include "checkpointing/python/independent.h"
 
 namespace Checkpointing {
 Manager::Manager(PythonConfig specificSettings)
@@ -33,6 +34,12 @@ void Manager::initialize(DihuContext context) {
     } else if (type_ == "paraview-combined") {
       checkpointing =
           std::make_shared<Paraview::Combined>(context, context.rankSubset());
+    } else if (type_ == "python-independent-binary") {
+      checkpointing = std::make_shared<Python::Independent>(
+          context, context.rankSubset(), this->prefix_, true);
+    } else if (type_ == "python-independent-json") {
+      checkpointing = std::make_shared<Python::Independent>(
+          context, context.rankSubset(), this->prefix_, false);
     } else {
       LOG(ERROR) << "checkpointing type: " << type_
                  << " is not a valid type. Make sure to either configure it "

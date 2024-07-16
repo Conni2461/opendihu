@@ -20,7 +20,7 @@ public:
   //! part of the filename
   template <typename DataType>
   void write(DataType &data, int timeStepNo = -1, double currentTime = -1,
-             int callCountIncrement = 1);
+             int callCountIncrement = 1, const char *filename = nullptr);
 
 private:
   //! open a python file stream using io module (python 3) or with low-level api
