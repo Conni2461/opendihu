@@ -172,7 +172,15 @@ DihuContext::DihuContext(int argc, char *argv[], bool doNotFinalizeMpi,
 
     // initialize MPI, this is necessary to be able to call PetscFinalize
     // without MPI shutting down
-    MPI_Init(&argc, &argv);
+    const char *hdf5volconnector = getenv("HDF5_VOL_CONNECTOR");
+    if (hdf5volconnector &&
+        std::string(hdf5volconnector).rfind("async ", 0) == 0) {
+      int provided;
+      MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
+      assert(MPI_THREAD_MULTIPLE == provided);
+    } else {
+      MPI_Init(&argc, &argv);
+    }
 
     // the following three lines output the MPI version during compilation, use
     // for debugging
