@@ -5,6 +5,7 @@
 #include "checkpointing/json/combined.h"
 #include "checkpointing/json/independent.h"
 #include "checkpointing/paraview/combined.h"
+#include "checkpointing/python/independent.h"
 #include "control/diagnostic_tool/timing_measurement.h"
 
 namespace Checkpointing {
@@ -40,6 +41,12 @@ void Manager::createCheckpoint(DataType &problemData, int timeStepNo,
     LogScope s("WriteCheckpointJsonIndependent");
     std::shared_ptr<Paraview::Combined> obj =
         std::static_pointer_cast<Paraview::Combined>(checkpointing);
+    obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
+  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing) !=
+             nullptr) {
+    LogScope s("WriteCheckpointPythonIndependent");
+    std::shared_ptr<Python::Independent> obj =
+        std::static_pointer_cast<Python::Independent>(checkpointing);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
   }
   Control::TimingMeasurement::stop(timeStepNo, "checkpointing");
@@ -84,6 +91,13 @@ bool Manager::restore(DataType &problemData, int &timeStepNo,
     LogScope s("RestoreCheckpointParaviewCombined");
     std::shared_ptr<Paraview::Combined> obj =
         std::static_pointer_cast<Paraview::Combined>(checkpointing);
+    return obj->restore<DataType>(problemData, timeStepNo, currentTime,
+                                  this->autoRestore_, ss.str());
+  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing) !=
+             nullptr) {
+    LogScope s("RestoreCheckpointPythonIndependent");
+    std::shared_ptr<Python::Independent> obj =
+        std::static_pointer_cast<Python::Independent>(checkpointing);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
   }

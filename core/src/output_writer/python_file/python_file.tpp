@@ -12,7 +12,7 @@ namespace OutputWriter {
 
 template <typename DataType>
 void PythonFile::write(DataType &data, int timeStepNo, double currentTime,
-                       int callCountIncrement) {
+                       int callCountIncrement, const char *filename) {
   // check if output should be written in this timestep and prepare filename
   if (!Generic::prepareWrite(data, timeStepNo, currentTime,
                              callCountIncrement)) {
@@ -32,9 +32,17 @@ void PythonFile::write(DataType &data, int timeStepNo, double currentTime,
     // setup name of file
     std::stringstream filenameStart;
     if (meshNames.size() == 1) {
-      filenameStart << this->filename_;
+      if (filename) {
+        filenameStart << filename;
+      } else {
+        filenameStart << this->filename_;
+      }
     } else {
-      filenameStart << this->filename_ << "_" << meshName;
+      if (filename) {
+        filenameStart << filename << "_" << meshName;
+      } else {
+        filenameStart << this->filename_ << "_" << meshName;
+      }
     }
 
     // exelem file
