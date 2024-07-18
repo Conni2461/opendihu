@@ -19,7 +19,8 @@ void Independent::createCheckpoint(DataType &data, int timeStepNo,
   SCR_Start_output(ckptName.str().c_str(), SCR_FLAG_CHECKPOINT);
 
   std::stringstream checkpointDirStream;
-  checkpointDirStream << prefix_ << "/timestep." << timeStepNo << "d";
+  checkpointDirStream << prefix_ << "/timestep." << std::setw(4)
+                      << std::setfill('0') << timeStepNo << "d";
   std::string checkpointDir = checkpointDirStream.str();
 
   if (ownRank == 0) {
