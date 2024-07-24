@@ -26,11 +26,17 @@ public:
   bool hasDataset(const char *name) const;
 
   //! Read a i32 attribute on the root node and return it
-  int32_t readInt32Attribute(const char *name) const;
+  template <typename T,
+            std::enable_if_t<std::is_same<T, int32_t>::value, bool> = true>
+  T readAttr(const char *name) const;
   //! Read a double attribute on the root node and return it
-  double readDoubleAttribute(const char *name) const;
+  template <typename T,
+            std::enable_if_t<std::is_same<T, double>::value, bool> = true>
+  T readAttr(const char *name) const;
   //! Read a string attribute on the root node and return it
-  std::string readStringAttribute(const char *name) const;
+  template <typename T,
+            std::enable_if_t<std::is_same<T, std::string>::value, bool> = true>
+  T readAttr(const char *name) const;
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
@@ -49,6 +55,13 @@ protected:
 
   std::vector<Object> datasets_;      //< cached datasets
   std::vector<Attribute> attributes_; //< cached attributes
+
+private:
+  //! Helper function that reads an attribute with a given name and type into a
+  //! output variable
+  herr_t readAttribute(const char *name, hid_t type, void *out) const;
 };
 } // namespace HDF5
 } // namespace InputReader
+
+#include "input_reader/hdf5/file.tpp"
