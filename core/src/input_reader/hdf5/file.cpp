@@ -47,51 +47,19 @@ bool File::hasDataset(const char *name) const {
   return false;
 }
 
-int32_t File::readInt32Attribute(const char *name) const {
+herr_t File::readAttribute(const char *name, hid_t type, void *out) const {
   hid_t attr = H5Aopen_name(fileID_, name);
-  assert(attr >= 0);
-
-  int32_t out;
-  herr_t err = H5Aread(attr, H5T_NATIVE_INT, &out);
-  assert(err >= 0);
-  err = H5Aclose(attr);
-  assert(err >= 0);
-  return out;
-}
-
-double File::readDoubleAttribute(const char *name) const {
-  hid_t attr = H5Aopen_name(fileID_, name);
-  assert(attr >= 0);
-
-  double out;
-  herr_t err = H5Aread(attr, H5T_NATIVE_DOUBLE, &out);
-  assert(err >= 0);
-  err = H5Aclose(attr);
-  assert(err >= 0);
-  return out;
-}
-
-std::string File::readStringAttribute(const char *name) const {
-  hid_t attr = H5Aopen_name(fileID_, name);
-  assert(attr >= 0);
-
-  std::string out;
-  hid_t atype = H5Tcopy(H5T_C_S1);
-  for (const auto &e : attributes_) {
-    if (e.name == name) {
-      H5Tset_size(atype, e.size + 1);
-      out.resize(e.size + 1);
-      break;
-    }
+  if (attr < 0) {
+    return attr;
   }
 
-  herr_t err = H5Aread(attr, atype, (void *)out.c_str());
-  assert(err >= 0);
-  err = H5Tclose(atype);
-  assert(err >= 0);
+  herr_t err = H5Aread(attr, type, &out);
+  if (err < 0) {
+    H5Aclose(attr);
+    return err;
+  }
   err = H5Aclose(attr);
-  assert(err >= 0);
-  return out;
+  return err;
 }
 
 bool File::readIntVector(const char *name, std::vector<int32_t> &out) const {
