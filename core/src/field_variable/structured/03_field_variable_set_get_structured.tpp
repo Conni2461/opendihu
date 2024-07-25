@@ -759,22 +759,26 @@ void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
   // get number of dofs
   assert(this->functionSpace_);
   const dof_no_t nDofs = this->functionSpace_->nDofsLocalWithGhosts();
+
   if (nDofs == values.size()) {
     for (int componentIndex = 0; componentIndex < nComponents;
          componentIndex++) {
       this->setValuesWithGhosts(componentIndex, values, INSERT_VALUES);
     }
-  } else if (values.size() >= (nDofs * nComponents)) {
+  } else if (values.size() == (nDofs * nComponents)) {
+    std::vector<double> t;
+    t.resize(nDofs);
     for (int componentIndex = 0; componentIndex < nComponents;
          componentIndex++) {
-      std::vector<double> t;
-      t.resize(nDofs);
       for (size_t i = 0; i < nDofs; i++) {
         t[i] = values[(i * nComponents) + componentIndex];
       }
       this->setValuesWithGhosts(componentIndex, t, INSERT_VALUES);
     }
   } else {
+    LOG(ERROR) << "Failed to set values in fieldVariable [" << this->name()
+               << "] because values.size() != (nDofs * nComponents): "
+               << values.size() << "!= " << (nDofs * nComponents);
     assert(false);
   }
 }
