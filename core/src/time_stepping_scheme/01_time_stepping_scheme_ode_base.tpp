@@ -105,9 +105,6 @@ void TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::run() {
   this->initialize();
 
   auto checkpointing = this->context_.getCheckpointing();
-  if (checkpointing) {
-    checkpointing->initialize(this->context_);
-  }
   // do simulations
   this->advanceTimeSpan(true, checkpointing);
 }

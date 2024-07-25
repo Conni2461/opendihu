@@ -36,10 +36,6 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::run() {
   initialize();
 
   auto checkpointing = this->context_.getCheckpointing();
-  if (checkpointing) {
-    checkpointing->initialize(this->context_);
-  }
-
   // advance one timestep
   advanceTimeSpan(true, checkpointing);
 }

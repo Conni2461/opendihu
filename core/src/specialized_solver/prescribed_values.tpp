@@ -343,9 +343,6 @@ void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::run() {
   initialize();
 
   auto checkpointing = this->context_.getCheckpointing();
-  if (checkpointing) {
-    checkpointing->initialize(this->context_);
-  }
   advanceTimeSpan(true, checkpointing);
 }
 

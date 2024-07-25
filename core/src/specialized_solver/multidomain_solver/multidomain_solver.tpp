@@ -260,9 +260,6 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
   initialize();
 
   auto checkpointing = this->context_.getCheckpointing();
-  if (checkpointing) {
-    checkpointing->initialize(this->context_);
-  }
   this->advanceTimeSpan(true, checkpointing);
 }
 
