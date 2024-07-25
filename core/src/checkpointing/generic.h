@@ -15,5 +15,7 @@ public:
 
 protected:
   virtual void initWriter(DihuContext context) const {}
+
+  const int32_t maxAttempt = 3;
 };
 } // namespace Checkpointing
