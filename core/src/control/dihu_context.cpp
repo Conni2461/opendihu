@@ -519,7 +519,11 @@ int DihuContext::ownRankNo() { return rankSubset_->ownRankNo(); }
 
 int DihuContext::nRanksCommWorld() { return nRanksCommWorld_; }
 
-std::shared_ptr<Checkpointing::Manager> DihuContext::getCheckpointing() {
+std::shared_ptr<Checkpointing::Manager> DihuContext::getCheckpointing() const {
+  if (checkpointing_) {
+    checkpointing_->initialize(*this);
+  }
+
   return checkpointing_;
 }
 
