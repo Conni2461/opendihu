@@ -50,10 +50,8 @@ herr_t HDF5::writeCombinedTypesVector(HDF5Utils::Group &group, uint64_t nValues,
 namespace HDF5Utils {
 File::File(const char *filename, bool mpiio, bool async)
     : filename_(filename), mpiio_(mpiio), async_(mpiio ? async : false),
-      esID_(-1), fileID_(-1) {
-  MPI_Comm_size(MPI_COMM_WORLD, &worldSize_);
-  MPI_Comm_rank(MPI_COMM_WORLD, &ownRank_);
-
+      esID_(-1), fileID_(-1), ownRank_(DihuContext::ownRankNoCommWorld()),
+      worldSize_(DihuContext::nRanksCommWorld()) {
   if (async_) {
     const char *hdf5volconnector = getenv("HDF5_VOL_CONNECTOR");
     const char *hdf5pluginpath = getenv("HDF5_PLUGIN_PATH");
@@ -66,6 +64,7 @@ File::File(const char *filename, bool mpiio, bool async)
     }
   }
 
+  // we want to reevalute async_ here because it could have changed
   if (async_) {
     esID_ = H5EScreate();
     assert(esID_ >= 0);
