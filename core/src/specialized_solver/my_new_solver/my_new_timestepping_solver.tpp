@@ -199,9 +199,6 @@ void MyNewTimesteppingSolver<TimeStepping>::run() {
   initialize();
 
   auto checkpointing = this->context_.getCheckpointing();
-  if (checkpointing) {
-    checkpointing->initialize(this->context_);
-  }
   advanceTimeSpan(true, checkpointing);
 }
 
