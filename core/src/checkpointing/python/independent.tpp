@@ -14,7 +14,8 @@ void Independent::createCheckpoint(DataType &data, int timeStepNo,
   MPI_Comm_rank(MPI_COMM_WORLD, &ownRank);
 
   std::stringstream ckptName;
-  ckptName << "timestep." << timeStepNo << "d";
+  ckptName << "timestep." << std::setw(4) << std::setfill('0') << timeStepNo
+           << "d";
   SCR_Start_output(ckptName.str().c_str(), SCR_FLAG_CHECKPOINT);
 
   std::stringstream checkpointDirStream;
