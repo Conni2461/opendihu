@@ -57,11 +57,13 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
     }
 
     if (writeMeta_) {
+      file->writeAttr("rawVersion", DihuContext::version());
       file->writeAttr("version", DihuContext::versionText());
       file->writeAttr("meta", DihuContext::metaText());
+      file->writeAttr("worldSize", DihuContext::nRanksCommWorld());
     }
     file->writeAttr("currentTime", this->currentTime_);
-    file->writeAttr("timeStepNo", this->timeStepNo_);
+    file->template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
 
     Control::PerformanceMeasurement::start("durationJson1D");
 
@@ -147,11 +149,13 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
 
     JsonUtils::File file = JsonUtils::File(s.str().c_str(), false);
     if (writeMeta_) {
+      file.writeAttr("rawVersion", DihuContext::version());
       file.writeAttr("version", DihuContext::versionText());
       file.writeAttr("meta", DihuContext::metaText());
+      file.writeAttr("worldSize", DihuContext::nRanksCommWorld());
     }
     file.writeAttr("currentTime", this->currentTime_);
-    file.writeAttr("timeStepNo", this->timeStepNo_);
+    file.template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
     for (const std::string &meshName : meshesToOutput) {
       JsonUtils::Group group = file.newGroup(meshName.c_str());
       // loop over all field variables and output those that are associated with
@@ -165,7 +169,7 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
 }
 
 namespace JsonUtils {
-template <typename T, std::enable_if_t<std::is_same<T, int>::value, bool>>
+template <typename T, std::enable_if_t<std::is_same<T, int32_t>::value, bool>>
 void File::writeAttr(const char *key, const T &v) {
   content_["__attributes"][key] = v;
 }
