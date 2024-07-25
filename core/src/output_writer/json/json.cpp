@@ -50,10 +50,9 @@ void Json::writeCombinedTypesVector(JsonUtils::Group &group, uint64_t nValues,
 
 namespace JsonUtils {
 File::File(const char *filename, bool mpiio)
-    : filename_(filename), mpiio_(mpiio), content_() {
-  MPI_Comm_size(MPI_COMM_WORLD, &worldSize_);
-  MPI_Comm_rank(MPI_COMM_WORLD, &ownRank_);
-}
+    : filename_(filename), mpiio_(mpiio), content_(),
+      ownRank_(DihuContext::ownRankNoCommWorld()),
+      worldSize_(DihuContext::nRanksCommWorld()) {}
 
 File::~File() {
   if (mpiio_) {
