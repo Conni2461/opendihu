@@ -8,7 +8,7 @@ Combined::Combined(DihuContext context,
     : Generic(), writer_(std::make_unique<OutputWriter::HDF5>(
                      context, PythonConfig(nullptr), rankSubset)) {
   writer_->setCombineFiles(true);
-  writer_->setWriteMeta(false);
+  writer_->setWriteMeta(true);
   writer_->setUseCheckpointData(true);
   writer_->setAsync(async);
 }
