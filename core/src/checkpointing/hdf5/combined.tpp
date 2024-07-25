@@ -12,7 +12,7 @@ void Combined::createCheckpoint(DataType &data, int timeStepNo,
   Control::PerformanceMeasurement::start("durationWriteCheckpoint");
 
   char ckpt_name[SCR_MAX_FILENAME];
-  snprintf(ckpt_name, sizeof(ckpt_name), "timestep.%d", timeStepNo);
+  snprintf(ckpt_name, sizeof(ckpt_name), "timestep.%04d", timeStepNo);
   SCR_Start_output(ckpt_name, SCR_FLAG_CHECKPOINT);
 
   char checkpoint_file[256];
@@ -34,6 +34,7 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
                        const std::string &checkpointToRestore) const {
   bool restarted = false;
   bool found = false;
+  int32_t attempt = 1;
   while (!restarted) {
     if (!autoRestore) {
       break;
@@ -90,13 +91,27 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
       break;
     }
 
-    LOG(DEBUG) << "Successfully restored checkpointing timeStepNo: " << step
-               << " | currentTime: " << newTime;
+    LOG(INFO) << "Successfully restored checkpointing timeStepNo: " << step
+              << " | currentTime: " << newTime;
     timeStepNo = step;
     currentTime = newTime;
 
     int rc = SCR_Complete_restart(valid);
     restarted = (rc == SCR_SUCCESS);
+
+    if (!restarted) {
+      if (attempt >= this->maxAttempt) {
+        LOG(FATAL) << "We were not able to Successfully restore the checkpoint "
+                      "on all ranks, only on some. Because of this we might a "
+                      "have broken state on some ranks and can't continue "
+                      "execution. Aborting application!";
+      }
+
+      LOG(ERROR) << "Fatal error, not all ranks were able to restore the "
+                    "checkpoint. Trying again. This was attempt: "
+                 << attempt << "/" << this->maxAttempt;
+      attempt++;
+    }
   }
 
   if (!restarted && found) {

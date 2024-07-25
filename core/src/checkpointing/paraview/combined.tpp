@@ -11,7 +11,7 @@ void Combined::createCheckpoint(DataType &data, int timeStepNo,
   Control::PerformanceMeasurement::start("durationWriteCheckpoint");
 
   char ckpt_name[SCR_MAX_FILENAME];
-  snprintf(ckpt_name, sizeof(ckpt_name), "timestep.%d", timeStepNo);
+  snprintf(ckpt_name, sizeof(ckpt_name), "timestep.%04d", timeStepNo);
   SCR_Start_output(ckpt_name, SCR_FLAG_CHECKPOINT);
 
   char checkpoint_file[256];
