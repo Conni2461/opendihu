@@ -54,6 +54,7 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
     int32_t have_restart = 0;
     SCR_Have_restart(&have_restart, ckpt_name);
     if (!have_restart) {
+      LOG(WARNING) << "We did not have a checkpoint to restart";
       break;
     }
 
@@ -62,28 +63,63 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
     SCR_Start_restart(checkpointing_dir);
 
     char scr_file[SCR_MAX_FILENAME];
+    int ret = 0;
     if (checkpointToRestore != "") {
-      SCR_Route_file(checkpointToRestore.c_str(), scr_file);
+      ret = SCR_Route_file(checkpointToRestore.c_str(), scr_file);
     } else {
-      SCR_Route_file(ckpt_name, scr_file);
+      ret = SCR_Route_file(ckpt_name, scr_file);
     }
 
-    if (!Path::fileExists(scr_file)) {
+    if (ret == 1) {
+      LOG(ERROR) << "File to restore not found.";
       break;
     }
 
     int valid = 1;
     InputReader::HDF5::Partial r(scr_file);
 
+    std::string rawVersion;
+    if (!r.hasAttribute("rawVersion") ||
+        !r.readAttr("rawVersion", rawVersion)) {
+      LOG(ERROR) << "rawVersion was not found in file, or we were not able to "
+                    "load this attribute";
+      break;
+    }
+
+    if (rawVersion != DihuContext::version()) {
+      LOG(ERROR) << "Checkpoint was created with a different OpenDiHu version "
+                    "and can not be restored! Current: "
+                 << DihuContext::version() << " checkpoint: " << rawVersion;
+      break;
+    }
+    int32_t worldSize;
+    if (!r.hasAttribute("worldSize") || !r.readAttr("worldSize", worldSize)) {
+      LOG(ERROR) << "worldSize was not found in file, or we were not able to "
+                    "load this attribute";
+      break;
+    }
+    if (worldSize != DihuContext::nRanksCommWorld()) {
+      LOG(ERROR) << "Checkpoint was created with a different worldSize and can "
+                    "not be restored! Current: "
+                 << DihuContext::nRanksCommWorld()
+                 << " checkpoint: " << worldSize;
+      break;
+    }
+
     int32_t step;
     double newTime;
     if (!r.hasAttribute("timeStepNo") || !r.readAttr("timeStepNo", step)) {
+      LOG(ERROR) << "timeStepNo was not found in file, or we were not able to "
+                    "load this attribute";
       break;
     }
     if (!r.hasAttribute("currentTime") || !r.readAttr("currentTime", newTime)) {
+      LOG(ERROR) << "currentTime was not found in file, or we were not able to "
+                    "load this attribute";
       break;
     }
     if (!data.restoreState(r)) {
+      LOG(ERROR) << "Failed to restore state data";
       break;
     }
 
