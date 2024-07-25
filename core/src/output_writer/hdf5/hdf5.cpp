@@ -48,10 +48,9 @@ herr_t HDF5::writeCombinedTypesVector(HDF5Utils::Group &group, uint64_t nValues,
 
 namespace HDF5Utils {
 File::File(const char *filename, bool mpiio)
-    : filename_(filename), mpiio_(mpiio), fileID_(-1) {
-  MPI_Comm_size(MPI_COMM_WORLD, &worldSize_);
-  MPI_Comm_rank(MPI_COMM_WORLD, &ownRank_);
-
+    : filename_(filename), mpiio_(mpiio), fileID_(-1),
+      ownRank_(DihuContext::ownRankNoCommWorld()),
+      worldSize_(DihuContext::nRanksCommWorld()) {
   if (mpiio_) {
     hid_t plist = H5Pcreate(H5P_FILE_ACCESS);
     herr_t err;
