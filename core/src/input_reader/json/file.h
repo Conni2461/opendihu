@@ -26,7 +26,7 @@ public:
   bool hasDataset(const char *name) const;
 
   //! Read a attribute on the root node and return it
-  template <typename T> T readAttr(const char *name) const;
+  template <typename T> bool readAttr(const char *name, T &out) const;
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
