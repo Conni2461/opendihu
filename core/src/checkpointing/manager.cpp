@@ -16,25 +16,26 @@ Manager::Manager(PythonConfig specificSettings)
           specificSettings.getOptionString("checkpointToRestore", "")) {}
 
 void Manager::initialize(DihuContext context) {
-  if (!checkpointing) {
-    if (type_ == "hdf5-combined") {
-      checkpointing =
-          std::make_shared<HDF5::Combined>(context, context.rankSubset());
-    } else if (type_ == "hdf5-independent") {
-      checkpointing = std::make_shared<HDF5::Independent>(
-          context, context.rankSubset(), this->prefix_);
-    } else if (type_ == "json-combined") {
-      checkpointing =
-          std::make_shared<Json::Combined>(context, context.rankSubset());
-    } else if (type_ == "json-independent") {
-      checkpointing = std::make_shared<Json::Independent>(
-          context, context.rankSubset(), this->prefix_);
-    } else {
-      LOG(ERROR) << "checkpointing type: " << type_
-                 << " is not a valid type. Make sure to either configure it "
-                    "with the type 'hdf5-combined', 'hdf5-independent', "
-                    "'json-combined' or 'json-independent'";
-    }
+  if (checkpointing) {
+    return;
+  }
+  if (type_ == "hdf5-combined") {
+    checkpointing =
+        std::make_shared<HDF5::Combined>(context, context.rankSubset());
+  } else if (type_ == "hdf5-independent") {
+    checkpointing = std::make_shared<HDF5::Independent>(
+        context, context.rankSubset(), this->prefix_);
+  } else if (type_ == "json-combined") {
+    checkpointing =
+        std::make_shared<Json::Combined>(context, context.rankSubset());
+  } else if (type_ == "json-independent") {
+    checkpointing = std::make_shared<Json::Independent>(
+        context, context.rankSubset(), this->prefix_);
+  } else {
+    LOG(ERROR) << "checkpointing type: " << type_
+               << " is not a valid type. Make sure to either configure it "
+                  "with the type 'hdf5-combined', 'hdf5-independent', "
+                  "'json-combined' or 'json-independent'";
   }
 }
 
