@@ -28,15 +28,15 @@ public:
   //! Read a i32 attribute on the root node and return it
   template <typename T,
             std::enable_if_t<std::is_same<T, int32_t>::value, bool> = true>
-  T readAttr(const char *name) const;
+  bool readAttr(const char *name, T &v) const;
   //! Read a double attribute on the root node and return it
   template <typename T,
             std::enable_if_t<std::is_same<T, double>::value, bool> = true>
-  T readAttr(const char *name) const;
+  bool readAttr(const char *name, T &v) const;
   //! Read a string attribute on the root node and return it
   template <typename T,
             std::enable_if_t<std::is_same<T, std::string>::value, bool> = true>
-  T readAttr(const char *name) const;
+  bool readAttr(const char *name, T &v) const;
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable

@@ -77,14 +77,10 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
 
     int32_t step;
     double newTime;
-    if (r.hasAttribute("timeStepNo")) {
-      step = r.template readAttr<int32_t>("timeStepNo");
-    } else {
+    if (!r.hasAttribute("timeStepNo") || !r.readAttr("timeStepNo", step)) {
       break;
     }
-    if (r.hasAttribute("currentTime")) {
-      newTime = r.template readAttr<double>("currentTime");
-    } else {
+    if (!r.hasAttribute("currentTime") || !r.readAttr("currentTime", newTime)) {
       break;
     }
     if (!data.restoreState(r)) {
