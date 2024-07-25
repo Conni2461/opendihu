@@ -74,7 +74,11 @@ public:
   //! return the python code that was used to create the config object
   static std::string pythonScriptText();
 
-  //! return a text specifying the version of this opendihu program
+  //! return a text only containing the version of this opendihu program
+  static std::string version();
+
+  //! return a text specifying the version of this opendihu program, including
+  //! the used compiler and more
   static std::string versionText();
 
   //! return a text giving meta information

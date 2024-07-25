@@ -164,7 +164,7 @@ public:
 
   //! Write a integer attribute to the root node with a given key
   template <typename T,
-            std::enable_if_t<std::is_same<T, int>::value, bool> = true>
+            std::enable_if_t<std::is_same<T, int32_t>::value, bool> = true>
   void writeAttr(const char *key, const T &v);
   //! Write a double attribute to the root node with a given key
   template <typename T,

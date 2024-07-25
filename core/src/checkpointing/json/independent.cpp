@@ -13,7 +13,7 @@ Independent::Independent(DihuContext context,
   }
 
   writer_->setCombineFiles(false);
-  writer_->setWriteMeta(false);
+  writer_->setWriteMeta(true);
   writer_->setUseCheckpointData(true);
 }
 } // namespace Json

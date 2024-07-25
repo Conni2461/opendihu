@@ -58,14 +58,18 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
 
     herr_t err;
     if (writeMeta_) {
+      err = file->writeAttr("rawVersion", DihuContext::version());
+      assert(err >= 0);
       err = file->writeAttr("version", DihuContext::versionText());
       assert(err >= 0);
       err = file->writeAttr("meta", DihuContext::metaText());
       assert(err >= 0);
+      err = file->writeAttr("worldSize", DihuContext::nRanksCommWorld());
+      assert(err >= 0);
     }
     err = file->writeAttr("currentTime", this->currentTime_);
     assert(err >= 0);
-    err = file->writeAttr("timeStepNo", this->timeStepNo_);
+    err = file->template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
     assert(err >= 0);
 
     Control::PerformanceMeasurement::start("durationHDF51D");
@@ -153,14 +157,18 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
     HDF5Utils::File file = HDF5Utils::File(s.str().c_str(), false);
     herr_t err;
     if (writeMeta_) {
+      err = file.writeAttr("rawVersion", DihuContext::version());
+      assert(err >= 0);
       err = file.writeAttr("version", DihuContext::versionText());
       assert(err >= 0);
       err = file.writeAttr("meta", DihuContext::metaText());
       assert(err >= 0);
+      err = file.writeAttr("worldSize", DihuContext::nRanksCommWorld());
+      assert(err >= 0);
     }
     err = file.writeAttr("currentTime", this->currentTime_);
     assert(err >= 0);
-    err = file.writeAttr("timeStepNo", this->timeStepNo_);
+    err = file.template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
     assert(err >= 0);
     for (const std::string &meshName : meshesToOutput) {
       HDF5Utils::Group group = file.newGroup(meshName.c_str());
@@ -175,7 +183,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
 }
 
 namespace HDF5Utils {
-template <typename T, std::enable_if_t<std::is_same<T, int>::value, bool>>
+template <typename T, std::enable_if_t<std::is_same<T, int32_t>::value, bool>>
 herr_t File::writeAttr(const char *key, const T &v) const {
   std::array<int32_t, 1> data = {(int32_t)v};
   return writeAttribute(fileID_, H5T_STD_I32LE, H5T_NATIVE_INT, 1, key,

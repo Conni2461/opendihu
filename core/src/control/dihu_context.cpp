@@ -456,11 +456,13 @@ PythonConfig DihuContext::getPythonConfig() const { return pythonConfig_; }
 
 std::string DihuContext::pythonScriptText() { return pythonScriptText_; }
 
+std::string DihuContext::version() { return "1.3"; }
+
 std::string DihuContext::versionText() {
   std::stringstream versionTextStr;
 
   versionTextStr
-      << "opendihu 1.3, built "
+      << "opendihu " << DihuContext::version() << ", built "
       << __DATE__; // << " " << __TIME__; // do not add time otherwise it wants
                    // to recompile this file every time
 #ifdef __cplusplus
