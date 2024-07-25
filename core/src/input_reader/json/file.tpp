@@ -2,8 +2,9 @@
 
 namespace InputReader {
 namespace Json {
-template <typename T> T File::readAttr(const char *name) const {
-  return content_["__attributes"][name].template get<T>();
+template <typename T> bool File::readAttr(const char *name, T &out) const {
+  out = content_["__attributes"][name].template get<T>();
+  return true;
 }
 } // namespace Json
 } // namespace InputReader
