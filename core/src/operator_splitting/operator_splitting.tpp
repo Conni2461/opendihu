@@ -197,10 +197,6 @@ void OperatorSplitting<TimeStepping1, TimeStepping2>::run() {
 #endif
 
   auto checkpointing = this->context_.getCheckpointing();
-  if (checkpointing) {
-    checkpointing->initialize(this->context_);
-  }
-
   // run simulation
   advanceTimeSpan(true, checkpointing);
 

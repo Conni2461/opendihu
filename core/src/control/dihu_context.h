@@ -87,7 +87,7 @@ public:
                    std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   //! return the top-level python config object
-  static std::shared_ptr<Checkpointing::Manager> getCheckpointing();
+  std::shared_ptr<Checkpointing::Manager> getCheckpointing() const;
 
   //! return the mesh manager object that contains all meshes
   static std::shared_ptr<Mesh::Manager> meshManager();
