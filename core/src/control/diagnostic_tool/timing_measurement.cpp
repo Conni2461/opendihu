@@ -2,15 +2,21 @@
 
 #include <stdlib.h>
 
+#define TimingMap                                                              \
+  std::map<int32_t, std::map<std::string, TimingMeasurement::Measurement>>
+
 namespace Control {
-std::map<int32_t, std::map<std::string, TimingMeasurement::Measurement>>
-    TimingMeasurement::measurements_;
+std::shared_ptr<TimingMap> TimingMeasurement::measurements_;
 
 void TimingMeasurement::start(int32_t timestep, const char *name) {
-  auto innerMap = measurements_.find(timestep);
+  if (!measurements_) {
+    measurements_ = std::make_shared<TimingMap>();
+  }
 
-  if (innerMap == measurements_.end()) {
-    auto insertedIter = measurements_.insert(
+  auto innerMap = measurements_->find(timestep);
+
+  if (innerMap == measurements_->end()) {
+    auto insertedIter = measurements_->insert(
         std::pair<int32_t, std::map<std::string, Measurement>>(timestep, {}));
     innerMap = insertedIter.first;
   }
@@ -21,11 +27,15 @@ void TimingMeasurement::start(int32_t timestep, const char *name) {
 }
 
 void TimingMeasurement::stop(int32_t timestep, const char *name) {
+  if (!measurements_) {
+    measurements_ = std::make_shared<TimingMap>();
+  }
+
   double stopTime = MPI_Wtime();
-  if (measurements_.find(timestep) == measurements_.end()) {
+  if (measurements_->find(timestep) == measurements_->end()) {
     return;
   }
-  auto &timeStepMeasurements = measurements_[timestep];
+  auto &timeStepMeasurements = (*measurements_)[timestep];
   if (timeStepMeasurements.find(name) == timeStepMeasurements.end()) {
     return;
   }
@@ -43,6 +53,10 @@ void TimingMeasurement::stop(int32_t timestep, const char *name) {
 }
 
 void TimingMeasurement::writeCSV(const char *filename) {
+  if (!measurements_) {
+    return;
+  }
+
   const char *fname = getenv("TIMING_FILENAME");
   int ownRankNo = DihuContext::ownRankNoCommWorld();
 
@@ -59,7 +73,7 @@ void TimingMeasurement::writeCSV(const char *filename) {
   std::stringstream data;
 
   bool headerSet = false;
-  for (const auto &tms : measurements_) {
+  for (const auto &tms : (*measurements_)) {
     if (!headerSet) {
       header << "timestep";
       for (const auto &m : tms.second) {
