@@ -29,6 +29,7 @@ private:
     bool set;
   };
 
-  static std::map<int32_t, std::map<std::string, Measurement>> measurements_;
+  static std::shared_ptr<std::map<int32_t, std::map<std::string, Measurement>>>
+      measurements_;
 };
 } // namespace Control
