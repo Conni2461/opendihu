@@ -609,6 +609,7 @@ DihuContext::~DihuContext() {
     writeSolverStructureDiagram();
     Control::StimulationLogging::writeLogFile();
     Control::PerformanceMeasurement::writeLogFile();
+    Control::TimingMeasurement::writeCSV();
     MappingBetweenMeshes::Manager::writeLogFile();
 
     // After a call to MPI_Finalize we cannot call MPI_Initialize() anymore.
@@ -625,8 +626,6 @@ DihuContext::~DihuContext() {
       if (megamolThread_)
         megamolThread_->join();
 #endif
-
-      Control::TimingMeasurement::writeCSV();
 
       // global barrier
       MPI_Barrier(MPI_COMM_WORLD);
