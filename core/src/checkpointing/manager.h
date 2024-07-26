@@ -11,7 +11,8 @@ class Manager {
 public:
   Manager(PythonConfig specificSettings);
 
-  void initialize(DihuContext context);
+  void initialize(DihuContext context,
+                  std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   template <typename DataType>
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,
