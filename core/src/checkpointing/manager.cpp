@@ -15,22 +15,21 @@ Manager::Manager(PythonConfig specificSettings)
       checkpointToRestore_(
           specificSettings.getOptionString("checkpointToRestore", "")) {}
 
-void Manager::initialize(DihuContext context) {
+void Manager::initialize(DihuContext context,
+                         std::shared_ptr<Partition::RankSubset> rankSubset) {
   if (checkpointing) {
     return;
   }
   if (type_ == "hdf5-combined") {
-    checkpointing =
-        std::make_shared<HDF5::Combined>(context, context.rankSubset());
+    checkpointing = std::make_shared<HDF5::Combined>(context, rankSubset);
   } else if (type_ == "hdf5-independent") {
-    checkpointing = std::make_shared<HDF5::Independent>(
-        context, context.rankSubset(), this->prefix_);
-  } else if (type_ == "json-combined") {
     checkpointing =
-        std::make_shared<Json::Combined>(context, context.rankSubset());
+        std::make_shared<HDF5::Independent>(context, rankSubset, this->prefix_);
+  } else if (type_ == "json-combined") {
+    checkpointing = std::make_shared<Json::Combined>(context, rankSubset);
   } else if (type_ == "json-independent") {
-    checkpointing = std::make_shared<Json::Independent>(
-        context, context.rankSubset(), this->prefix_);
+    checkpointing =
+        std::make_shared<Json::Independent>(context, rankSubset, this->prefix_);
   } else {
     LOG(ERROR) << "checkpointing type: " << type_
                << " is not a valid type. Make sure to either configure it "
