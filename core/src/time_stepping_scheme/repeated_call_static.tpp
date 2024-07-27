@@ -42,7 +42,7 @@ template <typename Solver> void RepeatedCallStatic<Solver>::initialize() {
 template <typename Solver>
 void RepeatedCallStatic<Solver>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // avoid that solver structure file is created, this should only be done after
   // the whole simulation has finished
   DihuContext::solverStructureVisualizer()->disable();

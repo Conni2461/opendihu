@@ -20,7 +20,7 @@ public:
   //! given numberTimeSteps
   virtual void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize solver
   void initialize();

@@ -33,7 +33,7 @@ MyNewTimesteppingSolver<TimeStepping>::MyNewTimesteppingSolver(
 template <typename TimeStepping>
 void MyNewTimesteppingSolver<TimeStepping>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // This method computes some time steps of the simulation by running a for

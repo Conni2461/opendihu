@@ -10,94 +10,94 @@
 
 namespace Checkpointing {
 template <typename DataType>
-void Manager::createCheckpoint(DataType &problemData, int timeStepNo,
-                               double currentTime) const {
+void Handle::createCheckpoint(DataType &problemData, int timeStepNo,
+                              double currentTime) const {
   Control::TimingMeasurement::start(timeStepNo, "checkpointing");
-  if (std::dynamic_pointer_cast<HDF5::Combined>(checkpointing) != nullptr) {
+  if (std::dynamic_pointer_cast<HDF5::Combined>(checkpointing_) != nullptr) {
     LogScope s("WriteCheckpointHDF5Combined");
     std::shared_ptr<HDF5::Combined> obj =
-        std::static_pointer_cast<HDF5::Combined>(checkpointing);
+        std::static_pointer_cast<HDF5::Combined>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<HDF5::Independent>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<HDF5::Independent>(checkpointing_) !=
              nullptr) {
     LogScope s("WriteCheckpointHDF5Independent");
     std::shared_ptr<HDF5::Independent> obj =
-        std::static_pointer_cast<HDF5::Independent>(checkpointing);
+        std::static_pointer_cast<HDF5::Independent>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<Json::Combined>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Json::Combined>(checkpointing_) !=
              nullptr) {
     LogScope s("WriteCheckpointJsonCombined");
     std::shared_ptr<Json::Combined> obj =
-        std::static_pointer_cast<Json::Combined>(checkpointing);
+        std::static_pointer_cast<Json::Combined>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<Json::Independent>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Json::Independent>(checkpointing_) !=
              nullptr) {
     LogScope s("WriteCheckpointJsonIndependent");
     std::shared_ptr<Json::Independent> obj =
-        std::static_pointer_cast<Json::Independent>(checkpointing);
+        std::static_pointer_cast<Json::Independent>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<Paraview::Combined>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Paraview::Combined>(checkpointing_) !=
              nullptr) {
     LogScope s("WriteCheckpointJsonIndependent");
     std::shared_ptr<Paraview::Combined> obj =
-        std::static_pointer_cast<Paraview::Combined>(checkpointing);
+        std::static_pointer_cast<Paraview::Combined>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing_) !=
              nullptr) {
     LogScope s("WriteCheckpointPythonIndependent");
     std::shared_ptr<Python::Independent> obj =
-        std::static_pointer_cast<Python::Independent>(checkpointing);
+        std::static_pointer_cast<Python::Independent>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
   }
   Control::TimingMeasurement::stop(timeStepNo, "checkpointing");
 }
 
 template <typename DataType>
-bool Manager::restore(DataType &problemData, int &timeStepNo,
-                      double &currentTime) const {
+bool Handle::restore(DataType &problemData, int &timeStepNo,
+                     double &currentTime) const {
   std::stringstream ss;
   if (this->checkpointToRestore_ != "") {
     ss << this->checkpointToRestore_;
   }
-  if (std::dynamic_pointer_cast<HDF5::Combined>(checkpointing) != nullptr) {
+  if (std::dynamic_pointer_cast<HDF5::Combined>(checkpointing_) != nullptr) {
     LogScope s("RestoreCheckpointHDF5Combined");
     std::shared_ptr<HDF5::Combined> obj =
-        std::static_pointer_cast<HDF5::Combined>(checkpointing);
+        std::static_pointer_cast<HDF5::Combined>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<HDF5::Independent>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<HDF5::Independent>(checkpointing_) !=
              nullptr) {
     LogScope s("RestoreCheckpointHDF5Independent");
     std::shared_ptr<HDF5::Independent> obj =
-        std::static_pointer_cast<HDF5::Independent>(checkpointing);
+        std::static_pointer_cast<HDF5::Independent>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<Json::Combined>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Json::Combined>(checkpointing_) !=
              nullptr) {
     LogScope s("RestoreCheckpointJsonCombined");
     std::shared_ptr<Json::Combined> obj =
-        std::static_pointer_cast<Json::Combined>(checkpointing);
+        std::static_pointer_cast<Json::Combined>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<Json::Independent>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Json::Independent>(checkpointing_) !=
              nullptr) {
     LogScope s("RestoreCheckpointJsonIndependent");
     std::shared_ptr<Json::Independent> obj =
-        std::static_pointer_cast<Json::Independent>(checkpointing);
+        std::static_pointer_cast<Json::Independent>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<Paraview::Combined>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Paraview::Combined>(checkpointing_) !=
              nullptr) {
     LogScope s("RestoreCheckpointParaviewCombined");
     std::shared_ptr<Paraview::Combined> obj =
-        std::static_pointer_cast<Paraview::Combined>(checkpointing);
+        std::static_pointer_cast<Paraview::Combined>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing) !=
+  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing_) !=
              nullptr) {
     LogScope s("RestoreCheckpointPythonIndependent");
     std::shared_ptr<Python::Independent> obj =
-        std::static_pointer_cast<Python::Independent>(checkpointing);
+        std::static_pointer_cast<Python::Independent>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
   }
