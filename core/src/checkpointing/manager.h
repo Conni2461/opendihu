@@ -7,23 +7,15 @@
 #include "checkpointing/generic.h"
 
 namespace Checkpointing {
+class Handle;
+
 class Manager {
 public:
   Manager(PythonConfig specificSettings);
 
-  void initialize(DihuContext context,
-                  std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
-
-  template <typename DataType>
-  void createCheckpoint(DataType &problemData, int timeStepNo = -1,
-                        double currentTime = 0.0) const;
-
-  template <typename DataType>
-  bool restore(DataType &problemData, int &timeStepNo,
-               double &currentTime) const;
-
-  bool needCheckpoint();
-  bool shouldExit();
+  std::shared_ptr<Handle>
+  initialize(DihuContext context,
+             std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   int32_t getInterval() const;
   const char *getPrefix() const;
@@ -37,9 +29,30 @@ private:
   std::string type_;
   bool autoRestore_; //! if set it restores if there is a checkpoint found
   std::string checkpointToRestore_;
-
-  std::shared_ptr<Generic> checkpointing;
 };
+
+class Handle {
+public:
+  Handle(std::shared_ptr<Generic> checkpointing, bool autoRestore,
+         const std::string &checkpointToRestore);
+
+  template <typename DataType>
+  void createCheckpoint(DataType &problemData, int timeStepNo = -1,
+                        double currentTime = 0.0) const;
+
+  template <typename DataType>
+  bool restore(DataType &problemData, int &timeStepNo,
+               double &currentTime) const;
+
+  bool needCheckpoint();
+  bool shouldExit();
+
+private:
+  std::shared_ptr<Generic> checkpointing_;
+  bool autoRestore_; //! if set it restores if there is a checkpoint found
+  std::string checkpointToRestore_;
+};
+
 } // namespace Checkpointing
 
 #include "checkpointing/manager.tpp"

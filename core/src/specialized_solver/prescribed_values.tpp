@@ -27,7 +27,7 @@ PrescribedValues<FunctionSpaceType, nComponents1,
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
     advanceTimeSpan(bool withOutputWritersEnabled,
-                    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+                    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement, the name of the output variable can be set by

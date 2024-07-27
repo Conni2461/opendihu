@@ -30,7 +30,7 @@ public:
   //! solution
   virtual void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr) = 0;
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr) = 0;
 
   virtual void initialize();
 

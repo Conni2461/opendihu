@@ -253,7 +253,7 @@ MultipleInstances<TimeSteppingScheme>::MultipleInstances(DihuContext context)
 template <typename TimeSteppingScheme>
 void MultipleInstances<TimeSteppingScheme>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
 
   // start duration measurement

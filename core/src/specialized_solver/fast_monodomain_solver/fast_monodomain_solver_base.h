@@ -82,7 +82,7 @@ public:
   //! run simulation for the specified timespan
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! call the output writer on the data object, output files will contain
   //! currentTime, with callCountIncrement !=1 output timesteps can be skipped
@@ -213,7 +213,7 @@ protected:
 
   //! compute the 0D-1D problem with Strang splitting
   void computeMonodomain(
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! check if the current point will be stimulated now
   bool isCurrentPointStimulated(int fiberDataNo, double currentTime,
