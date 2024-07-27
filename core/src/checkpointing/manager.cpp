@@ -17,12 +17,10 @@ Manager::Manager(PythonConfig specificSettings)
       checkpointToRestore_(
           specificSettings.getOptionString("checkpointToRestore", "")) {}
 
-void Manager::initialize(DihuContext context,
-                         std::shared_ptr<Partition::RankSubset> rankSubset) {
-  if (checkpointing) {
-    return;
-  }
-
+std::shared_ptr<Handle>
+Manager::initialize(DihuContext context,
+                    std::shared_ptr<Partition::RankSubset> rankSubset) {
+  std::shared_ptr<Generic> checkpointing = nullptr;
   if (type_ == "hdf5-combined") {
     checkpointing = std::make_shared<HDF5::Combined>(context, rankSubset);
   } else if (type_ == "hdf5-combined-async") {
@@ -49,20 +47,12 @@ void Manager::initialize(DihuContext context,
                   "with the type 'hdf5-combined', 'hdf5-independent', "
                   "'json-combined' or 'json-independent'";
   }
-}
-
-bool Manager::needCheckpoint() {
   if (checkpointing) {
-    return checkpointing->needCheckpoint();
+    return std::make_shared<Handle>(checkpointing, autoRestore_,
+                                    checkpointToRestore_);
+  } else {
+    return nullptr;
   }
-  return false;
-}
-
-bool Manager::shouldExit() {
-  if (checkpointing) {
-    return checkpointing->shouldExit();
-  }
-  return false;
 }
 
 int32_t Manager::getInterval() const { return interval_; }
@@ -70,4 +60,24 @@ const char *Manager::getPrefix() const { return prefix_.c_str(); }
 const std::string &Manager::getCheckpointToRestore() const {
   return checkpointToRestore_;
 }
+
+Handle::Handle(std::shared_ptr<Generic> checkpointing, bool autoRestore,
+               const std::string &checkpointToRestore)
+    : checkpointing_(checkpointing), autoRestore_(autoRestore),
+      checkpointToRestore_(checkpointToRestore) {}
+
+bool Handle::needCheckpoint() {
+  if (checkpointing_) {
+    return checkpointing_->needCheckpoint();
+  }
+  return false;
+}
+
+bool Handle::shouldExit() {
+  if (checkpointing_) {
+    return checkpointing_->shouldExit();
+  }
+  return false;
+}
+
 } // namespace Checkpointing

@@ -8,7 +8,7 @@ Dummy::Dummy(DihuContext context)
 
 void Dummy::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {}
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {}
 
 void Dummy::initialize() {
   // initialize() will be called before the simulation starts.

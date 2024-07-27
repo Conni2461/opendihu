@@ -42,7 +42,7 @@ template <typename Solver> void RepeatedCall<Solver>::initialize() {
 template <typename Solver>
 void RepeatedCall<Solver>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config
   if (this->durationLogKey_ != "")

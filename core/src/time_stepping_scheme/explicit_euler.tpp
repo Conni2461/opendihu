@@ -20,7 +20,7 @@ ExplicitEuler<DiscretizableInTime>::ExplicitEuler(DihuContext context)
 template <typename DiscretizableInTime>
 void ExplicitEuler<DiscretizableInTime>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   LOG_SCOPE_FUNCTION;
   // start duration measurement, the name of the output variable can be set by
   // "durationLogKey" in the config

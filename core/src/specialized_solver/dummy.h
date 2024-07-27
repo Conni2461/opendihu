@@ -27,7 +27,7 @@ public:
   //! advance simulation by the given time span [startTime_, endTime_]
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize time span from specificSettings_
   void initialize();

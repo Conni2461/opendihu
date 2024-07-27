@@ -43,7 +43,7 @@ public:
   //! time_stepping_scheme/00_time_stepping_scheme.h)
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize time span from specificSettings_
   void initialize();

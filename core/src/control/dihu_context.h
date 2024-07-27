@@ -24,7 +24,8 @@ extern bool GLOBAL_DEBUG;
 // forward declaration
 namespace Checkpointing {
 class Manager;
-}
+class Handle;
+} // namespace Checkpointing
 namespace Mesh {
 class Manager;
 }
@@ -91,7 +92,7 @@ public:
                    std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
 
   //! return the top-level python config object
-  std::shared_ptr<Checkpointing::Manager> getCheckpointing() const;
+  std::shared_ptr<Checkpointing::Handle> getCheckpointing() const;
 
   //! return the mesh manager object that contains all meshes
   static std::shared_ptr<Mesh::Manager> meshManager();
