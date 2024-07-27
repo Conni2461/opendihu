@@ -15,7 +15,7 @@ ExplicitEulerReduced<TimeSteppingExplicitType>::ExplicitEulerReduced(
 template <typename TimeSteppingExplicitType>
 void ExplicitEulerReduced<TimeSteppingExplicitType>::advanceTimeSpan(
     bool withOutputWritersEnabled,
-    std::shared_ptr<Checkpointing::Manager> checkpointing) {
+    std::shared_ptr<Checkpointing::Handle> checkpointing) {
   // compute timestep width
   double timeSpan = this->endTime_ - this->startTime_;
 

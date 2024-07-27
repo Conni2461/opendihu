@@ -512,12 +512,12 @@ int DihuContext::ownRankNo() { return rankSubset_->ownRankNo(); }
 
 int DihuContext::nRanksCommWorld() { return nRanksCommWorld_; }
 
-std::shared_ptr<Checkpointing::Manager> DihuContext::getCheckpointing() const {
+std::shared_ptr<Checkpointing::Handle> DihuContext::getCheckpointing() const {
   if (checkpointing_) {
-    checkpointing_->initialize(*this);
+    return checkpointing_->initialize(*this);
+  } else {
+    return nullptr;
   }
-
-  return checkpointing_;
 }
 
 std::shared_ptr<Mesh::Manager> DihuContext::meshManager() {

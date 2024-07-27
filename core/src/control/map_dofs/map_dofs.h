@@ -35,7 +35,7 @@ public:
   //! advance simulation by the given time span
   void advanceTimeSpan(
       bool withOutputWritersEnabled = true,
-      std::shared_ptr<Checkpointing::Manager> checkpointing = nullptr);
+      std::shared_ptr<Checkpointing::Handle> checkpointing = nullptr);
 
   //! initialize field variables and everything needed for the dofs mapping
   void initialize();
