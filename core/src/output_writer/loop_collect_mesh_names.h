@@ -57,6 +57,14 @@ typename std::enable_if<TypeUtility::isTuple<VectorType>::value, bool>::type
 collectMeshNames(VectorType currentFieldVariableGradient,
                  std::set<std::string> &meshNames);
 
+/** Loop body for a string element
+ */
+template <typename StringType>
+typename std::enable_if<std::is_same<StringType, std::string>::value,
+                        bool>::type
+collectMeshNames(StringType currentFieldVariableGradient,
+                 std::set<std::string> &meshNames);
+
 /**  Loop body for a pointer element
  */
 template <typename CurrentFieldVariableType>

@@ -70,6 +70,17 @@ collectMeshProperties(
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
     std::vector<std::string> &meshNamesVector, int i);
 
+/** Loop body for a string element
+ */
+template <typename StringType, typename FieldVariablesForOutputWriterType>
+typename std::enable_if<std::is_same<StringType, std::string>::value,
+                        bool>::type
+collectMeshProperties(
+    StringType currentFieldVariableGradient,
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector, int i);
+
 /**  Loop body for a pointer element
  */
 template <typename CurrentFieldVariableType,

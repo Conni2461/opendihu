@@ -70,6 +70,15 @@ collectMeshNames(TupleType currentFieldVariableTuple,
   return false; // do not break iteration
 }
 
+template <typename StringType>
+typename std::enable_if<std::is_same<StringType, std::string>::value,
+                        bool>::type
+collectMeshNames(StringType currentFieldVariableTuple,
+                 std::set<std::string> &meshNames) {
+  // Skip if we see a string
+  return false; // do not break iteration
+}
+
 // element i is a field variables with Mesh::CompositeOfDimension<D>
 template <typename CurrentFieldVariableType>
 typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,

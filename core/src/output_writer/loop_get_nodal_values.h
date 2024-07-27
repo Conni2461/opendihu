@@ -65,6 +65,16 @@ getNodalValues(VectorType currentFieldVariableGradient,
                std::set<std::string> meshNames,
                std::map<std::string, std::vector<double>> &values);
 
+/** Loop body for a string element
+ */
+template <typename StringType, typename FieldVariablesForOutputWriterType>
+typename std::enable_if<std::is_same<StringType, std::string>::value,
+                        bool>::type
+getNodalValues(StringType currentFieldVariableGradient,
+               const FieldVariablesForOutputWriterType &fieldVariables,
+               std::set<std::string> meshNames,
+               std::map<std::string, std::vector<double>> &values);
+
 /**  Loop body for a pointer element
  */
 template <typename CurrentFieldVariableType,

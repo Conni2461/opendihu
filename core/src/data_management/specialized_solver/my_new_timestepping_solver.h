@@ -76,6 +76,7 @@ public:
 
   //! field variables that will be output by checkpointing
   typedef std::tuple<
+      std::string,
       std::shared_ptr<VectorFieldVariableType>, // geometry, this always has to
                                                 // be the first field variable,
                                                 // such that the output writer

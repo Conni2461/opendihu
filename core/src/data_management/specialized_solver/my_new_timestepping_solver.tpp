@@ -136,6 +136,7 @@ typename MyNewTimesteppingSolver<
     FunctionSpaceType>::FieldVariablesForCheckpointing
 MyNewTimesteppingSolver<
     FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  return std::tuple_cat(std::tuple<std::string>("asdf_"),
+                        this->getFieldVariablesForOutputWriter());
 }
 } // namespace Data

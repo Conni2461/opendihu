@@ -179,6 +179,18 @@ collectMeshProperties(
   return false; // do not break iteration
 }
 
+template <typename StringType, typename FieldVariablesForOutputWriterType>
+typename std::enable_if<std::is_same<StringType, std::string>::value,
+                        bool>::type
+collectMeshProperties(
+    StringType currentFieldVariableTuple,
+    const FieldVariablesForOutputWriterType &fieldVariables,
+    std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
+    std::vector<std::string> &meshNamesVector, int i) {
+  // Skip if we see a string
+  return false; // do not break iteration
+}
+
 // element i is a field variables with Mesh::CompositeOfDimension<D>
 template <typename CurrentFieldVariableType,
           typename FieldVariablesForOutputWriterType>
