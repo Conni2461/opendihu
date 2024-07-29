@@ -24,8 +24,6 @@ public:
 
 private:
   std::unique_ptr<OutputWriter::HDF5> writer_;
-
-  std::string prefix_;
 };
 } // namespace HDF5
 } // namespace Checkpointing

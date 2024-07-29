@@ -3,6 +3,12 @@
 #include <scr.h>
 
 namespace Checkpointing {
+Generic::Generic(const std::string &prefix) : prefix_(prefix) {
+  if (prefix_ == "") {
+    prefix_ = ".";
+  }
+}
+
 bool Generic::needCheckpoint() {
   int32_t v;
   SCR_Need_checkpoint(&v);

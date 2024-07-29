@@ -34,7 +34,7 @@ private:
 class Handle {
 public:
   Handle(std::shared_ptr<Generic> checkpointing, bool autoRestore,
-         const std::string &checkpointToRestore);
+         const std::string &checkpointToRestore, const std::string &prefix);
 
   template <typename DataType>
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,
@@ -49,6 +49,7 @@ public:
 
 private:
   std::shared_ptr<Generic> checkpointing_;
+  std::string prefix_;
   bool autoRestore_; //! if set it restores if there is a checkpoint found
   std::string checkpointToRestore_;
 };

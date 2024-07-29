@@ -15,7 +15,8 @@ void Combined::createCheckpoint(DataType &data, int timeStepNo,
   SCR_Start_output(ckpt_name, SCR_FLAG_CHECKPOINT);
 
   char checkpoint_file[256];
-  sprintf(checkpoint_file, "states/timestep.%04d", timeStepNo);
+  sprintf(checkpoint_file, "%s/timestep.%04d", this->prefix_.c_str(),
+          timeStepNo);
 
   char scr_file[SCR_MAX_FILENAME];
   SCR_Route_file(checkpoint_file, scr_file);

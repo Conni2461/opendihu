@@ -7,7 +7,7 @@
 namespace Checkpointing {
 class Generic {
 public:
-  Generic() = default;
+  Generic(const std::string &prefix);
   virtual ~Generic() = default;
 
   bool needCheckpoint();
@@ -17,5 +17,6 @@ protected:
   virtual void initWriter(DihuContext context) const {}
 
   const int32_t maxAttempt = 3;
+  std::string prefix_;
 };
 } // namespace Checkpointing

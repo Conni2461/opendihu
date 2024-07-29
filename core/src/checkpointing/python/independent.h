@@ -24,8 +24,6 @@ public:
 
 private:
   std::unique_ptr<OutputWriter::PythonFile> writer_;
-
-  std::string prefix_;
 };
 } // namespace Python
 } // namespace Checkpointing
