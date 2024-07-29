@@ -24,8 +24,6 @@ public:
 
 private:
   std::unique_ptr<OutputWriter::Json> writer_;
-
-  std::string prefix_;
 };
 } // namespace Json
 } // namespace Checkpointing

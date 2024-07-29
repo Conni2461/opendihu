@@ -4,9 +4,9 @@ namespace Checkpointing {
 namespace HDF5 {
 Combined::Combined(DihuContext context,
                    std::shared_ptr<Partition::RankSubset> rankSubset,
-                   bool async)
-    : Generic(), writer_(std::make_unique<OutputWriter::HDF5>(
-                     context, PythonConfig(nullptr), rankSubset)) {
+                   const std::string &prefix, bool async)
+    : Generic(prefix), writer_(std::make_unique<OutputWriter::HDF5>(
+                           context, PythonConfig(nullptr), rankSubset)) {
   writer_->setCombineFiles(true);
   writer_->setWriteMeta(true);
   writer_->setUseCheckpointData(true);

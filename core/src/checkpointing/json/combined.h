@@ -11,7 +11,8 @@ namespace Json {
 class Combined : public Generic {
 public:
   Combined(DihuContext context,
-           std::shared_ptr<Partition::RankSubset> rankSubset = nullptr);
+           std::shared_ptr<Partition::RankSubset> rankSubset = nullptr,
+           const std::string &prefix = ".");
 
   template <typename DataType>
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,

@@ -12,7 +12,7 @@ class Combined : public Generic {
 public:
   Combined(DihuContext context,
            std::shared_ptr<Partition::RankSubset> rankSubset = nullptr,
-           bool async = false);
+           const std::string &prefix = ".", bool async = false);
 
   template <typename DataType>
   void createCheckpoint(DataType &problemData, int timeStepNo = -1,
