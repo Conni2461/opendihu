@@ -47,13 +47,17 @@ bool File::hasDataset(const char *name) const {
   return false;
 }
 
-herr_t File::readAttribute(const char *name, hid_t type, void *out) const {
+herr_t File::readAttribute(const char *name, void *out) const {
   hid_t attr = H5Aopen_name(fileID_, name);
   if (attr < 0) {
     return attr;
   }
-
-  herr_t err = H5Aread(attr, type, &out);
+  hid_t type = H5Aget_type(attr);
+  if (type < 0) {
+    H5Aclose(attr);
+    return type;
+  }
+  herr_t err = H5Aread(attr, type, out);
   if (err < 0) {
     H5Aclose(attr);
     return err;

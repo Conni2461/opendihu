@@ -57,9 +57,10 @@ protected:
   std::vector<Attribute> attributes_; //< cached attributes
 
 private:
-  //! Helper function that reads an attribute with a given name and type into a
-  //! output variable
-  herr_t readAttribute(const char *name, hid_t type, void *out) const;
+  //! Helper function that reads an attribute with a given name into a output
+  //! variable. The type is determined by reading it from the attribute metainfo
+  //! found in the file.
+  herr_t readAttribute(const char *name, void *out) const;
 };
 } // namespace HDF5
 } // namespace InputReader
