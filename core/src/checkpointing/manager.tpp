@@ -40,7 +40,7 @@ bool Handle::restore(DataType &problemData, int &timeStepNo,
                      double &currentTime) const {
   std::stringstream ss;
   if (this->checkpointToRestore_ != "") {
-    ss << this->checkpointToRestore_;
+    ss << this->prefix_ << "/" << this->checkpointToRestore_;
   }
   if (std::dynamic_pointer_cast<HDF5::Combined>(checkpointing_) != nullptr) {
     LogScope s("RestoreCheckpointHDF5Combined");

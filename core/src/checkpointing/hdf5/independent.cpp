@@ -5,13 +5,8 @@ namespace HDF5 {
 Independent::Independent(DihuContext context,
                          std::shared_ptr<Partition::RankSubset> rankSubset,
                          const std::string &prefix)
-    : Generic(), writer_(std::make_unique<OutputWriter::HDF5>(
-                     context, PythonConfig(nullptr), rankSubset)),
-      prefix_(prefix) {
-  if (prefix_ == "") {
-    prefix_ = ".";
-  }
-
+    : Generic(prefix), writer_(std::make_unique<OutputWriter::HDF5>(
+                           context, PythonConfig(nullptr), rankSubset)) {
   writer_->setCombineFiles(false);
   writer_->setWriteMeta(true);
   writer_->setUseCheckpointData(true);

@@ -20,12 +20,14 @@ Manager::initialize(DihuContext context,
                     std::shared_ptr<Partition::RankSubset> rankSubset) {
   std::shared_ptr<Generic> checkpointing = nullptr;
   if (type_ == "hdf5-combined") {
-    checkpointing = std::make_shared<HDF5::Combined>(context, rankSubset);
+    checkpointing =
+        std::make_shared<HDF5::Combined>(context, rankSubset, this->prefix_);
   } else if (type_ == "hdf5-independent") {
     checkpointing =
         std::make_shared<HDF5::Independent>(context, rankSubset, this->prefix_);
   } else if (type_ == "json-combined") {
-    checkpointing = std::make_shared<Json::Combined>(context, rankSubset);
+    checkpointing =
+        std::make_shared<Json::Combined>(context, rankSubset, this->prefix_);
   } else if (type_ == "json-independent") {
     checkpointing =
         std::make_shared<Json::Independent>(context, rankSubset, this->prefix_);
@@ -35,9 +37,10 @@ Manager::initialize(DihuContext context,
                   "with the type 'hdf5-combined', 'hdf5-independent', "
                   "'json-combined' or 'json-independent'";
   }
+
   if (checkpointing) {
     return std::make_shared<Handle>(checkpointing, autoRestore_,
-                                    checkpointToRestore_);
+                                    checkpointToRestore_, this->prefix_);
   } else {
     return nullptr;
   }
@@ -50,8 +53,9 @@ const std::string &Manager::getCheckpointToRestore() const {
 }
 
 Handle::Handle(std::shared_ptr<Generic> checkpointing, bool autoRestore,
-               const std::string &checkpointToRestore)
-    : checkpointing_(checkpointing), autoRestore_(autoRestore),
+               const std::string &checkpointToRestore,
+               const std::string &prefix)
+    : checkpointing_(checkpointing), prefix_(prefix), autoRestore_(autoRestore),
       checkpointToRestore_(checkpointToRestore) {}
 
 bool Handle::needCheckpoint() {
