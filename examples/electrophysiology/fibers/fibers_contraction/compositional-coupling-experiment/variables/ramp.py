@@ -6,7 +6,7 @@ scenario_name = "ramp"
 
 # time parameters
 # --------------------
-end_time = 100                    # [ms] end time of the simulation
+end_time = 10                    # [ms] end time of the simulation
 dt_0D = 2e-4                      # [ms] timestep width of ODEs (2e-3)
 dt_1D = 4e-4                      # [ms] timestep width of diffusion (4e-3)
 dt_splitting = 4e-4               # [ms] overall timestep width of strang splitting (4e-3)
