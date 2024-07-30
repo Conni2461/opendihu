@@ -19,5 +19,16 @@ public:
   //! Read a dataset of doubles in a flat vector passed in using an out variable
   virtual bool readDoubleVector(const char *name,
                                 std::vector<double> &out) const = 0;
+
+  //! Wrapper around readDoubleVector that reads maxSize items into a vector of
+  //! D dimensional arrays.
+  //! If the maxSize is set to -1, we will read the full vector into D
+  //! dimensions, otherwise maxSize % D == 0 is expected and this function will
+  //! return fales if this is not given.
+  template <int D>
+  bool readDoubleVecD(const char *name, ssize_t maxSize,
+                      std::vector<VecD<D>> &out) const;
 };
 } // namespace InputReader
+
+#include "input_reader/generic.tpp"

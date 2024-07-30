@@ -1,0 +1,37 @@
+#include "input_reader/generic.h"
+
+namespace InputReader {
+template <int D>
+bool Generic::readDoubleVecD(const char *name, ssize_t maxSize,
+                             std::vector<VecD<D>> &out) const {
+  if (maxSize >= 0) {
+    if (maxSize % D != 0) {
+      return false;
+    }
+  }
+
+  std::vector<double> values;
+  bool ret = this->readDoubleVector(name, values);
+  if (!ret) {
+    return ret;
+  }
+
+  if (maxSize < 0) {
+    maxSize = values.size();
+    if (maxSize % D != 0) {
+      return false;
+    }
+  }
+
+  out.reserve(maxSize / D);
+  for (size_t i = 0; i < maxSize; i += D) {
+    VecD<D> mat;
+    for (size_t j = 0; j < D; j++) {
+      mat[j] = values[i + j];
+    }
+    out.push_back(mat);
+  }
+
+  return true;
+}
+} // namespace InputReader
