@@ -120,7 +120,7 @@ bool Combined::restore(DataType &data, int &timeStepNo, double &currentTime,
       break;
     }
     if (!data.restoreState(r)) {
-      LOG(ERROR) << "Failed to restore state data";
+      LOG(FATAL) << "Failed to restore state data";
       break;
     }
 
