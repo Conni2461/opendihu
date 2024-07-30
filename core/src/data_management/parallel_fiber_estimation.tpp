@@ -41,14 +41,14 @@ bool ParallelFiberEstimation<FunctionSpaceType>::restoreState(
   std::vector<double> gradient;
   std::vector<double> dirichletValues;
   std::vector<double> jacobianConditionNumber;
-  if (!r.readDoubleVector(this->gradient_->name().c_str(), gradient)) {
+  if (!r.readDoubleVector(this->gradient_->uniqueName().c_str(), gradient)) {
     return false;
   }
-  if (!r.readDoubleVector(this->dirichletValues_->name().c_str(),
+  if (!r.readDoubleVector(this->dirichletValues_->uniqueName().c_str(),
                           dirichletValues)) {
     return false;
   }
-  if (!r.readDoubleVector(this->jacobianConditionNumber_->name().c_str(),
+  if (!r.readDoubleVector(this->jacobianConditionNumber_->uniqueName().c_str(),
                           jacobianConditionNumber)) {
     return false;
   }
@@ -71,11 +71,16 @@ void ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
+  this->gradient->setUniqueName("parallel_fiber_estimation_gradient");
   this->dirichletValues_ =
       this->functionSpace_->template createFieldVariable<1>("dirichletValues");
+  this->dirichletValues_->setUniqueName(
+      "parallel_fiber_estimation_dirichletValues");
   this->jacobianConditionNumber_ =
       this->functionSpace_->template createFieldVariable<1>(
           "jacobianConditionNumber");
+  this->jacobianConditionNumber_->setUniqueName(
+      "parallel_fiber_estimation_jacobianConditionNumber");
 }
 
 template <typename FunctionSpaceType>

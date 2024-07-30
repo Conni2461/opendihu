@@ -80,8 +80,8 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
     // create a PolyData file that combines all 1D meshes into one file
     {
       JsonUtils::Group group = file->newGroup("1D");
-      writePolyDataFile<FieldVariablesForOutputWriterType>(group, variables,
-                                                           combined1DMeshes);
+      writePolyDataFile<FieldVariablesForOutputWriterType>(
+          group, variables, combined1DMeshes, useCheckpointData_);
     }
 
     Control::PerformanceMeasurement::stop("durationJson1D");
@@ -91,7 +91,7 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
     {
       JsonUtils::Group group = file->newGroup("3D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          group, variables, combined3DMeshes, true);
+          group, variables, combined3DMeshes, true, useCheckpointData_);
     }
 
     Control::PerformanceMeasurement::stop("durationJson3D");
@@ -101,7 +101,7 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
     {
       JsonUtils::Group group = file->newGroup("2D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          group, variables, combined2DMeshes, false);
+          group, variables, combined2DMeshes, false, useCheckpointData_);
     }
 
     Control::PerformanceMeasurement::stop("durationJson2D");

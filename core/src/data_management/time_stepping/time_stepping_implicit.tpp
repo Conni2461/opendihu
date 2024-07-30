@@ -25,9 +25,13 @@ void TimeSteppingImplicit<FunctionSpaceType,
   this->boundaryConditionsRightHandSideSummand_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "boundaryConditionsRightHandSideSummand");
+  this->boundaryConditionsRightHandSideSummand_->setUniqueName(
+      "time_stepping_implicit_boundaryConditionsRightHandSideSummand");
   this->systemRightHandSide_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "systemRightHandSide");
+  this->systemRightHandSide_->setUniqueName(
+      "time_stepping_implicit_systemRightHandSide");
 
   this->debuggingName_ = "Implicit";
   VLOG(1) << "initial values "

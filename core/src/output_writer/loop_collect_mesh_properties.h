@@ -37,7 +37,7 @@ inline typename std::enable_if<
 loopCollectMeshProperties(
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector) {}
+    std::vector<std::string> &meshNamesVector, bool useUniqueName = false) {}
 
 /** Static recursive loop from 0 to number of entries in the tuple
  * Loop body
@@ -48,7 +48,7 @@ template <typename FieldVariablesForOutputWriterType, int i = 0>
     loopCollectMeshProperties(
         const FieldVariablesForOutputWriterType &fieldVariables,
         std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-        std::vector<std::string> &meshNamesVector);
+        std::vector<std::string> &meshNamesVector, bool useUniqueName = false);
 
 /** Loop body for a vector element
  */
@@ -58,7 +58,8 @@ collectMeshProperties(
     VectorType currentFieldVariableGradient,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i);
+    std::vector<std::string> &meshNamesVector, int i,
+    bool useUniqueName = false);
 
 /** Loop body for a tuple element
  */
@@ -68,7 +69,8 @@ collectMeshProperties(
     VectorType currentFieldVariableGradient,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i);
+    std::vector<std::string> &meshNamesVector, int i,
+    bool useUniqueName = false);
 
 /**  Loop body for a pointer element
  */
@@ -83,7 +85,8 @@ collectMeshProperties(
     CurrentFieldVariableType currentFieldVariable,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i);
+    std::vector<std::string> &meshNamesVector, int i,
+    bool useUniqueName = false);
 
 /** Loop body for a field variables with Mesh::CompositeOfDimension<D>
  */
@@ -95,7 +98,8 @@ collectMeshProperties(
     CurrentFieldVariableType currentFieldVariable,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i);
+    std::vector<std::string> &meshNamesVector, int i,
+    bool useUniqueName = false);
 
 } // namespace LoopOverTuple
 } // namespace OutputWriter

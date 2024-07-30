@@ -33,7 +33,8 @@ public:
 
 private:
   std::unique_ptr<OutputWriter::HDF5>
-      writer_; //< Constructed output writer that is used to create new checkpoints
+      writer_; //< Constructed output writer that is used to create new
+               // checkpoints
 };
 } // namespace HDF5
 } // namespace Checkpointing

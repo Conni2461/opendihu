@@ -45,6 +45,8 @@ void TimeSteppingHeun<FunctionSpaceType, nComponents>::createPetscObjects() {
   this->algebraicIncrement_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "algebraicIncrement");
+  this->algebraicIncrement_->setUniqueName(
+      "time_stepping_heun_algebraicIncrement");
 }
 
 template <typename FunctionSpaceType, int nComponents>

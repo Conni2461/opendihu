@@ -24,7 +24,8 @@ template <typename FunctionSpaceType, typename FunctionSpaceFatType>
 bool MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> phi_b;
-  if (!r.readDoubleVector(extraCellularPotentialFat_->name().c_str(), phi_b)) {
+  if (!r.readDoubleVector(extraCellularPotentialFat_->uniqueName().c_str(),
+                          phi_b)) {
     return false;
   }
 
@@ -40,6 +41,7 @@ void MultidomainWithFat<FunctionSpaceType,
 
   this->extraCellularPotentialFat_ =
       this->functionSpace_->template createFieldVariable<1>("phi_b");
+  this->extraCellularPotentialFat_->setUniqueName("multidomain_with_fat_phi_b");
 }
 
 //! initialize the function space

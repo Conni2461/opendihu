@@ -58,7 +58,7 @@ bool MapDofs<FunctionSpaceType, NestedSolverType>::restoreState(
   std::vector<std::vector<double>> stateData;
   stateData.resize(additionalFieldVariables_.size());
   for (size_t i = 0; i < additionalFieldVariables_.size(); i++) {
-    if (!r.readDoubleVector(additionalFieldVariables_[i]->name().c_str(),
+    if (!r.readDoubleVector(additionalFieldVariables_[i]->uniqueName().c_str(),
                             stateData[i])) {
       return false;
     }
@@ -76,6 +76,7 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::createPetscObjects() {
     name << "additionalFieldVariable" << i;
     std::shared_ptr<FieldVariableType> additionalFieldVariable =
         this->functionSpace_->template createFieldVariable<1>(name.str());
+    additionalFieldVariable->setUniqueName("control_map_dofs_" + name.str());
 
     additionalFieldVariables_.push_back(additionalFieldVariable);
   }

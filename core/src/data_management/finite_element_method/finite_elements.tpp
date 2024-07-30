@@ -72,6 +72,7 @@ void FiniteElements<FunctionSpaceType, nComponents, Term,
 
   referenceGeometry_ = this->functionSpace_->template createFieldVariable<3>(
       "referenceGeometry");
+  referenceGeometry_->setUniqueName("finite_elements_referenceGeometry");
   referenceGeometry_->setValues(this->functionSpace_->geometryField());
 }
 

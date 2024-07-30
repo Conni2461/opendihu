@@ -29,8 +29,14 @@ public:
   //! get the name of the field variable
   std::string name() const;
 
+  //! return the unique name of the component
+  std::string uniqueName() const;
+
   //! set the name of the field variable
   void setName(std::string name);
+
+  //! assign the uniqueName of the component
+  void setUniqueName(const std::string &uniqueName);
 
   //! if the field has the flag "geometry field", i.e. in the exelem file its
   //! type was specified as "coordinate"
@@ -157,6 +163,7 @@ protected:
       functionSpace_; //< the mesh/function_space for which the field variable
                       // is defined
   std::string name_;  //< name of the field variable
+  std::string uniqueName_; //< unique name of the field variable
 };
 
 // output operator

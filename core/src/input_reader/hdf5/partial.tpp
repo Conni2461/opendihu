@@ -8,6 +8,7 @@ bool Partial::readDataset(const char *name, hid_t memTypeId,
   const herr_t RANK = 1;
 
   const std::string *fullName = getFullDatasetName(name);
+  LOG(INFO) << "reading: " << name << " | fullname: " << fullName;
   if (!fullName) {
     return false;
   }

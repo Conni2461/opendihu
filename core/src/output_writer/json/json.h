@@ -34,7 +34,8 @@ public:
   void
   writePolyDataFile(JsonUtils::Group &group,
                     const FieldVariablesForOutputWriterType &fieldVariables,
-                    std::set<std::string> &combinedMeshesOut);
+                    std::set<std::string> &combinedMeshesOut,
+                    bool useUniqueName = false);
 
   //! write all data of all 3D or 2D field ! variables (depending on
   //! output3DMeshes) into a group. This is uses MPI IO. It can be enabled with
@@ -44,7 +45,8 @@ public:
   void writeCombinedUnstructuredGridFile(
       JsonUtils::Group &group,
       const FieldVariablesForOutputWriterType &fieldVariables,
-      std::set<std::string> &combinedMeshesOut, bool output3DMeshes);
+      std::set<std::string> &combinedMeshesOut, bool output3DMeshes,
+      bool useUniqueName = false);
 
   //! Enable or disable combine files option
   void setCombineFiles(bool v);
@@ -102,7 +104,8 @@ private:
       PolyDataPropertiesForMesh &polyDataPropertiesForMesh,
       const std::map<std::string, PolyDataPropertiesForMesh>
           &meshPropertiesUnstructuredGridFile,
-      std::vector<std::string> meshNames, bool meshPropertiesInitialized);
+      std::vector<std::string> meshNames, bool meshPropertiesInitialized,
+      bool useUniqueName = false);
 
   bool combineFiles_; //< if set everything is combined into a single file
   bool writeMeta_;    //< if set, additional metadata is written to attributes

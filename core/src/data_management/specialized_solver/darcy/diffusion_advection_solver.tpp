@@ -95,10 +95,10 @@ template <typename FunctionSpaceType>
 bool DiffusionAdvectionSolver<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> solution, increment;
-  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
   }
-  if (!r.readDoubleVector(this->increment_->name().c_str(), increment)) {
+  if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment)) {
     return false;
   }
   this->solution_->setValues(solution);
@@ -121,8 +121,10 @@ void DiffusionAdvectionSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->solution_ =
       this->functionSpace_->template createFieldVariable<1>("solution");
+  this->solution_->setUniqueName("diffusion_advection_solver_solution");
   this->increment_ =
       this->functionSpace_->template createFieldVariable<1>("increment");
+  this->increment_->setUniqueName("diffusion_advection_solver_increment");
 
   // create PETSc matrix object
 

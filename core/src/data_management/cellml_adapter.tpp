@@ -272,13 +272,15 @@ template <int nStates, int nAlgebraics, typename FunctionSpaceType>
 bool CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> algebraics, states, parameters;
-  if (!r.readDoubleVector(this->algebraics_->name().c_str(), algebraics)) {
+  if (!r.readDoubleVector(this->algebraics_->uniqueName().c_str(),
+                          algebraics)) {
     return false;
   }
-  if (!r.readDoubleVector(this->states_->name().c_str(), states)) {
+  if (!r.readDoubleVector(this->states_->uniqueName().c_str(), states)) {
     return false;
   }
-  if (!r.readDoubleVector(this->parameters_->name().c_str(), parameters)) {
+  if (!r.readDoubleVector(this->parameters_->uniqueName().c_str(),
+                          parameters)) {
     return false;
   }
 
@@ -302,6 +304,7 @@ void CellmlAdapter<nStates, nAlgebraics,
   this->algebraics_ =
       this->functionSpace_->template createFieldVariable<nAlgebraics>(
           "algebraics", algebraicNames_);
+  this->algebraics_->setUniqueName("cellml_adapter_algebraics");
   this->algebraics_->setRepresentationContiguous();
 
   std::vector<std::string> parameterNames;
@@ -330,6 +333,7 @@ void CellmlAdapter<nStates, nAlgebraics,
   this->parameters_ =
       this->functionSpace_->template createFieldVariable<nAlgebraics>(
           "parameters", parameterNames);
+  this->parameters_->setUniqueName("cellml_adapter_parameters");
 }
 
 //! return a reference to the parameters vector

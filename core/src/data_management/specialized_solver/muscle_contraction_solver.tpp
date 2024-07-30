@@ -52,34 +52,35 @@ bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> lambda, lambdaDot, gamma, displacements, velocities,
       activePK2Stress, pK2Stress, fiberDirection, materialTraction;
-  if (!r.readDoubleVector(this->gamma_->name().c_str(), gamma)) {
+  if (!r.readDoubleVector(this->gamma_->uniqueName().c_str(), gamma)) {
     return false;
   }
-  if (!r.readDoubleVector(this->lambda_->name().c_str(), lambda)) {
+  if (!r.readDoubleVector(this->lambda_->uniqueName().c_str(), lambda)) {
     return false;
   }
-  if (!r.readDoubleVector(this->lambdaDot_->name().c_str(), lambdaDot)) {
+  if (!r.readDoubleVector(this->lambdaDot_->uniqueName().c_str(), lambdaDot)) {
     return false;
   }
-  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+  if (!r.readDoubleVector(this->displacements_->uniqueName().c_str(),
                           displacements)) {
     return false;
   }
-  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+  if (!r.readDoubleVector(this->velocities_->uniqueName().c_str(),
+                          velocities)) {
     return false;
   }
-  if (!r.readDoubleVector(this->activePK2Stress_->name().c_str(),
+  if (!r.readDoubleVector(this->activePK2Stress_->uniqueName().c_str(),
                           activePK2Stress)) {
     return false;
   }
-  if (!r.readDoubleVector(this->pK2Stress_->name().c_str(), pK2Stress)) {
+  if (!r.readDoubleVector(this->pK2Stress_->uniqueName().c_str(), pK2Stress)) {
     return false;
   }
-  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
                           fiberDirection)) {
     return false;
   }
-  if (!r.readDoubleVector(this->materialTraction_->name().c_str(),
+  if (!r.readDoubleVector(this->materialTraction_->uniqueName().c_str(),
                           materialTraction)) {
     return false;
   }
@@ -105,9 +106,12 @@ void MuscleContractionSolver<FunctionSpaceType>::createPetscObjects() {
   // The string is the name of the field variable. It will also be used in the
   // VTK output files.
   this->gamma_ = this->functionSpace_->template createFieldVariable<1>("γ");
+  this->gamma_->setUniqueName("muscle_contraction_solver_γ");
   this->lambda_ = this->functionSpace_->template createFieldVariable<1>("λ");
+  this->lambda_->setUniqueName("muscle_contraction_solver_λ");
   this->lambdaDot_ =
       this->functionSpace_->template createFieldVariable<1>("λdot");
+  this->lambdaDot_->setUniqueName("muscle_contraction_solver_λdot");
 }
 
 template <typename FunctionSpaceType>

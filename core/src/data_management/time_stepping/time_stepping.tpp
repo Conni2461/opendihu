@@ -35,16 +35,31 @@ TimeStepping<FunctionSpaceType, nComponents>::~TimeStepping() {
 template <typename FunctionSpaceType, int nComponents>
 bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
     const InputReader::Generic &r) {
+  LOG(INFO) << "here once: " << this;
   std::vector<double> solution, increment;
-  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
   }
-  if (!r.readDoubleVector(this->increment_->name().c_str(), increment)) {
-    return false;
-  }
-  this->solution_->setValues(solution);
-  this->increment_->setValues(increment);
-  // TODO(conni2461): restore geometry, increment, additionalFieldVariables_
+  // TODO(conni2461): restore geometry
+  // if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment))
+  // {
+  //   return false;
+  // }
+  // std::vector<std::vector<double>> additionalValues;
+  // for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+  //   std::vector<double> additional;
+  //   if
+  //   (!r.readDoubleVector(this->additionalFieldVariables_[i]->uniqueName().c_str(),
+  //   additional)) {
+  //     return false;
+  //   }
+  //   additionalValues.push_back(additional);
+  // }
+  // this->solution_->setValues(solution);
+  // // this->increment_->setValues(increment);
+  // for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+  //   this->additionalFieldVariables_[i]->setValues(additionalValues[i]);
+  // }
   return true;
 }
 
@@ -60,18 +75,22 @@ void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
     this->solution_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "solution");
+    this->solution_->setUniqueName("time_stepping_solution");
     this->increment_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "increment");
+    this->increment_->setUniqueName("time_stepping_increment");
   } else {
     // if there are component names stored, use them for construction of the
     // field variables
     this->solution_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "solution", componentNames_);
+    this->solution_->setUniqueName("time_stepping_solution");
     this->increment_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "increment", componentNames_);
+    this->increment_->setUniqueName("time_stepping_increment");
   }
 
   slotConnectorData_ = std::make_shared<SlotConnectorDataType>();
@@ -88,6 +107,7 @@ void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
     name << "additionalFieldVariable" << i;
     additionalFieldVariables_[i] =
         this->functionSpace_->template createFieldVariable<1>(name.str());
+    additionalFieldVariables_[i]->setUniqueName("time_stepping_" + name.str());
 
     slotConnectorData_->addFieldVariable2(additionalFieldVariables_[i]);
     LOG(DEBUG) << "  add field variable " << name.str();

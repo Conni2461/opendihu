@@ -42,7 +42,7 @@ template <typename FunctionSpaceType, typename BaseDataType>
 bool StreamlineTracer<FunctionSpaceType, BaseDataType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> gradient;
-  if (!r.readDoubleVector(this->gradient_->name().c_str(), gradient)) {
+  if (!r.readDoubleVector(this->gradient_->uniqueName().c_str(), gradient)) {
     return false;
   }
   this->gradient_->setValues(gradient);
@@ -60,6 +60,7 @@ void StreamlineTracer<FunctionSpaceType, BaseDataType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
+  this->gradient_->setUniqueName("StreamlineTracerGradient");
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>

@@ -56,10 +56,10 @@ bool MyNewTimesteppingSolver<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> a, b;
   // std::vector<std::array<double, 3>> geometry;
-  if (!r.readDoubleVector(this->fieldVariableA_->name().c_str(), a)) {
+  if (!r.readDoubleVector(this->fieldVariableA_->uniqueName().c_str(), a)) {
     return false;
   }
-  if (!r.readDoubleVector(this->fieldVariableB_->name().c_str(), b)) {
+  if (!r.readDoubleVector(this->fieldVariableB_->uniqueName().c_str(), b)) {
     return false;
   }
   // if (!r.readNestedDoubleVector<3>(
@@ -85,8 +85,10 @@ void MyNewTimesteppingSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->fieldVariableA_ =
       this->functionSpace_->template createFieldVariable<1>("a");
+  this->fieldVariableA_->setUniqueName("my_new_timestepping_solver_a");
   this->fieldVariableB_ =
       this->functionSpace_->template createFieldVariable<3>("b");
+  this->fieldVariableB_->setUniqueName("my_new_timestepping_solver_b");
 }
 
 // ... add a "getter" method for each fieldvariable with the same name as the

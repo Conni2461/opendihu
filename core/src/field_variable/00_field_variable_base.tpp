@@ -20,11 +20,23 @@ std::string FieldVariableBaseFunctionSpace<FunctionSpaceType>::name() const {
   return this->name_;
 }
 
+template <typename FunctionSpaceType>
+std::string
+FieldVariableBaseFunctionSpace<FunctionSpaceType>::uniqueName() const {
+  return this->uniqueName_;
+}
+
 //! set the name of the field variable
 template <typename FunctionSpaceType>
 void FieldVariableBaseFunctionSpace<FunctionSpaceType>::setName(
     std::string name) {
   this->name_ = name;
+}
+
+template <typename FunctionSpaceType>
+void FieldVariableBaseFunctionSpace<FunctionSpaceType>::setUniqueName(
+    const std::string &name) {
+  this->uniqueName_ = name;
 }
 
 template <typename FunctionSpaceType>

@@ -35,7 +35,8 @@ inline typename std::enable_if<
     i == std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
 loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
                    std::set<std::string> meshNames,
-                   std::map<std::string, std::vector<double>> &values) {}
+                   std::map<std::string, std::vector<double>> &values,
+                   bool useUniqueName = false) {}
 
 /** Static recursive loop from 0 to number of entries in the tuple
  * Loop body
@@ -45,7 +46,8 @@ template <typename FieldVariablesForOutputWriterType, int i = 0>
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
     loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
                        std::set<std::string> meshNames,
-                       std::map<std::string, std::vector<double>> &values);
+                       std::map<std::string, std::vector<double>> &values,
+                       bool useUniqueName = false);
 
 /** Loop body for a vector element
  */
@@ -54,7 +56,8 @@ typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
 getNodalValues(VectorType currentFieldVariableGradient,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName = false);
 
 /** Loop body for a tuple element
  */
@@ -63,7 +66,8 @@ typename std::enable_if<TypeUtility::isTuple<VectorType>::value, bool>::type
 getNodalValues(VectorType currentFieldVariableGradient,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName = false);
 
 /**  Loop body for a pointer element
  */
@@ -77,7 +81,8 @@ typename std::enable_if<
 getNodalValues(CurrentFieldVariableType currentFieldVariable,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName = false);
 
 /** Loop body for a field variables with Mesh::CompositeOfDimension<D>
  */
@@ -88,7 +93,8 @@ typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
 getNodalValues(CurrentFieldVariableType currentFieldVariable,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values);
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName = false);
 
 } // namespace LoopOverTuple
 } // namespace OutputWriter
