@@ -42,7 +42,7 @@ protected:
   std::vector<Object> datasets_;      //< cached datasets
   std::vector<Attribute> attributes_; //< cached attributes
 
-  nlohmann::json content_;
+  nlohmann::json content_; //< Parsed content of the json file
 };
 } // namespace Json
 } // namespace InputReader
