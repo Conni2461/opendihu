@@ -13,7 +13,7 @@ template <typename FieldVariablesForOutputWriterType>
 void Json::writePolyDataFile(
     JsonUtils::Group &group,
     const FieldVariablesForOutputWriterType &fieldVariables,
-    std::set<std::string> &meshNames) {
+    std::set<std::string> &meshNames, bool useUniqueName) {
   bool meshPropertiesInitialized = !meshPropertiesPolyDataFile_.empty();
   std::vector<std::string> meshNamesVector;
 
@@ -23,7 +23,8 @@ void Json::writePolyDataFile(
     // collect the size data that is needed to compute offsets for parallel file
     // output
     LoopOverTuple::loopCollectMeshProperties<FieldVariablesForOutputWriterType>(
-        fieldVariables, meshPropertiesPolyDataFile_, meshNamesVector);
+        fieldVariables, meshPropertiesPolyDataFile_, meshNamesVector,
+        useUniqueName);
 
     Control::PerformanceMeasurement::stop("durationJson1DInit");
   }
@@ -175,7 +176,8 @@ void Json::writePolyDataFile(
   // collect all data for the field variables, organized by field variable names
   std::map<std::string, std::vector<double>> fieldVariableValues;
   LoopOverTuple::loopGetNodalValues<FieldVariablesForOutputWriterType>(
-      fieldVariables, piece1D_.meshNamesCombinedMeshes, fieldVariableValues);
+      fieldVariables, piece1D_.meshNamesCombinedMeshes, fieldVariableValues,
+      useUniqueName);
 
   assert(!fieldVariableValues.empty());
   fieldVariableValues["partitioning"].resize(

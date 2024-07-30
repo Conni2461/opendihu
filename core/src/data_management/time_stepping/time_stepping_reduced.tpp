@@ -82,8 +82,10 @@ void TimeSteppingReduced<functionSpaceRowsType>::createPetscObjects() {
   this->redSolution_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "redSolution");
+  this->redSolution_->setUniqueName("time_stepping_reduced_redSolution");
   this->redIncrement_ = std::static_pointer_cast<FieldVariableType>(
       this->functionSpace_->createFieldVariable("redIncrement", 1));
+  this->redIncrement_->setUniqueName("time_stepping_reduced_redIncrement");
 
   // get the partitioning from the function space
   std::shared_ptr<Partition::MeshPartition<functionSpaceRowsType>>

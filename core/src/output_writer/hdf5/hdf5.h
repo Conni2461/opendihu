@@ -34,7 +34,8 @@ public:
   void
   writePolyDataFile(HDF5Utils::Group &group,
                     const FieldVariablesForOutputWriterType &fieldVariables,
-                    std::set<std::string> &combinedMeshesOut);
+                    std::set<std::string> &combinedMeshesOut,
+                    bool useUniqueName = false);
 
   //! write all data of all 3D or 2D field ! variables (depending on
   //! output3DMeshes) into a group. This is uses MPI IO. It can be enabled with
@@ -44,7 +45,8 @@ public:
   void writeCombinedUnstructuredGridFile(
       HDF5Utils::Group &group,
       const FieldVariablesForOutputWriterType &fieldVariables,
-      std::set<std::string> &combinedMeshesOut, bool output3DMeshes);
+      std::set<std::string> &combinedMeshesOut, bool output3DMeshes,
+      bool useUniqueName = false);
 
   //! Enable or disable combine files option
   void setCombineFiles(bool v);
@@ -104,7 +106,8 @@ private:
       PolyDataPropertiesForMesh &polyDataPropertiesForMesh,
       const std::map<std::string, PolyDataPropertiesForMesh>
           &meshPropertiesUnstructuredGridFile,
-      std::vector<std::string> meshNames, bool meshPropertiesInitialized);
+      std::vector<std::string> meshNames, bool meshPropertiesInitialized,
+      bool useUniqueName = false);
 
   bool combineFiles_; //< if set everything is combined into a single file
   bool writeMeta_;    //< if set, additional metadata is written to attributes
@@ -204,6 +207,9 @@ public:
 
   //! Create a new Group inside the current group, nested groups
   Group newGroup(const char *name) const;
+
+  //! returns true if the dataset already exists
+  bool exists(const std::string &dsname) const;
 
   //! write a dataset with a specific name to the current Group
   template <typename T>

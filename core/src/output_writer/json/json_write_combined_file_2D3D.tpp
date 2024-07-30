@@ -13,7 +13,7 @@ template <typename FieldVariablesForOutputWriterType>
 void Json::writeCombinedUnstructuredGridFile(
     JsonUtils::Group &group,
     const FieldVariablesForOutputWriterType &fieldVariables,
-    std::set<std::string> &meshNames, bool output3DMeshes) {
+    std::set<std::string> &meshNames, bool output3DMeshes, bool useUniqueName) {
   std::map<std::string, PolyDataPropertiesForMesh>
       &meshPropertiesUnstructuredGridFile_ =
           (output3DMeshes ? meshPropertiesUnstructuredGridFile3D_
@@ -28,7 +28,8 @@ void Json::writeCombinedUnstructuredGridFile(
     // collect the size data that is needed to compute offsets for parallel file
     // output
     LoopOverTuple::loopCollectMeshProperties<FieldVariablesForOutputWriterType>(
-        fieldVariables, meshPropertiesUnstructuredGridFile_, meshNamesVector);
+        fieldVariables, meshPropertiesUnstructuredGridFile_, meshNamesVector,
+        useUniqueName);
 
     Control::PerformanceMeasurement::stop("durationJson3DInit");
   }
@@ -162,7 +163,8 @@ void Json::writeCombinedUnstructuredGridFile(
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
           group, fieldVariables, piece3D_.properties,
           meshPropertiesUnstructuredGridFile_,
-          piece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized);
+          piece3D_.meshNamesCombinedMeshesVector, meshPropertiesInitialized,
+          useUniqueName);
     } else {
       VLOG(1) << "skip meshes " << piece3D_.meshNamesCombinedMeshes
               << " because " << piece3D_.properties.dimensionality
@@ -199,7 +201,7 @@ void Json::writeCombinedUnstructuredGridFile(
     writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
         group2, fieldVariables, polyDataPropertiesForMesh,
         meshPropertiesUnstructuredGridFile_, currentMesh,
-        meshPropertiesInitialized);
+        meshPropertiesInitialized, useUniqueName);
 
     // for the next meshes, reinitialize, the initialized information can only
     // be shared if there is exactly 1 mesh to write in this method
@@ -214,7 +216,8 @@ void Json::writeCombinedUnstructuredGridFile(
     PolyDataPropertiesForMesh &polyDataPropertiesForMesh,
     const std::map<std::string, PolyDataPropertiesForMesh>
         &meshPropertiesUnstructuredGridFile,
-    std::vector<std::string> meshNames, bool meshPropertiesInitialized) {
+    std::vector<std::string> meshNames, bool meshPropertiesInitialized,
+    bool useUniqueName) {
   int targetDimensionality = polyDataPropertiesForMesh.dimensionality;
   bool output3DMeshes = targetDimensionality == 3;
 
@@ -525,7 +528,7 @@ void Json::writeCombinedUnstructuredGridFile(
   // collect all data for the field variables, organized by field variable names
   std::map<std::string, std::vector<double>> fieldVariableValues;
   LoopOverTuple::loopGetNodalValues<FieldVariablesForOutputWriterType>(
-      fieldVariables, meshNamesSet, fieldVariableValues);
+      fieldVariables, meshNamesSet, fieldVariableValues, useUniqueName);
 
   if (!meshPropertiesInitialized) {
     // if next assertion fails, output why for debugging

@@ -71,12 +71,14 @@ bool PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
   std::vector<std::vector<double>> data2;
   data2.resize(fieldVariables2_.size());
   for (size_t i = 0; i < fieldVariables1_.size(); i++) {
-    if (!r.readDoubleVector(fieldVariables1_[i]->name().c_str(), data1[i])) {
+    if (!r.readDoubleVector(fieldVariables1_[i]->uniqueName().c_str(),
+                            data1[i])) {
       return false;
     }
   }
   for (size_t i = 0; i < fieldVariables2_.size(); i++) {
-    if (!r.readDoubleVector(fieldVariables2_[i]->name().c_str(), data2[i])) {
+    if (!r.readDoubleVector(fieldVariables2_[i]->uniqueName().c_str(),
+                            data2[i])) {
       return false;
     }
   }
@@ -101,8 +103,10 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
   for (int fieldVariable1No = 0; fieldVariable1No < fieldVariable1Names_.size();
        fieldVariable1No++) {
     std::string name = fieldVariable1Names_[fieldVariable1No];
-    this->fieldVariables1_.push_back(
-        this->functionSpace_->template createFieldVariable<nComponents1>(name));
+    auto var =
+        this->functionSpace_->template createFieldVariable<nComponents1>(name);
+    var->setUniqueName("prescribed_values_" + name);
+    this->fieldVariables1_.push_back(var);
   }
 
   // create field variables with `nComponents2` components, using the given
@@ -110,8 +114,10 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
   for (int fieldVariable2No = 0; fieldVariable2No < fieldVariable2Names_.size();
        fieldVariable2No++) {
     std::string name = fieldVariable2Names_[fieldVariable2No];
-    this->fieldVariables2_.push_back(
-        this->functionSpace_->template createFieldVariable<nComponents2>(name));
+    auto var =
+        this->functionSpace_->template createFieldVariable<nComponents2>(name);
+    var->setUniqueName("prescribed_values_" + name);
+    this->fieldVariables2_.push_back(var);
   }
 }
 

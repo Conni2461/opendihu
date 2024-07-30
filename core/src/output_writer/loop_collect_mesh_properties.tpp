@@ -19,7 +19,7 @@ template <typename FieldVariablesForOutputWriterType, int i>
     loopCollectMeshProperties(
         const FieldVariablesForOutputWriterType &fieldVariables,
         std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-        std::vector<std::string> &meshNamesVector) {
+        std::vector<std::string> &meshNamesVector, bool useUniqueName) {
   // LOG(DEBUG) << "loopCollectMeshProperties i=" << i << " type " <<
   // StringUtility::demangle(typeid(typename
   // std::tuple_element<i,FieldVariablesForOutputWriterType>::type).name());
@@ -29,12 +29,12 @@ template <typename FieldVariablesForOutputWriterType, int i>
                                 i, FieldVariablesForOutputWriterType>::type,
                             FieldVariablesForOutputWriterType>(
           std::get<i>(fieldVariables), fieldVariables, meshProperties,
-          meshNamesVector, i))
+          meshNamesVector, i, useUniqueName))
     return;
 
   // advance iteration to next tuple element
   loopCollectMeshProperties<FieldVariablesForOutputWriterType, i + 1>(
-      fieldVariables, meshProperties, meshNamesVector);
+      fieldVariables, meshProperties, meshNamesVector, useUniqueName);
 }
 
 // current element is of pointer type (not vector)
@@ -49,7 +49,7 @@ collectMeshProperties(
     CurrentFieldVariableType currentFieldVariable,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i) {
+    std::vector<std::string> &meshNamesVector, int i, bool useUniqueName) {
   if (currentFieldVariable == nullptr) {
     LOG(FATAL) << "In collectMeshProperties, currentFieldVariable is nullptr.\n"
                << " meshProperties: " << meshProperties
@@ -133,7 +133,11 @@ collectMeshProperties(
 
   if (!currentFieldVariable->isGeometryField()) {
     PolyDataPropertiesForMesh::DataArrayName dataArrayName;
-    dataArrayName.name = currentFieldVariable->name();
+    if (useUniqueName) {
+      dataArrayName.name = currentFieldVariable->uniqueName();
+    } else {
+      dataArrayName.name = currentFieldVariable->name();
+    }
     dataArrayName.nComponents = currentFieldVariable->nComponents();
     dataArrayName.componentNames =
         std::vector<std::string>(currentFieldVariable->componentNames().begin(),
@@ -152,13 +156,13 @@ collectMeshProperties(
     VectorType currentFieldVariableGradient,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i) {
+    std::vector<std::string> &meshNamesVector, int i, bool useUniqueName) {
   for (auto &currentFieldVariable : currentFieldVariableGradient) {
     // call function on all vector entries
     if (collectMeshProperties<typename VectorType::value_type,
                               FieldVariablesForOutputWriterType>(
             currentFieldVariable, fieldVariables, meshProperties,
-            meshNamesVector, i))
+            meshNamesVector, i, useUniqueName))
       return true; // break iteration
   }
   return false; // do not break iteration
@@ -171,10 +175,11 @@ collectMeshProperties(
     TupleType currentFieldVariableTuple,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i) {
+    std::vector<std::string> &meshNamesVector, int i, bool useUniqueName) {
   // call for tuple element
   loopCollectMeshProperties<TupleType>(currentFieldVariableTuple,
-                                       meshProperties, meshNamesVector);
+                                       meshProperties, meshNamesVector,
+                                       useUniqueName);
 
   return false; // do not break iteration
 }
@@ -188,7 +193,7 @@ collectMeshProperties(
     CurrentFieldVariableType currentFieldVariable,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::map<std::string, PolyDataPropertiesForMesh> &meshProperties,
-    std::vector<std::string> &meshNamesVector, int i) {
+    std::vector<std::string> &meshNamesVector, int i, bool useUniqueName) {
   const int D = CurrentFieldVariableType::element_type::FunctionSpace::dim();
   typedef typename CurrentFieldVariableType::element_type::FunctionSpace::
       BasisFunction BasisFunctionType;
@@ -208,7 +213,7 @@ collectMeshProperties(
     if (collectMeshProperties<std::shared_ptr<SubFieldVariableType>,
                               FieldVariablesForOutputWriterType>(
             currentSubFieldVariable, fieldVariables, meshProperties,
-            meshNamesVector, i))
+            meshNamesVector, i, useUniqueName))
       return true;
   }
 

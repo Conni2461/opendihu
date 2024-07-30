@@ -58,8 +58,14 @@ void MultipleInstances<FunctionSpaceType, BaseTimesteppingType>::
 template <typename FunctionSpaceType, typename BaseDataType>
 bool MultipleInstances<FunctionSpaceType, BaseDataType>::restoreState(
     const InputReader::Generic &r) {
-  // TODO(conni2461): restore state
-  return false;
+  LOG(INFO) << "here, restoring data";
+  bool v = true;
+  for (auto iter : instancesData_) {
+    bool b = iter->restoreState(r);
+    LOG(INFO) << "b: " << b;
+    v = v && b;
+  }
+  return v;
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>
@@ -95,6 +101,17 @@ typename MultipleInstances<FunctionSpaceType,
                            BaseDataType>::FieldVariablesForCheckpointing
 MultipleInstances<FunctionSpaceType,
                   BaseDataType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::vector<typename BaseDataType::FieldVariablesForCheckpointing>
+      instancesFieldVariablesForCheckpointing;
+  instancesFieldVariablesForCheckpointing.reserve(instancesData_.size());
+
+  for (typename std::vector<std::shared_ptr<BaseDataType>>::const_iterator
+           iter = instancesData_.begin();
+       iter != instancesData_.end(); iter++) {
+    instancesFieldVariablesForCheckpointing.push_back(
+        (*iter)->getFieldVariablesForCheckpointing());
+  }
+
+  return std::make_tuple(instancesFieldVariablesForCheckpointing);
 }
 } // namespace Data

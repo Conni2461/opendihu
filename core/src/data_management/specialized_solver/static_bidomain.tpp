@@ -42,6 +42,8 @@ void StaticBidomain<FunctionSpaceType>::initialize() {
     name << "additionalFieldVariable" << i;
     additionalFieldVariables_[i] =
         this->functionSpace_->template createFieldVariable<1>(name.str());
+    additionalFieldVariables_[i]->setUnqiueName("static_bidomain_" +
+                                                name.str());
 
     slotConnectorData_->addFieldVariable2(additionalFieldVariables_[i]);
     LOG(DEBUG) << "  add field variable " << name.str();
@@ -56,30 +58,30 @@ bool StaticBidomain<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> transmembraneFlow, transmembranePotential, flowPotential,
       fiberDirection, extraCellularPotential, zero, jacobianConditionNumber;
-  if (!r.readDoubleVector(this->transmembraneFlow_->name().c_str(),
+  if (!r.readDoubleVector(this->transmembraneFlow_->uniqueName().c_str(),
                           transmembraneFlow)) {
     return false;
   }
-  if (!r.readDoubleVector(this->transmembranePotential_->name().c_str(),
+  if (!r.readDoubleVector(this->transmembranePotential_->uniqueName().c_str(),
                           transmembranePotential)) {
     return false;
   }
-  if (!r.readDoubleVector(this->flowPotential_->name().c_str(),
+  if (!r.readDoubleVector(this->flowPotential_->uniqueName().c_str(),
                           flowPotential)) {
     return false;
   }
-  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
                           fiberDirection)) {
     return false;
   }
-  if (!r.readDoubleVector(this->extraCellularPotential_->name().c_str(),
+  if (!r.readDoubleVector(this->extraCellularPotential_->uniqueName().c_str(),
                           extraCellularPotential)) {
     return false;
   }
-  if (!r.readDoubleVector(this->zero_->name().c_str(), zero)) {
+  if (!r.readDoubleVector(this->zero_->uniqueName().c_str(), zero)) {
     return false;
   }
-  if (!r.readDoubleVector(this->jacobianConditionNumber_->name().c_str(),
+  if (!r.readDoubleVector(this->jacobianConditionNumber_->uniqueName().c_str(),
                           jacobianConditionNumber)) {
     return false;
   }
@@ -104,18 +106,26 @@ void StaticBidomain<FunctionSpaceType>::createPetscObjects() {
   this->transmembraneFlow_ =
       this->functionSpace_->template createFieldVariable<1>(
           "transmembraneFlow");
+  this->transmembraneFlow_->setUniqueName("static_bidomain_transmembraneFlow");
   this->transmembranePotential_ =
       this->functionSpace_->template createFieldVariable<1>("Vm");
+  this->transmembranePotential_->setUniqueName("static_bidomain_Vm");
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
+  this->flowPotential_->setUniqueName("static_bidomain_flowPotential");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
+  this->fiberDirection_->setUniqueName("static_bidomain_fiberDirection");
   this->extraCellularPotential_ =
       this->functionSpace_->template createFieldVariable<1>("phi_e");
+  this->extraCellularPotential_->setUniqueName("static_bidomain_phi_e");
   this->zero_ = this->functionSpace_->template createFieldVariable<1>("zero");
+  this->zero_->setUniqueName("static_bidomain_zero");
   this->jacobianConditionNumber_ =
       this->functionSpace_->template createFieldVariable<1>(
           "jacobianConditionNumber");
+  this->jacobianConditionNumber_->setUniqueName(
+      "static_bidomain_jacobianConditionNumber");
 
   LOG(DEBUG) << "Vm field variable (" << this->transmembranePotential_ << ")";
 }

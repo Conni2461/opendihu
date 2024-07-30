@@ -30,13 +30,16 @@ template <typename FunctionSpace>
 bool QuasiStaticNonlinearElasticityChaste<FunctionSpace>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> activation, activeStress, displacement;
-  if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
+  if (!r.readDoubleVector(this->activation_->uniqueName().c_str(),
+                          activation)) {
     return false;
   }
-  if (!r.readDoubleVector(this->activeStress_->name().c_str(), activeStress)) {
+  if (!r.readDoubleVector(this->activeStress_->uniqueName().c_str(),
+                          activeStress)) {
     return false;
   }
-  if (!r.readDoubleVector(this->displacement_->name().c_str(), displacement)) {
+  if (!r.readDoubleVector(this->displacement_->uniqueName().c_str(),
+                          displacement)) {
     return false;
   }
   this->activation_->setValues(activation);
@@ -53,10 +56,16 @@ void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::createPetscObjects() {
 
   this->activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
+  this->activation_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_chaste_activation");
   this->activeStress_ =
       this->functionSpace_->template createFieldVariable<9>("activeStress");
+  this->activeStress_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_chaste_activeStress");
   this->displacement_ =
       this->functionSpace_->template createFieldVariable<3>("displacement");
+  this->displacement_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_chaste_displacement");
 }
 
 template <typename FunctionSpace>

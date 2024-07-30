@@ -47,10 +47,10 @@ template <typename FunctionSpaceType>
 bool MyNewStaticSolver<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> solution, fieldVariableB;
-  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
   }
-  if (!r.readDoubleVector(this->fieldVariableB_->name().c_str(),
+  if (!r.readDoubleVector(this->fieldVariableB_->uniqueName().c_str(),
                           fieldVariableB)) {
     return false;
   }
@@ -69,6 +69,7 @@ void MyNewStaticSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->fieldVariableB_ =
       this->functionSpace_->template createFieldVariable<1>("b");
+  this->fieldVariableB_->setUniqueName("my_new_static_solver_b");
 }
 
 // ... add a "getter" method for each fieldvariable with the same name as the

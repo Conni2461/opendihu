@@ -88,8 +88,8 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
     // create a PolyData file that combines all 1D meshes into one file
     {
       HDF5Utils::Group group = file->newGroup("1D");
-      writePolyDataFile<FieldVariablesForOutputWriterType>(group, variables,
-                                                           combined1DMeshes);
+      writePolyDataFile<FieldVariablesForOutputWriterType>(
+          group, variables, combined1DMeshes, useCheckpointData_);
     }
 
     Control::PerformanceMeasurement::stop("durationHDF51D");
@@ -99,7 +99,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
     {
       HDF5Utils::Group group = file->newGroup("3D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          group, variables, combined3DMeshes, true);
+          group, variables, combined3DMeshes, true, useCheckpointData_);
     }
 
     Control::PerformanceMeasurement::stop("durationHDF53D");
@@ -109,7 +109,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
     {
       HDF5Utils::Group group = file->newGroup("2D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
-          group, variables, combined2DMeshes, false);
+          group, variables, combined2DMeshes, false, useCheckpointData_);
     }
 
     Control::PerformanceMeasurement::stop("durationHDF52D");
@@ -236,6 +236,11 @@ herr_t File::writeAttr(const char *key, const T &v) const {
 template <typename T>
 herr_t Group::writeSimpleVec(const std::vector<T> &data,
                              const std::string &dsname) {
+  // make sure we only write a item only once
+  if (this->exists(dsname)) {
+    return 0;
+  }
+
   if (file_->isMPIIO()) {
     if (std::is_same<T, int32_t>::value) {
       return writeVectorMPIIO(data.data(), dsname, data.size(), H5T_STD_I32LE,
@@ -317,7 +322,7 @@ herr_t writeFieldVariable(Group &group, FieldVariableType &fieldVariable) {
     }
   }
 
-  return group.writeSimpleVec(values, fieldVariable.name());
+  return group.writeSimpleVec(values, fieldVariable.uniqueName());
 }
 
 template <typename FieldVariableType>
