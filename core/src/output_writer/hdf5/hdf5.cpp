@@ -166,6 +166,12 @@ Group Group::newGroup(const char *name) const {
   return Group(file_, groupID_, name);
 }
 
+bool Group::exists(const std::string &dsname) const {
+  std::string name = dsname;
+  std::replace(name.begin(), name.end(), '/', '|');
+  return H5Lexists(groupID_, name.c_str(), H5P_DEFAULT);
+}
+
 herr_t Group::writeVectorMPIIO(const void *data, const std::string &dsname,
                                const size_t dataSize, hid_t typeId,
                                hid_t memTypeId, size_t dsize) {

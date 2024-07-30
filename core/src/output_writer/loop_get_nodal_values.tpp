@@ -12,17 +12,19 @@ template <typename FieldVariablesForOutputWriterType, int i>
     i<std::tuple_size<FieldVariablesForOutputWriterType>::value, void>::type
     loopGetNodalValues(const FieldVariablesForOutputWriterType &fieldVariables,
                        std::set<std::string> meshNames,
-                       std::map<std::string, std::vector<double>> &values) {
+                       std::map<std::string, std::vector<double>> &values,
+                       bool useUniqueName) {
   // call what to do in the loop body
   if (getNodalValues<typename std::tuple_element<
                          i, FieldVariablesForOutputWriterType>::type,
                      FieldVariablesForOutputWriterType>(
-          std::get<i>(fieldVariables), fieldVariables, meshNames, values))
+          std::get<i>(fieldVariables), fieldVariables, meshNames, values,
+          useUniqueName))
     return;
 
   // advance iteration to next tuple element
   loopGetNodalValues<FieldVariablesForOutputWriterType, i + 1>(
-      fieldVariables, meshNames, values);
+      fieldVariables, meshNames, values, useUniqueName);
 }
 
 // current element is of pointer type (not vector)
@@ -36,7 +38,8 @@ typename std::enable_if<
 getNodalValues(CurrentFieldVariableType currentFieldVariable,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values) {
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName) {
   VLOG(1) << "field variable "
           << StringUtility::demangle(typeid(currentFieldVariable).name())
           << " name \"" << currentFieldVariable->name()
@@ -95,6 +98,9 @@ getNodalValues(CurrentFieldVariableType currentFieldVariable,
         old_representation, values_modified_t::values_unchanged);
 
     std::string fieldVariableName = currentFieldVariable->name();
+    if (useUniqueName) {
+      fieldVariableName = currentFieldVariable->uniqueName();
+    }
 
     // create entry for field variable name if it does not exist and reserve
     // enough space for all values
@@ -120,12 +126,14 @@ typename std::enable_if<TypeUtility::isVector<VectorType>::value, bool>::type
 getNodalValues(VectorType currentFieldVariableGradient,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values) {
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName) {
   for (auto &currentFieldVariable : currentFieldVariableGradient) {
     // call function on all vector entries
     if (getNodalValues<typename VectorType::value_type,
                        FieldVariablesForOutputWriterType>(
-            currentFieldVariable, fieldVariables, meshNames, values))
+            currentFieldVariable, fieldVariables, meshNames, values,
+            useUniqueName))
       return true; // break iteration
   }
   return false; // do not break iteration
@@ -137,9 +145,11 @@ typename std::enable_if<TypeUtility::isTuple<TupleType>::value, bool>::type
 getNodalValues(TupleType currentFieldVariableTuple,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values) {
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName) {
   // call for tuple element
-  loopGetNodalValues<TupleType>(currentFieldVariableTuple, meshNames, values);
+  loopGetNodalValues<TupleType>(currentFieldVariableTuple, meshNames, values,
+                                useUniqueName);
 
   return false; // do not break iteration
 }
@@ -152,7 +162,8 @@ typename std::enable_if<Mesh::isComposite<CurrentFieldVariableType>::value,
 getNodalValues(CurrentFieldVariableType currentFieldVariable,
                const FieldVariablesForOutputWriterType &fieldVariables,
                std::set<std::string> meshNames,
-               std::map<std::string, std::vector<double>> &values) {
+               std::map<std::string, std::vector<double>> &values,
+               bool useUniqueName) {
   const int D = CurrentFieldVariableType::element_type::FunctionSpace::dim();
   typedef typename CurrentFieldVariableType::element_type::FunctionSpace::
       BasisFunction BasisFunctionType;
@@ -171,7 +182,8 @@ getNodalValues(CurrentFieldVariableType currentFieldVariable,
     // call function on all vector entries
     if (getNodalValues<std::shared_ptr<SubFieldVariableType>,
                        FieldVariablesForOutputWriterType>(
-            currentSubFieldVariable, fieldVariables, meshNames, values))
+            currentSubFieldVariable, fieldVariables, meshNames, values,
+            useUniqueName))
       return true;
   }
 

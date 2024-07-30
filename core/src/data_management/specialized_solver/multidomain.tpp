@@ -91,26 +91,26 @@ bool Multidomain<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> flowPotential, fiberDirection, phi_e, zero, relFactor,
       activeStressTotal;
-  if (!r.readDoubleVector(this->flowPotential_->name().c_str(),
+  if (!r.readDoubleVector(this->flowPotential_->uniqueName().c_str(),
                           flowPotential)) {
     return false;
   }
-  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
                           fiberDirection)) {
     return false;
   }
-  if (!r.readDoubleVector(this->extraCellularPotential_->name().c_str(),
+  if (!r.readDoubleVector(this->extraCellularPotential_->uniqueName().c_str(),
                           phi_e)) {
     return false;
   }
-  if (!r.readDoubleVector(this->zero_->name().c_str(), zero)) {
+  if (!r.readDoubleVector(this->zero_->uniqueName().c_str(), zero)) {
     return false;
   }
-  if (!r.readDoubleVector(this->relativeFactorTotal_->name().c_str(),
+  if (!r.readDoubleVector(this->relativeFactorTotal_->uniqueName().c_str(),
                           relFactor)) {
     return false;
   }
-  if (!r.readDoubleVector(this->activeStressTotal_->name().c_str(),
+  if (!r.readDoubleVector(this->activeStressTotal_->uniqueName().c_str(),
                           activeStressTotal)) {
     return false;
   }
@@ -126,7 +126,8 @@ bool Multidomain<FunctionSpaceType>::restoreState(
     {
       std::vector<double> a;
       if (!r.readDoubleVector(
-              this->transmembranePotentialSolution_[k]->name().c_str(), a)) {
+              this->transmembranePotentialSolution_[k]->uniqueName().c_str(),
+              a)) {
         return false;
       }
       transmembranePotentialSolution.push_back(std::move(a));
@@ -134,8 +135,8 @@ bool Multidomain<FunctionSpaceType>::restoreState(
 
     {
       std::vector<double> a;
-      if (!r.readDoubleVector(this->transmembranePotential_[k]->name().c_str(),
-                              a)) {
+      if (!r.readDoubleVector(
+              this->transmembranePotential_[k]->uniqueName().c_str(), a)) {
         return false;
       }
       transmembranePotential.push_back(std::move(a));
@@ -144,7 +145,7 @@ bool Multidomain<FunctionSpaceType>::restoreState(
     {
       std::vector<double> a;
       if (!r.readDoubleVector(
-              this->compartmentRelativeFactor_[k]->name().c_str(), a)) {
+              this->compartmentRelativeFactor_[k]->uniqueName().c_str(), a)) {
         return false;
       }
       compartmentRelativeFactor.push_back(std::move(a));
@@ -152,7 +153,8 @@ bool Multidomain<FunctionSpaceType>::restoreState(
 
     {
       std::vector<double> a;
-      if (!r.readDoubleVector(this->activeStress_[k]->name().c_str(), a)) {
+      if (!r.readDoubleVector(this->activeStress_[k]->uniqueName().c_str(),
+                              a)) {
         return false;
       }
       activeStress.push_back(std::move(a));
@@ -194,41 +196,60 @@ void Multidomain<FunctionSpaceType>::createPetscObjects() {
   for (int k = 0; k < nCompartments_; k++) {
     std::stringstream transmembranePotentialSolutionName;
     transmembranePotentialSolutionName << "Vm^(i+1)_" << k;
-    this->transmembranePotentialSolution_.push_back(
-        this->functionSpace_->template createFieldVariable<1>(
-            transmembranePotentialSolutionName.str()));
+    {
+      auto var = this->functionSpace_->template createFieldVariable<1>(
+          transmembranePotentialSolutionName.str());
+      var->setUniqueName("multidomain_" +
+                         transmembranePotentialSolutionName.str());
+      this->transmembranePotentialSolution_.push_back(var);
+    }
 
     std::stringstream transmembranePotentialName;
     transmembranePotentialName << "Vm^(i)_" << k;
-    this->transmembranePotential_.push_back(
-        this->functionSpace_->template createFieldVariable<1>(
-            transmembranePotentialName.str()));
+    {
+      auto var = this->functionSpace_->template createFieldVariable<1>(
+          transmembranePotentialName.str());
+      var->setUniqueName("multidomain_" + transmembranePotentialName.str());
+      this->transmembranePotential_.push_back(var);
+    }
 
     std::stringstream compartmentRelativeFactorName;
     compartmentRelativeFactorName << "f_r_" << k;
-    this->compartmentRelativeFactor_.push_back(
-        this->functionSpace_->template createFieldVariable<1>(
-            compartmentRelativeFactorName.str()));
+    {
+      auto var = this->functionSpace_->template createFieldVariable<1>(
+          compartmentRelativeFactorName.str());
+      var->setUniqueName("multidomain_" + compartmentRelativeFactorName.str());
+      this->compartmentRelativeFactor_.push_back(var);
+    }
 
     std::stringstream activeStressName;
     activeStressName << "active_stress_" << k;
-    this->activeStress_.push_back(
-        this->functionSpace_->template createFieldVariable<1>(
-            activeStressName.str()));
+    {
+      auto var = this->functionSpace_->template createFieldVariable<1>(
+          activeStressName.str());
+      var->setUniqueName("multidomain_" + activeStressName.str());
+      this->activeStress_.push_back(var);
+    }
   }
 
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
+  this->flowPotential_->setUniqueName("multidomain_flowPotential");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
+  this->fiberDirection_->setUniqueName("multidomain_fiberDirection");
   this->extraCellularPotential_ =
       this->functionSpace_->template createFieldVariable<1>("phi_e");
+  this->extraCellularPotential_->setUniqueName("multidomain_phi_e");
   this->zero_ = this->functionSpace_->template createFieldVariable<1>("zero");
+  this->zero_->setUniqueName("multidomain_zero");
   this->relativeFactorTotal_ =
       this->functionSpace_->template createFieldVariable<1>("Σf_r");
+  this->relativeFactorTotal_->setUniqueName("multidomain_Σf_r");
   this->activeStressTotal_ =
       this->functionSpace_->template createFieldVariable<1>(
           "activeStressTotal");
+  this->activeStressTotal_->setUniqueName("multidomain_activeStressTotal");
 }
 
 template <typename FunctionSpaceType>

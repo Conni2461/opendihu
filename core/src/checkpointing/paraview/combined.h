@@ -30,7 +30,7 @@ public:
 private:
   std::unique_ptr<OutputWriter::Paraview>
       writer_; //< Constructed output writer that is used to create new
-               //checkpoints
+               // checkpoints
 };
 } // namespace Paraview
 } // namespace Checkpointing

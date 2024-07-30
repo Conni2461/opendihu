@@ -31,28 +31,30 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> activation, displacements, reactionForce, cauchyStress,
       pk2Stress, greenLagrangeStrain, relativeVolume;
-  if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
+  if (!r.readDoubleVector(this->activation_->uniqueName().c_str(),
+                          activation)) {
     return false;
   }
-  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+  if (!r.readDoubleVector(this->displacements_->uniqueName().c_str(),
                           displacements)) {
     return false;
   }
-  if (!r.readDoubleVector(this->reactionForce_->name().c_str(),
+  if (!r.readDoubleVector(this->reactionForce_->uniqueName().c_str(),
                           reactionForce)) {
     return false;
   }
-  if (!r.readDoubleVector(this->cauchyStress_->name().c_str(), cauchyStress)) {
+  if (!r.readDoubleVector(this->cauchyStress_->uniqueName().c_str(),
+                          cauchyStress)) {
     return false;
   }
-  if (!r.readDoubleVector(this->pk2Stress_->name().c_str(), pk2Stress)) {
+  if (!r.readDoubleVector(this->pk2Stress_->uniqueName().c_str(), pk2Stress)) {
     return false;
   }
-  if (!r.readDoubleVector(this->greenLagrangeStrain_->name().c_str(),
+  if (!r.readDoubleVector(this->greenLagrangeStrain_->uniqueName().c_str(),
                           greenLagrangeStrain)) {
     return false;
   }
-  if (!r.readDoubleVector(this->relativeVolume_->name().c_str(),
+  if (!r.readDoubleVector(this->relativeVolume_->uniqueName().c_str(),
                           relativeVolume)) {
     return false;
   }
@@ -66,8 +68,8 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
   this->relativeVolume_->setValues(relativeVolume);
 
   // TODO(conni2461): restore geometry
-  this->referenceGeometry_ = std::make_shared<FieldVariableTypeVector>(
-      this->functionSpace_->geometryField(), "referenceGeometry");
+
+  // Note we do not need to hande referenceGeometry here
   return true;
 }
 
@@ -78,20 +80,34 @@ void QuasiStaticNonlinearElasticityFebio::createPetscObjects() {
 
   activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
+  activation_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_febio_activation");
   displacements_ = this->functionSpace_->template createFieldVariable<3>("u");
+  displacements_->setUniqueName("quasi_static_nonlinear_elasticity_febio_u");
   reactionForce_ =
       this->functionSpace_->template createFieldVariable<3>("reactionForce");
+  reactionForce_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_febio_reactionForce");
   cauchyStress_ = this->functionSpace_->template createFieldVariable<6>(
       "sigma (Cauchy stress)");
+  cauchyStress_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_febio_sigma (Cauchy stress)");
   pk2Stress_ =
       this->functionSpace_->template createFieldVariable<6>("S (Pk2 stress)");
+  pk2Stress_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_febio_S (Pk2 stress)");
   greenLagrangeStrain_ = this->functionSpace_->template createFieldVariable<6>(
       "E (Green-Lagrange strain)");
+  greenLagrangeStrain_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_febio_E (Green-Lagrange strain)");
   relativeVolume_ = this->functionSpace_->template createFieldVariable<1>("J");
+  relativeVolume_->setUniqueName("quasi_static_nonlinear_elasticity_febio_J");
 
   // copy initial geometry to referenceGeometry
   referenceGeometry_ = std::make_shared<FieldVariableTypeVector>(
       this->functionSpace_->geometryField(), "referenceGeometry");
+  referenceGeometry_->setUniqueName(
+      "quasi_static_nonlinear_elasticity_febio_referenceGeometry");
 
   LOG(DEBUG) << "pointer referenceGeometry: "
              << referenceGeometry_->partitionedPetscVec();

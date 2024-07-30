@@ -34,7 +34,7 @@ public:
 private:
   std::unique_ptr<OutputWriter::Json>
       writer_; //< Constructed output writer that is used to create new
-               //checkpoints
+               // checkpoints
 };
 } // namespace Json
 } // namespace Checkpointing

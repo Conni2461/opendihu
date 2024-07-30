@@ -12,22 +12,23 @@ bool DynamicHyperelasticitySolver<FunctionSpaceType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> displacements, velocities, internalVirtualWork,
       accelerationTerm, externalVirtualWorkDead;
-  if (!r.readDoubleVector(this->displacements_->name().c_str(),
+  if (!r.readDoubleVector(this->displacements_->uniqueName().c_str(),
                           displacements)) {
     return false;
   }
-  if (!r.readDoubleVector(this->velocities_->name().c_str(), velocities)) {
+  if (!r.readDoubleVector(this->velocities_->uniqueName().c_str(),
+                          velocities)) {
     return false;
   }
-  if (!r.readDoubleVector(this->internalVirtualWork_->name().c_str(),
+  if (!r.readDoubleVector(this->internalVirtualWork_->uniqueName().c_str(),
                           internalVirtualWork)) {
     return false;
   }
-  if (!r.readDoubleVector(this->accelerationTerm_->name().c_str(),
+  if (!r.readDoubleVector(this->accelerationTerm_->uniqueName().c_str(),
                           accelerationTerm)) {
     return false;
   }
-  if (!r.readDoubleVector(this->externalVirtualWorkDead_->name().c_str(),
+  if (!r.readDoubleVector(this->externalVirtualWorkDead_->uniqueName().c_str(),
                           externalVirtualWorkDead)) {
     return false;
   }
@@ -51,15 +52,23 @@ void DynamicHyperelasticitySolver<FunctionSpaceType>::createPetscObjects() {
   std::vector<std::string> displacementsComponentNames({"x", "y", "z"});
   displacements_ = this->functionSpace_->template createFieldVariable<3>(
       "u", displacementsComponentNames);
+  displacements_->setUniqueName("dynamic_hyperelasticity_solver_u");
   velocities_ = this->functionSpace_->template createFieldVariable<3>(
       "v", displacementsComponentNames);
+  velocities_->setUniqueName("dynamic_hyperelasticity_solver_v");
   internalVirtualWork_ = this->functionSpace_->template createFieldVariable<3>(
       "δWint_displacement", displacementsComponentNames);
+  internalVirtualWork_->setUniqueName(
+      "dynamic_hyperelasticity_solver_δWint_displacement");
   accelerationTerm_ = this->functionSpace_->template createFieldVariable<3>(
       "δWint_acceleration", displacementsComponentNames);
+  accelerationTerm_->setUniqueName(
+      "dynamic_hyperelasticity_solver_δWint_acceleration");
   externalVirtualWorkDead_ =
       this->functionSpace_->template createFieldVariable<3>(
           "δWext", displacementsComponentNames);
+  externalVirtualWorkDead_->setUniqueName(
+      "dynamic_hyperelasticity_solver_δWext");
 }
 
 //! field variable of u

@@ -47,24 +47,26 @@ bool QuasiStaticLinearElasticity<DataLinearElasticityType>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> activation, activeStress, strain, rightHandSideActive,
       fiberDirection, flowPotential;
-  if (!r.readDoubleVector(this->activation_->name().c_str(), activation)) {
+  if (!r.readDoubleVector(this->activation_->uniqueName().c_str(),
+                          activation)) {
     return false;
   }
-  if (!r.readDoubleVector(this->activeStress_->name().c_str(), activeStress)) {
+  if (!r.readDoubleVector(this->activeStress_->uniqueName().c_str(),
+                          activeStress)) {
     return false;
   }
-  if (!r.readDoubleVector(this->strain_->name().c_str(), strain)) {
+  if (!r.readDoubleVector(this->strain_->uniqueName().c_str(), strain)) {
     return false;
   }
-  if (!r.readDoubleVector(this->rightHandSideActive_->name().c_str(),
+  if (!r.readDoubleVector(this->rightHandSideActive_->uniqueName().c_str(),
                           rightHandSideActive)) {
     return false;
   }
-  if (!r.readDoubleVector(this->fiberDirection_->name().c_str(),
+  if (!r.readDoubleVector(this->fiberDirection_->uniqueName().c_str(),
                           fiberDirection)) {
     return false;
   }
-  if (!r.readDoubleVector(this->flowPotential_->name().c_str(),
+  if (!r.readDoubleVector(this->flowPotential_->uniqueName().c_str(),
                           flowPotential)) {
     return false;
   }
@@ -93,17 +95,27 @@ void QuasiStaticLinearElasticity<
   // create all field variables that are needed
   this->activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
+  this->activation_->setUniqueName("quasi_static_linear_elasticity_activation");
   this->activeStress_ = this->functionSpace_->template createFieldVariable<9>(
       "activeStress", componentNames);
+  this->activeStress_->setUniqueName(
+      "quasi_static_linear_elasticity_activeStress");
   this->strain_ = this->functionSpace_->template createFieldVariable<9>(
       "strain", componentNames);
+  this->strain_->setUniqueName("quasi_static_linear_elasticity_strain");
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
+  this->flowPotential_->setUniqueName(
+      "quasi_static_linear_elasticity_flowPotential");
   this->rightHandSideActive_ =
       this->functionSpace_->template createFieldVariable<3>(
           "rightHandSideActive");
+  this->rightHandSideActive_->setUniqueName(
+      "quasi_static_linear_elasticity_rightHandSideActive");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
+  this->fiberDirection_->setUniqueName(
+      "quasi_static_linear_elasticity_fiberDirection");
 }
 
 template <typename DataLinearElasticityType>

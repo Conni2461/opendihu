@@ -99,14 +99,14 @@ template <typename FunctionSpaceType, int nComponents>
 bool FiniteElementsBase<FunctionSpaceType, nComponents>::restoreState(
     const InputReader::Generic &r) {
   std::vector<double> rhs, solution, negativeRhsNeumannBoundaryConditions;
-  if (!r.readDoubleVector(this->rhs_->name().c_str(), rhs)) {
+  if (!r.readDoubleVector(this->rhs_->uniqueName().c_str(), rhs)) {
     return false;
   }
-  if (!r.readDoubleVector(this->solution_->name().c_str(), solution)) {
+  if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
   }
   if (!r.readDoubleVector(
-          this->negativeRhsNeumannBoundaryConditions_->name().c_str(),
+          this->negativeRhsNeumannBoundaryConditions_->uniqueName().c_str(),
           negativeRhsNeumannBoundaryConditions)) {
     return false;
   }
@@ -133,11 +133,15 @@ void FiniteElementsBase<FunctionSpaceType, nComponents>::createPetscObjects() {
   // create field variables on local partition
   this->rhs_ = this->functionSpace_->template createFieldVariable<nComponents>(
       "rightHandSide");
+  this->rhs_->setUniqueName("finite_elements_base_rightHandSide");
   this->solution_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "solution");
+  this->solution_->setUniqueName("finite_elements_base_solution");
   this->negativeRhsNeumannBoundaryConditions_ =
       this->functionSpace_->template createFieldVariable<nComponents>("zero");
+  this->negativeRhsNeumannBoundaryConditions_->setUniqueName(
+      "finite_elements_base_zero");
 
   // create PETSc matrix object
 
