@@ -127,6 +127,43 @@ public:
   //! field of the displacementsFunctionSpace
   void updateReferenceGeometry();
 
+  //! field variables that will be output by checkpointing
+  // type to use if there is no fiber direction field variable
+  typedef std::tuple<
+      std::shared_ptr<DisplacementsFieldVariableType>, // current geometry field
+
+      std::shared_ptr<DisplacementsFieldVariableType>, // displacements_
+      std::shared_ptr<
+          DisplacementsFieldVariableType>, // displacementsPreviousTimestep_
+
+      std::shared_ptr<DisplacementsFieldVariableType>, // velocities_
+      std::shared_ptr<
+          DisplacementsFieldVariableType>, // velocitiesPreviousTimestep_
+
+      std::shared_ptr<DisplacementsFieldVariableType>, // fiberDirection_
+      std::shared_ptr<DisplacementsFieldVariableType>, // traction_
+      std::shared_ptr<DisplacementsFieldVariableType>, // materialTraction_
+      std::shared_ptr<
+          DisplacementsLinearFieldVariableType>, // displacementsLinearMesh_
+      std::shared_ptr<DisplacementsLinearFieldVariableType>, // velocitiesLinearMesh_
+
+      std::shared_ptr<PressureFieldVariableType>, // pressure_
+      // std::shared_ptr<DisplacementsFieldVariableType>, //
+      // pressurePreviousTimestep_ TODO
+      std::shared_ptr<StressFieldVariableType>, // pK2Stress_
+      std::shared_ptr<StressFieldVariableType>, // activePK2Stress_
+
+      std::shared_ptr<
+          DeformationGradientFieldVariableType>, // deformationGradient_
+      std::shared_ptr<
+          DeformationGradientFieldVariableType> // deformationGradientTimeDerivative_
+      >
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  bool restoreState(const InputReader::Generic &r);
 protected:
   //! initializes the vectors with size
   void createPetscObjects() override;
@@ -239,22 +276,6 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
-
-  //! field variables that will be output by checkpointing
-  // type to use if there is no fiber direction field variable
-  typedef std::tuple<
-      std::shared_ptr<DisplacementsFieldVariableType>, // current geometry field
-      std::shared_ptr<DisplacementsFieldVariableType>, // displacements_
-      std::shared_ptr<DisplacementsFieldVariableType>, // velocities_
-      std::shared_ptr<DisplacementsFieldVariableType>, // material traction
-      std::shared_ptr<StressFieldVariableType>         // pK2Stress_
-      >
-      FieldVariablesForCheckpointing;
-
-  //! get pointers to all field variables that can be written by checkpointing
-  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
-
-  bool restoreState(const InputReader::Generic &r);
 };
 
 // withLargeOutput = true, Term::usesFiberDirection = false
@@ -300,32 +321,6 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
-
-  //! field variables that will be output by checkpointing
-  // type to use if there is no fiber direction field variable
-  typedef std::tuple<
-      std::shared_ptr<DisplacementsFieldVariableType>, // current geometry field
-      std::shared_ptr<DisplacementsFieldVariableType>, // displacements_
-      std::shared_ptr<DisplacementsFieldVariableType>, // velocities_
-      std::shared_ptr<DisplacementsFieldVariableType>, // traction
-      std::shared_ptr<DisplacementsFieldVariableType>, // material traction
-      std::shared_ptr<StressFieldVariableType>,        // pK2Stress_
-      std::shared_ptr<
-          DeformationGradientFieldVariableType>, // deformationGradient_
-      std::shared_ptr<
-          DeformationGradientFieldVariableType>, // deformationGradientTimeDerivative_
-      std::shared_ptr<DeformationGradientFieldVariableType>, // pK1Stress_
-      std::shared_ptr<DeformationGradientFieldVariableType>, // Cauchy stress
-      std::shared_ptr<FieldVariable::FieldVariable<
-          DisplacementsFunctionSpace, 1>> // determinant of the material
-                                          // deformation gradient
-      >
-      FieldVariablesForCheckpointing;
-
-  //! get pointers to all field variables that can be written by checkpointing
-  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
-
-  bool restoreState(const InputReader::Generic &r);
 };
 
 // withLargeOutput = false, Term::usesFiberDirection = true
@@ -361,24 +356,6 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
-
-  //! field variables that will be output by checkpointing
-  // type to use if we have a fiber direction field variable
-  typedef std::tuple<
-      std::shared_ptr<DisplacementsFieldVariableType>, // current geometry field
-      std::shared_ptr<DisplacementsFieldVariableType>, // displacements_
-      std::shared_ptr<DisplacementsFieldVariableType>, // velocities_
-      std::shared_ptr<StressFieldVariableType>,        // pK2Stress_
-      std::shared_ptr<StressFieldVariableType>,        // activePK2Stress_
-      std::shared_ptr<DisplacementsFieldVariableType>, // fiber direction
-      std::shared_ptr<DisplacementsFieldVariableType>  // material traction
-      >
-      FieldVariablesForCheckpointing;
-
-  //! get pointers to all field variables that can be written by checkpointing
-  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
-
-  bool restoreState(const InputReader::Generic &r);
 };
 
 // withLargeOutput = true, Term::usesFiberDirection = true
@@ -426,34 +403,6 @@ public:
 
   //! get pointers to all field variables that can be written by output writers
   FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
-
-  //! field variables that will be output by checkpointing
-  // type to use if we have a fiber direction field variable
-  typedef std::tuple<
-      std::shared_ptr<DisplacementsFieldVariableType>, // current geometry field
-      std::shared_ptr<DisplacementsFieldVariableType>, // displacements_
-      std::shared_ptr<DisplacementsFieldVariableType>, // velocities_
-      std::shared_ptr<StressFieldVariableType>,        // pK2Stress_
-      std::shared_ptr<StressFieldVariableType>,        // activePK2Stress_
-      std::shared_ptr<DisplacementsFieldVariableType>, // fiber direction
-      std::shared_ptr<DisplacementsFieldVariableType>, // traction
-      std::shared_ptr<DisplacementsFieldVariableType>, // material traction
-      std::shared_ptr<
-          DeformationGradientFieldVariableType>, // deformationGradient_
-      std::shared_ptr<
-          DeformationGradientFieldVariableType>, // deformationGradientTimeDerivative_
-      std::shared_ptr<DeformationGradientFieldVariableType>, // pK1Stress_
-      std::shared_ptr<DeformationGradientFieldVariableType>, // Cauchy stress
-      std::shared_ptr<FieldVariable::FieldVariable<
-          DisplacementsFunctionSpace, 1>> // determinant of the material
-                                          // deformation gradient
-      >
-      FieldVariablesForCheckpointing;
-
-  //! get pointers to all field variables that can be written by checkpointing
-  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
-
-  bool restoreState(const InputReader::Generic &r);
 };
 
 // ------------------------------------------------------------------------------------------------------

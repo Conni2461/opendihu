@@ -40,26 +40,27 @@ bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
   if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
   }
+  if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment))
+  {
+    return false;
+  }
+  std::vector<std::vector<double>> additionalValues;
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    std::vector<double> additional;
+    if
+    (!r.readDoubleVector(this->additionalFieldVariables_[i]->uniqueName().c_str(),
+    additional)) {
+      return false;
+    }
+    additionalValues.push_back(additional);
+  }
+
+  this->solution_->setValues(solution);
+  this->increment_->setValues(increment);
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    this->additionalFieldVariables_[i]->setValues(additionalValues[i]);
+  }
   // TODO(conni2461): restore geometry
-  // if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment))
-  // {
-  //   return false;
-  // }
-  // std::vector<std::vector<double>> additionalValues;
-  // for (int i = 0; i < additionalFieldVariables_.size(); i++) {
-  //   std::vector<double> additional;
-  //   if
-  //   (!r.readDoubleVector(this->additionalFieldVariables_[i]->uniqueName().c_str(),
-  //   additional)) {
-  //     return false;
-  //   }
-  //   additionalValues.push_back(additional);
-  // }
-  // this->solution_->setValues(solution);
-  // // this->increment_->setValues(increment);
-  // for (int i = 0; i < additionalFieldVariables_.size(); i++) {
-  //   this->additionalFieldVariables_[i]->setValues(additionalValues[i]);
-  // }
   return true;
 }
 
