@@ -3,9 +3,9 @@
 namespace InputReader {
 namespace HDF5 {
 template <typename T>
-bool FullDataset::readDataset(const char *name, hid_t memTypeId,
-                              std::vector<T> &out) const {
-  const std::string *fullName = getFullDatasetName(name);
+bool FullDataset::readDataset(const char *name, const std::string &groupName,
+                              hid_t memTypeId, std::vector<T> &out) const {
+  const std::string *fullName = getFullDatasetName(name, groupName);
   if (!fullName) {
     return false;
   }

@@ -14,11 +14,11 @@ public:
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
-  virtual bool readIntVector(const char *name,
-                             std::vector<int32_t> &out) const = 0;
+  virtual bool readIntVector(const char *name, std::vector<int32_t> &out,
+                             const std::string &groupName = "") const = 0;
   //! Read a dataset of doubles in a flat vector passed in using an out variable
-  virtual bool readDoubleVector(const char *name,
-                                std::vector<double> &out) const = 0;
+  virtual bool readDoubleVector(const char *name, std::vector<double> &out,
+                                const std::string &groupName = "") const = 0;
 
   //! Wrapper around readDoubleVector that reads maxSize items into a vector of
   //! D dimensional arrays.
@@ -27,7 +27,8 @@ public:
   //! return fales if this is not given.
   template <int D>
   bool readDoubleVecD(const char *name, ssize_t maxSize,
-                      std::vector<VecD<D>> &out) const;
+                      std::vector<VecD<D>> &out,
+                      const std::string &groupName = "") const;
 };
 } // namespace InputReader
 
