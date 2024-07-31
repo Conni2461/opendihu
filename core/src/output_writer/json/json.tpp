@@ -310,7 +310,7 @@ void writeFieldVariable(Group &group, FieldVariableType &fieldVariable) {
     }
   }
 
-  return group.writeSimpleVec(values, fieldVariable.name());
+  return group.writeSimpleVec(values, fieldVariable.uniqueName());
 }
 
 template <typename FieldVariableType>
