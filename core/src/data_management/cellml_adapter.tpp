@@ -284,11 +284,25 @@ bool CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::restoreState(
     return false;
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->algebraics_->setValues(algebraics);
   this->states_->setValues(states);
   this->parameters_->setValues(parameters);
 
-  // TODO(conni2461): restore geometry
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -550,6 +564,11 @@ typename CellmlAdapter<nStates, nAlgebraics,
                        FunctionSpaceType>::FieldVariablesForCheckpointing
 CellmlAdapter<nStates, nAlgebraics,
               FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  return std::make_tuple(geometryField, algebraics_, states_, parameters_);
 }
 } // namespace Data

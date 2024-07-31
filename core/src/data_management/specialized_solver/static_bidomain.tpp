@@ -86,6 +86,16 @@ bool StaticBidomain<FunctionSpaceType>::restoreState(
     return false;
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->transmembraneFlow_->setValues(transmembraneFlow);
   this->transmembranePotential_->setValues(transmembranePotential);
   this->flowPotential_->setValues(flowPotential);
@@ -93,7 +103,12 @@ bool StaticBidomain<FunctionSpaceType>::restoreState(
   this->extraCellularPotential_->setValues(extraCellularPotential);
   this->zero_->setValues(zero);
   this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
-  // TODO(conni2461): restore geometry, additionalFieldVariables_
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -227,6 +242,28 @@ StaticBidomain<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
 template <typename FunctionSpaceType>
 typename StaticBidomain<FunctionSpaceType>::FieldVariablesForCheckpointing
 StaticBidomain<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  // recover additional field variables from slotConnectorData_, they may have
+  // been changed by transfer
+  assert(slotConnectorData_->variable2.size() >=
+         additionalFieldVariables_.size());
+  for (int i = 0; i < additionalFieldVariables_.size(); i++) {
+    LOG(DEBUG) << " Data::StaticBidomain::getFieldVariablesForOutputWriter(), "
+               << " get field variable "
+               << slotConnectorData_->variable2[i].values << ", \""
+               << slotConnectorData_->variable2[i].values->name()
+               << "\" for additionalFieldVariables_[" << i << "]";
+    additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
+  }
+
+  // these field variables will be written to output files
+  return std::make_tuple(geometryField, this->fiberDirection_,
+                         extraCellularPotential_, transmembranePotential_,
+                         transmembraneFlow_, this->flowPotential_,
+                         jacobianConditionNumber_, additionalFieldVariables_);
 }
 } // namespace Data

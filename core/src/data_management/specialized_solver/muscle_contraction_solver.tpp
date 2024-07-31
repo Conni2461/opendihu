@@ -85,6 +85,16 @@ bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
     return false;
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->lambda_->setValues(lambda);
   this->lambdaDot_->setValues(lambdaDot);
   this->gamma_->setValues(gamma);
@@ -94,7 +104,12 @@ bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
   this->pK2Stress_->setValues(pK2Stress);
   this->fiberDirection_->setValues(fiberDirection);
   this->materialTraction_->setValues(materialTraction);
-  // TODO(conni2461): restore geometry
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -236,7 +251,6 @@ MuscleContractionSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
       this->pK2Stress_, //< the symmetric PK2 stress tensor in Voigt notation
       this->fiberDirection_,  //< direction of fibers at current point
       this->materialTraction_ //< material traction
-
   );
 }
 
@@ -245,6 +259,25 @@ typename MuscleContractionSolver<
     FunctionSpaceType>::FieldVariablesForCheckpointing
 MuscleContractionSolver<
     FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+  geometryField->setUniqueName("muscle_contraction_solver_" +
+                               geometryField->name());
+
+  return std::make_tuple(
+      geometryField,
+      this->lambda_,          //< relative fiber stretch
+      this->lambdaDot_,       //< contraction velocity
+      this->gamma_,           //< gamma, the homogenized stress
+      this->displacements_,   //< u, the displacements
+      this->velocities_,      //< v, the velocities
+      this->activePK2Stress_, //< the symmetric PK2 stress tensor of the active
+                              // contribution in Voigt notation
+      this->pK2Stress_, //< the symmetric PK2 stress tensor in Voigt notation
+      this->fiberDirection_,  //< direction of fibers at current point
+      this->materialTraction_ //< material traction
+  );
 }
 } // namespace Data

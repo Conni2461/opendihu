@@ -30,8 +30,8 @@ bool MultidomainWithFat<FunctionSpaceType, FunctionSpaceFatType>::restoreState(
   }
 
   this->extraCellularPotentialFat_->setValues(phi_b);
-  // TODO(conni2461): restore dataMultidomain_
-  return true;
+
+  return this->dataMultidomain_->restoreState(r);
 }
 
 template <typename FunctionSpaceType, typename FunctionSpaceFatType>

@@ -39,7 +39,21 @@ bool DynamicHyperelasticitySolver<FunctionSpaceType>::restoreState(
   accelerationTerm_->setValues(accelerationTerm);
   externalVirtualWorkDead_->setValues(externalVirtualWorkDead);
 
-  // TODO(conni2461): restore geometry_
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -135,6 +149,21 @@ typename DynamicHyperelasticitySolver<
     FunctionSpaceType>::FieldVariablesForCheckpointing
 DynamicHyperelasticitySolver<
     FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  auto geometryField = std::shared_ptr<DisplacementsFieldVariableType>(
+      std::make_shared<typename FunctionSpaceType::GeometryFieldType>(
+          this->functionSpace_->geometryField()));
+  geometryField->setUniqueName("dynamic_hyperelasticity_solver_" +
+                               geometryField->name());
+
+  return std::make_tuple(
+      geometryField,
+      std::shared_ptr<DisplacementsFieldVariableType>(
+          this->displacements_), // displacements_
+      std::shared_ptr<DisplacementsFieldVariableType>(this->velocities_),
+      std::shared_ptr<DisplacementsFieldVariableType>(
+          this->internalVirtualWork_),
+      std::shared_ptr<DisplacementsFieldVariableType>(this->accelerationTerm_),
+      std::shared_ptr<DisplacementsFieldVariableType>(
+          this->externalVirtualWorkDead_));
 }
 } // namespace Data

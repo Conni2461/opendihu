@@ -26,8 +26,7 @@ public:
   //! dimensions, otherwise maxSize % D == 0 is expected and this function will
   //! return fales if this is not given.
   template <int D>
-  bool readDoubleVecD(const char *name, ssize_t maxSize,
-                      std::vector<VecD<D>> &out,
+  bool readDoubleVecD(const char *name, int maxSize, std::vector<VecD<D>> &out,
                       const std::string &groupName = "") const;
 };
 } // namespace InputReader

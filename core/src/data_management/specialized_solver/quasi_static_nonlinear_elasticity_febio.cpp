@@ -59,6 +59,16 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
     return false;
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->activation_->setValues(activation);
   this->displacements_->setValues(displacements);
   this->reactionForce_->setValues(reactionForce);
@@ -67,7 +77,10 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
   this->greenLagrangeStrain_->setValues(greenLagrangeStrain);
   this->relativeVolume_->setValues(relativeVolume);
 
-  // TODO(conni2461): restore geometry
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
 
   // Note we do not need to hande referenceGeometry here
   return true;
@@ -200,6 +213,23 @@ QuasiStaticNonlinearElasticityFebio::getFieldVariablesForOutputWriter() {
 
 typename QuasiStaticNonlinearElasticityFebio::FieldVariablesForCheckpointing
 QuasiStaticNonlinearElasticityFebio::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariableTypeVector> geometryField =
+      std::make_shared<FieldVariableTypeVector>(
+          this->functionSpace_->geometryField());
+  geometryField->setUniqueName("quasi_static_nonlinear_elasticity_febio_" +
+                               geometryField->name());
+
+  return std::tuple_cat(
+      std::tuple<std::shared_ptr<FieldVariableTypeVector>>(geometryField),
+      std::tuple<std::shared_ptr<FieldVariableType>>(this->activation_),
+      std::tuple<std::shared_ptr<FieldVariableTypeVector>>(
+          this->displacements_),
+      std::tuple<std::shared_ptr<FieldVariableTypeVector>>(
+          this->reactionForce_),
+      std::tuple<std::shared_ptr<FieldVariableTypeTensor>>(this->cauchyStress_),
+      std::tuple<std::shared_ptr<FieldVariableTypeTensor>>(this->pk2Stress_),
+      std::tuple<std::shared_ptr<FieldVariableTypeTensor>>(
+          this->greenLagrangeStrain_),
+      std::tuple<std::shared_ptr<FieldVariableType>>(this->relativeVolume_));
 }
 } // namespace Data

@@ -57,8 +57,7 @@ bool ParallelFiberEstimation<FunctionSpaceType>::restoreState(
   this->dirichletValues_->setValues(dirichletValues);
   this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
 
-  // TODO(conni2461): restore problem_
-  return true;
+  return this->problem_->data().restoreState(r);
 }
 
 template <typename FunctionSpaceType>

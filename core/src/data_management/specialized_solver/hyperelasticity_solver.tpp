@@ -49,11 +49,14 @@ typename QuasiStaticHyperelasticityBase<
 QuasiStaticHyperelasticityBase<
     PressureFunctionSpace, DisplacementsFunctionSpace, Term,
     withLargeOutput>::getFieldVariablesForCheckpointing() {
+  auto geometryField = std::shared_ptr<DisplacementsFieldVariableType>(
+      std::make_shared<typename DisplacementsFunctionSpace::GeometryFieldType>(
+          this->displacementsFunctionSpace_->geometryField()));
+  geometryField->setUniqueName("hyperelasticity_solver_" +
+                               geometryField->name());
+
   return std::make_tuple(
-      std::shared_ptr<DisplacementsFieldVariableType>(
-          std::make_shared<
-              typename DisplacementsFunctionSpace::GeometryFieldType>(
-              this->displacementsFunctionSpace_->geometryField())),
+      geometryField,
       std::shared_ptr<DisplacementsFieldVariableType>(this->displacements_),
 
       std::shared_ptr<DisplacementsFieldVariableType>(
@@ -168,6 +171,17 @@ bool QuasiStaticHyperelasticityBase<
       this->deformationGradientDeterminant_->uniqueName().c_str(),
       deformationGradientDeterminant);
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->displacementsFunctionSpace_->geometryField()
+                .nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->displacements_->setValues(displacements);
   this->displacementsPreviousTimestep_->setValues(displacementsPT);
 
@@ -202,7 +216,12 @@ bool QuasiStaticHyperelasticityBase<
         deformationGradientDeterminant);
   }
 
-  // TODO(conni2461): restore geometry
+  this->displacementsFunctionSpace_->geometryField().setValuesWithoutGhosts(
+      geometryValues);
+  this->displacementsFunctionSpace_->geometryField().zeroGhostBuffer();
+  this->displacementsFunctionSpace_->geometryField().setRepresentationGlobal();
+  this->displacementsFunctionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -969,7 +988,20 @@ typename QuasiStaticHyperelasticityPressureOutput<
     PressureFunctionSpace>::FieldVariablesForCheckpointing
 QuasiStaticHyperelasticityPressureOutput<
     PressureFunctionSpace>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  auto geometryField =
+      std::make_shared<typename PressureFunctionSpace::GeometryFieldType>(
+          this->functionSpace_->geometryField());
+  geometryField->setUniqueName("quasi_static_hyperelasticity_pressure_output" +
+                               geometryField->name());
+
+  return std::tuple_cat(
+      std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
+          geometryField),
+      std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
+          this->displacementsLinearMesh_),
+      std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(
+          this->velocitiesLinearMesh_),
+      std::tuple<std::shared_ptr<PressureFieldVariableType>>(this->pressure_));
 }
 
 template <typename PressureFunctionSpace>
@@ -988,10 +1020,25 @@ bool QuasiStaticHyperelasticityPressureOutput<
     return false;
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->displacementsLinearMesh_->setValues(displacementsLinearMesh);
   this->velocitiesLinearMesh_->setValues(velocitiesLinearMesh);
   this->pressure_->setValues(pressure);
-  // TODO(conni2461): restore geometry
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
