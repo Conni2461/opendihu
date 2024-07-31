@@ -33,26 +33,23 @@ bool DynamicHyperelasticitySolver<FunctionSpaceType>::restoreState(
     return false;
   }
 
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
+  }
+
   displacements_->setValues(displacements);
   velocities_->setValues(velocities);
   internalVirtualWork_->setValues(internalVirtualWork);
   accelerationTerm_->setValues(accelerationTerm);
   externalVirtualWorkDead_->setValues(externalVirtualWorkDead);
 
-  std::vector<VecD<3>> geometryValues;
-  {
-    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
-    if (!r.template readDoubleVecD<3>(
-            this->functionSpace_->geometryField().name().c_str(), n,
-            geometryValues, "3D/")) {
-      return false;
-    }
+  for (size_t i = 0; i < 3; i++) {
+    this->functionSpace_->geometryField().setValuesWithGhosts(
+        i, geometryValues[i], INSERT_VALUES);
   }
-
-  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
-  this->functionSpace_->geometryField().zeroGhostBuffer();
-  this->functionSpace_->geometryField().setRepresentationGlobal();
-  this->functionSpace_->geometryField().startGhostManipulation();
 
   return true;
 }

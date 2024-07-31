@@ -1,6 +1,7 @@
 #pragma once
 
 #include "control/types.h"
+#include "control/dihu_context.h"
 
 namespace InputReader {
 //! Base input reader class, that every input reader needs to implement. It
@@ -20,13 +21,10 @@ public:
   virtual bool readDoubleVector(const char *name, std::vector<double> &out,
                                 const std::string &groupName = "") const = 0;
 
-  //! Wrapper around readDoubleVector that reads maxSize items into a vector of
-  //! D dimensional arrays.
-  //! If the maxSize is set to -1, we will read the full vector into D
-  //! dimensions, otherwise maxSize % D == 0 is expected and this function will
-  //! return fales if this is not given.
+  //! Wrapper around readDoubleVector that reads items into an array of vectors
+  //! of dimension D.
   template <int D>
-  bool readDoubleVecD(const char *name, int maxSize, std::vector<VecD<D>> &out,
+  bool readDoubleVecD(const char *name, std::array<std::vector<double>, D> &out,
                       const std::string &groupName = "") const;
 };
 } // namespace InputReader

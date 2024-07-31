@@ -35,7 +35,6 @@ TimeStepping<FunctionSpaceType, nComponents>::~TimeStepping() {
 template <typename FunctionSpaceType, int nComponents>
 bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
     const InputReader::Generic &r) {
-  LOG(INFO) << "here once: " << this;
   std::vector<double> solution, increment;
   if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
@@ -53,26 +52,23 @@ bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
     }
     additionalValues.push_back(additional);
   }
-  std::vector<VecD<3>> geometryValues;
-  {
-    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
-    if (!r.template readDoubleVecD<3>(
-            this->functionSpace_->geometryField().name().c_str(), n,
-            geometryValues, "3D/")) {
-      return false;
-    }
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
   }
 
   this->solution_->setValues(solution);
   this->increment_->setValues(increment);
   for (int i = 0; i < additionalFieldVariables_.size(); i++) {
-    this->additionalFieldVariables_[i]->setValues(additionalValues[i]);
+    slotConnectorData_->variable2[i].values->setValues(additionalValues[i]);
   }
 
-  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
-  this->functionSpace_->geometryField().zeroGhostBuffer();
-  this->functionSpace_->geometryField().setRepresentationGlobal();
-  this->functionSpace_->geometryField().startGhostManipulation();
+  for (size_t i = 0; i < 3; i++) {
+    this->functionSpace_->geometryField().setValuesWithGhosts(
+        i, geometryValues[i], INSERT_VALUES);
+  }
 
   return true;
 }
@@ -222,6 +218,10 @@ TimeStepping<FunctionSpaceType,
                << slotConnectorData_->variable2[i].values->name()
                << "\" for additionalFieldVariables_[" << i << "]";
     additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
+    LOG(INFO) << "additionalFieldVariables[" << i << "] | dofs without: "
+              << additionalFieldVariables_[i]->nDofsLocalWithoutGhosts();
+              // << " nnodes without: "
+              // << additionalFieldVariables_[i]->nNodesLocalWithoutGhosts();
   }
   auto geometryField =
       std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(

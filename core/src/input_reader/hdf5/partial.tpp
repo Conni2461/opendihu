@@ -8,8 +8,8 @@ bool Partial::readDataset(const char *name, const std::string &groupName,
   const herr_t RANK = 1;
 
   const std::string *fullName = getFullDatasetName(name, groupName);
-  LOG(INFO) << "reading: " << name << " | fullname: " << fullName;
   if (!fullName) {
+    LOG(ERROR) << "Name: " << name << " not found";
     return false;
   }
   herr_t err;
@@ -35,6 +35,7 @@ bool Partial::readDataset(const char *name, const std::string &groupName,
     assert(err >= 0);
   }
   if (partition.size() != worldSize_) {
+    LOG(ERROR) << "Wrong partition size";
     return false;
   }
 
@@ -48,6 +49,7 @@ bool Partial::readDataset(const char *name, const std::string &groupName,
   assert(filespace >= 0);
   const int ndims = H5Sget_simple_extent_ndims(filespace);
   if (ndims != 1) {
+    LOG(ERROR) << "Dims not 1";
     err = H5Sclose(filespace);
     assert(err >= 0);
     err = H5Dclose(dset);
