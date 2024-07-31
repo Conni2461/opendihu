@@ -23,9 +23,11 @@ public:
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
-  bool readIntVector(const char *name, std::vector<int32_t> &out) const;
+  bool readIntVector(const char *name, std::vector<int32_t> &out,
+                     const std::string &groupName = "") const;
   //! Read a dataset of doubles in a flat vector passed in using an out variable
-  bool readDoubleVector(const char *name, std::vector<double> &out) const;
+  bool readDoubleVector(const char *name, std::vector<double> &out,
+                        const std::string &groupName = "") const;
 };
 } // namespace Json
 } // namespace InputReader

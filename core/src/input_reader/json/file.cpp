@@ -50,21 +50,29 @@ bool File::hasDataset(const char *name) const {
   return false;
 }
 
-bool File::readIntVector(const char *name, std::vector<int32_t> &out) const {
+bool File::readIntVector(const char *name, std::vector<int32_t> &out,
+                         const std::string &groupName) const {
   return false;
 }
 
-bool File::readDoubleVector(const char *name, std::vector<double> &out) const {
+bool File::readDoubleVector(const char *name, std::vector<double> &out,
+                            const std::string &groupName) const {
   return false;
 }
 
-const std::string *File::getPathToDataset(const char *name) const {
+const std::string *File::getPathToDataset(const char *name,
+                                          const std::string &groupName) const {
+  std::string dsname = name;
+  std::replace(dsname.begin(), dsname.end(), '/', '|');
+
   for (const auto &e : datasets_) {
     std::string sp = e.name.substr(e.name.find("/") + 1);
-    if (sp == name) {
-      // Return a pointer into the attributes set, this does not need to be
-      // deleted
-      return &e.path;
+    if (sp == dsname) {
+      if (groupName == "" || e.path.find(groupName) != std::string::npos) {
+        // Return a pointer into the attributes set, this does not need to be
+        // deleted
+        return &e.path;
+      }
     }
   }
   return nullptr;

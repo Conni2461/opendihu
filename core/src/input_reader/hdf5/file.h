@@ -40,16 +40,18 @@ public:
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
-  virtual bool readIntVector(const char *name, std::vector<int32_t> &out) const;
+  virtual bool readIntVector(const char *name, std::vector<int32_t> &out,
+                             const std::string &groupName = "") const;
   //! Read a dataset of doubles in a flat vector passed in using an out variable
-  virtual bool readDoubleVector(const char *name,
-                                std::vector<double> &out) const;
+  virtual bool readDoubleVector(const char *name, std::vector<double> &out,
+                                const std::string &groupName = "") const;
 
 protected:
   //! construct the full dataset name based on a given suffix
   //! It returns a pointer of a dataset name within the `datasets_` vector, so
   //! this does not need to be deleted.
-  const std::string *getFullDatasetName(const char *name) const;
+  const std::string *getFullDatasetName(const char *name,
+                                        const std::string &groupName) const;
 
   hid_t fileID_; //< id of open file
 

@@ -3,11 +3,11 @@
 namespace InputReader {
 namespace HDF5 {
 template <typename T>
-bool Partial::readDataset(const char *name, hid_t memTypeId,
-                          std::vector<T> &out) const {
+bool Partial::readDataset(const char *name, const std::string &groupName,
+                          hid_t memTypeId, std::vector<T> &out) const {
   const herr_t RANK = 1;
 
-  const std::string *fullName = getFullDatasetName(name);
+  const std::string *fullName = getFullDatasetName(name, groupName);
   LOG(INFO) << "reading: " << name << " | fullname: " << fullName;
   if (!fullName) {
     return false;

@@ -26,16 +26,18 @@ public:
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
-  bool readIntVector(const char *name, std::vector<int32_t> &out) const;
+  bool readIntVector(const char *name, std::vector<int32_t> &out,
+                     const std::string &groupName = "") const;
   //! Read a dataset of doubles in a flat vector passed in using an out variable
-  bool readDoubleVector(const char *name, std::vector<double> &out) const;
+  bool readDoubleVector(const char *name, std::vector<double> &out,
+                        const std::string &groupName = "") const;
 
 private:
   //! Helper function for reading any type into a flat vector witha a given
   //! name. Function is here to reduce code duplication.
   template <typename T>
-  bool readDataset(const char *name, hid_t memTypeId,
-                   std::vector<T> &out) const;
+  bool readDataset(const char *name, const std::string &groupName,
+                   hid_t memTypeId, std::vector<T> &out) const;
 
   int32_t ownRank_;   //< own rank cached
   int32_t worldSize_; //< world size cached
