@@ -111,12 +111,27 @@ bool FiniteElementsBase<FunctionSpaceType, nComponents>::restoreState(
     return false;
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->rhs_->setValues(rhs);
   this->solution_->setValues(solution);
   this->negativeRhsNeumannBoundaryConditions_->setValues(
       negativeRhsNeumannBoundaryConditions);
-  // TODO(conni2461): restore geometry, stiffnessMatrix,
-  // stiffnessMatrixWithoutBc
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
+  // TODO: restore stiffnessMatrix, stiffnessMatrixWithoutBc ???
   return true;
 }
 
@@ -357,6 +372,13 @@ typename FiniteElementsBase<FunctionSpaceType,
                             nComponents>::FieldVariablesForCheckpointing
 FiniteElementsBase<FunctionSpaceType,
                    nComponents>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  assert(this->functionSpace_);
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  return FieldVariablesForOutputWriter(geometryField, solution_, rhs_,
+                                       negativeRhsNeumannBoundaryConditions_);
 }
 } // namespace Data

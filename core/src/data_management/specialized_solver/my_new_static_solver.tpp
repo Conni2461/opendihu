@@ -56,7 +56,22 @@ bool MyNewStaticSolver<FunctionSpaceType>::restoreState(
   }
   this->solution_->setValues(solution);
   this->fieldVariableB_->setValues(fieldVariableB);
-  // TODO(conni2461): restore geometry
+
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -126,6 +141,16 @@ MyNewStaticSolver<FunctionSpaceType>::getFieldVariablesForOutputWriter() {
 template <typename FunctionSpaceType>
 typename MyNewStaticSolver<FunctionSpaceType>::FieldVariablesForCheckpointing
 MyNewStaticSolver<FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  return std::make_tuple(
+      geometryField, this->solution_,
+      this->fieldVariableB_ // add all field variables that should appear in the
+                            // output file. Of course, this list has to match
+                            // the type in the header file.
+  );
 }
 } // namespace Data

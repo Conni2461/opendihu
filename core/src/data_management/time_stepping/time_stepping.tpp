@@ -40,19 +40,27 @@ bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
   if (!r.readDoubleVector(this->solution_->uniqueName().c_str(), solution)) {
     return false;
   }
-  if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment))
-  {
+  if (!r.readDoubleVector(this->increment_->uniqueName().c_str(), increment)) {
     return false;
   }
   std::vector<std::vector<double>> additionalValues;
   for (int i = 0; i < additionalFieldVariables_.size(); i++) {
     std::vector<double> additional;
-    if
-    (!r.readDoubleVector(this->additionalFieldVariables_[i]->uniqueName().c_str(),
-    additional)) {
+    if (!r.readDoubleVector(
+            this->additionalFieldVariables_[i]->uniqueName().c_str(),
+            additional)) {
       return false;
     }
     additionalValues.push_back(additional);
+  }
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
   }
 
   this->solution_->setValues(solution);
@@ -60,7 +68,12 @@ bool TimeStepping<FunctionSpaceType, nComponents>::restoreState(
   for (int i = 0; i < additionalFieldVariables_.size(); i++) {
     this->additionalFieldVariables_[i]->setValues(additionalValues[i]);
   }
-  // TODO(conni2461): restore geometry
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -210,12 +223,13 @@ TimeStepping<FunctionSpaceType,
                << "\" for additionalFieldVariables_[" << i << "]";
     additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
   }
+  auto geometryField =
+      std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+          this->functionSpace_->geometryField());
 
   // these field variables will be written to output files
-  return FieldVariablesForCheckpointing(
-      std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
-          this->functionSpace_->geometryField()),
-      solution_, increment_, additionalFieldVariables_);
+  return FieldVariablesForCheckpointing(geometryField, solution_, increment_,
+                                        additionalFieldVariables_);
 }
 
 //! output the given data for debugging

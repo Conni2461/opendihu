@@ -104,7 +104,22 @@ bool DiffusionAdvectionSolver<FunctionSpaceType>::restoreState(
   this->solution_->setValues(solution);
   this->increment_->setValues(increment);
 
-  // TODO(conni2461): restore geometry, vMatrix (???)
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
+  // TODO: restore vMatrix (???)
   return true;
 }
 
@@ -201,6 +216,15 @@ typename DiffusionAdvectionSolver<
     FunctionSpaceType>::FieldVariablesForCheckpointing
 DiffusionAdvectionSolver<
     FunctionSpaceType>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+  geometryField->setUniqueName("diffusion_advection_solver_" +
+                               geometryField->name());
+
+  return std::make_tuple(geometryField, this->solution_, this->increment_
+
+  );
 }
 } // namespace Data

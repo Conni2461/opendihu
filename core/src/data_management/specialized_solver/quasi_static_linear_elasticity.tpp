@@ -78,8 +78,7 @@ bool QuasiStaticLinearElasticity<DataLinearElasticityType>::restoreState(
   fiberDirection_->setValues(fiberDirection);
   flowPotential_->setValues(flowPotential);
 
-  // TODO(conni2461): restore dataLinearElasticity_
-  return true;
+  return this->dataLinearElasticity_->restoreState();
 }
 
 template <typename DataLinearElasticityType>
