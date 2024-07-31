@@ -4,9 +4,9 @@ namespace InputReader {
 namespace Json {
 FullDataset::FullDataset(const char *file) : File(file) {}
 
-bool FullDataset::readIntVector(const char *name,
-                                std::vector<int32_t> &out) const {
-  const std::string *path = getPathToDataset(name);
+bool FullDataset::readIntVector(const char *name, std::vector<int32_t> &out,
+                                const std::string &groupName) const {
+  const std::string *path = getPathToDataset(name, groupName);
   if (!path) {
     return false;
   }
@@ -14,9 +14,9 @@ bool FullDataset::readIntVector(const char *name,
   return true;
 }
 
-bool FullDataset::readDoubleVector(const char *name,
-                                   std::vector<double> &out) const {
-  const std::string *path = getPathToDataset(name);
+bool FullDataset::readDoubleVector(const char *name, std::vector<double> &out,
+                                   const std::string &groupName) const {
+  const std::string *path = getPathToDataset(name, groupName);
   if (!path) {
     return false;
   }

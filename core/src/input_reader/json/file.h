@@ -30,14 +30,16 @@ public:
 
   //! Read a dataset of integers in a flat vector passed in using an out
   //! variable
-  virtual bool readIntVector(const char *name, std::vector<int32_t> &out) const;
+  virtual bool readIntVector(const char *name, std::vector<int32_t> &out,
+                             const std::string &groupName = "") const;
   //! Read a dataset of doubles in a flat vector passed in using an out variable
-  virtual bool readDoubleVector(const char *name,
-                                std::vector<double> &out) const;
+  virtual bool readDoubleVector(const char *name, std::vector<double> &out,
+                                const std::string &groupName = "") const;
 
 protected:
   //! Returns a jsonpointer path to the dataset
-  const std::string *getPathToDataset(const char *name) const;
+  const std::string *getPathToDataset(const char *name,
+                                      const std::string &groupName) const;
 
   std::vector<Object> datasets_;      //< cached datasets
   std::vector<Attribute> attributes_; //< cached attributes
