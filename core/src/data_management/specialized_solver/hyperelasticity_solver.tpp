@@ -171,15 +171,11 @@ bool QuasiStaticHyperelasticityBase<
       this->deformationGradientDeterminant_->uniqueName().c_str(),
       deformationGradientDeterminant);
 
-  std::vector<VecD<3>> geometryValues;
-  {
-    int n = this->displacementsFunctionSpace_->geometryField()
-                .nDofsLocalWithoutGhosts();
-    if (!r.template readDoubleVecD<3>(
-            this->functionSpace_->geometryField().name().c_str(), n,
-            geometryValues, "3D/")) {
-      return false;
-    }
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->displacementsFunctionSpace_->geometryField().name().c_str(),
+          geometryValues, "3D/")) {
+    return false;
   }
 
   this->displacements_->setValues(displacements);
@@ -216,11 +212,10 @@ bool QuasiStaticHyperelasticityBase<
         deformationGradientDeterminant);
   }
 
-  this->displacementsFunctionSpace_->geometryField().setValuesWithoutGhosts(
-      geometryValues);
-  this->displacementsFunctionSpace_->geometryField().zeroGhostBuffer();
-  this->displacementsFunctionSpace_->geometryField().setRepresentationGlobal();
-  this->displacementsFunctionSpace_->geometryField().startGhostManipulation();
+  for (size_t i = 0; i < 3; i++) {
+    this->displacementsFunctionSpace_->geometryField().setValuesWithGhosts(
+        i, geometryValues[i], INSERT_VALUES);
+  }
 
   return true;
 }
@@ -1020,24 +1015,21 @@ bool QuasiStaticHyperelasticityPressureOutput<
     return false;
   }
 
-  std::vector<VecD<3>> geometryValues;
-  {
-    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
-    if (!r.template readDoubleVecD<3>(
-            this->functionSpace_->geometryField().name().c_str(), n,
-            geometryValues, "3D/")) {
-      return false;
-    }
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
   }
 
   this->displacementsLinearMesh_->setValues(displacementsLinearMesh);
   this->velocitiesLinearMesh_->setValues(velocitiesLinearMesh);
   this->pressure_->setValues(pressure);
 
-  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
-  this->functionSpace_->geometryField().zeroGhostBuffer();
-  this->functionSpace_->geometryField().setRepresentationGlobal();
-  this->functionSpace_->geometryField().startGhostManipulation();
+  for (size_t i = 0; i < 3; i++) {
+    this->functionSpace_->geometryField().setValuesWithGhosts(
+        i, geometryValues[i], INSERT_VALUES);
+  }
 
   return true;
 }

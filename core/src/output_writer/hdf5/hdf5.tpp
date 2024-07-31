@@ -237,7 +237,9 @@ template <typename T>
 herr_t Group::writeSimpleVec(const std::vector<T> &data,
                              const std::string &dsname) {
   // make sure we only write a item only once
+  LOG(INFO) << "writing: " << dsname;
   if (this->exists(dsname)) {
+    LOG(INFO) << "would override: " << dsname;
     return 0;
   }
 

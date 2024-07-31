@@ -59,14 +59,11 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
     return false;
   }
 
-  std::vector<VecD<3>> geometryValues;
-  {
-    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
-    if (!r.template readDoubleVecD<3>(
-            this->functionSpace_->geometryField().name().c_str(), n,
-            geometryValues, "3D/")) {
-      return false;
-    }
+  std::array<std::vector<double>, 3> geometryValues;
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
   }
 
   this->activation_->setValues(activation);
@@ -77,10 +74,10 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
   this->greenLagrangeStrain_->setValues(greenLagrangeStrain);
   this->relativeVolume_->setValues(relativeVolume);
 
-  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
-  this->functionSpace_->geometryField().zeroGhostBuffer();
-  this->functionSpace_->geometryField().setRepresentationGlobal();
-  this->functionSpace_->geometryField().startGhostManipulation();
+  for (size_t i = 0; i < 3; i++) {
+    this->functionSpace_->geometryField().setValuesWithGhosts(
+        i, geometryValues[i], INSERT_VALUES);
+  }
 
   // Note we do not need to hande referenceGeometry here
   return true;

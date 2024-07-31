@@ -776,9 +776,10 @@ void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
       this->setValuesWithGhosts(componentIndex, t, INSERT_VALUES);
     }
   } else {
-    LOG(ERROR) << "Failed to set values in fieldVariable [" << this->name()
-               << "] because values.size() != (nDofs * nComponents): "
-               << values.size() << "!= " << (nDofs * nComponents);
+    LOG(WARNING) << "Failed to set values in fieldVariable ["
+                 << this->uniqueName()
+                 << "] because values.size() != (nDofs * nComponents): "
+                 << values.size() << "!= " << (nDofs * nComponents);
     assert(false);
   }
 }
