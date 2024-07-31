@@ -83,13 +83,28 @@ bool PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
     }
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   for (size_t i = 0; i < fieldVariables1_.size(); i++) {
     fieldVariables1_[i]->setValues(data1[i]);
   }
   for (size_t i = 0; i < fieldVariables2_.size(); i++) {
     fieldVariables2_[i]->setValues(data2[i]);
   }
-  // TODO(conni2461): restore geometry
+
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 
@@ -180,6 +195,24 @@ typename PrescribedValues<FunctionSpaceType, nComponents1,
                           nComponents2>::FieldVariablesForCheckpointing
 PrescribedValues<FunctionSpaceType, nComponents1,
                  nComponents2>::getFieldVariablesForCheckpointing() {
-  return this->getFieldVariablesForOutputWriter();
+  std::shared_ptr<FieldVariable::FieldVariable<FunctionSpaceType, 3>>
+      geometryField =
+          std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
+              this->functionSpace_->geometryField());
+
+  // update the pointer of the field variables, because the most recent field
+  // variable may be in slotConnectorData_ (it could have been changed during
+  // transfer)
+  for (int fieldVariable1No = 0; fieldVariable1No < fieldVariables1_.size();
+       fieldVariable1No++) {
+    this->fieldVariables1_[fieldVariable1No] = fieldVariable1(fieldVariable1No);
+  }
+  for (int fieldVariable2No = 0; fieldVariable2No < fieldVariables2_.size();
+       fieldVariable2No++) {
+    this->fieldVariables2_[fieldVariable2No] = fieldVariable2(fieldVariable2No);
+  }
+
+  return std::make_tuple(geometryField, this->fieldVariables1_,
+                         this->fieldVariables2_);
 }
 } // namespace Data

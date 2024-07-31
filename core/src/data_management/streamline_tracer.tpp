@@ -46,8 +46,9 @@ bool StreamlineTracer<FunctionSpaceType, BaseDataType>::restoreState(
     return false;
   }
   this->gradient_->setValues(gradient);
-  // TODO(conni2461): restore baseData_ and fiberGeometry_
-  return true;
+  // TODO: restore fiberGeometry_, currently not serialized
+
+  return this->baseData_->restoreState(r);
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>

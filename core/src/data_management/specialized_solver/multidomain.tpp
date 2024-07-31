@@ -161,6 +161,16 @@ bool Multidomain<FunctionSpaceType>::restoreState(
     }
   }
 
+  std::vector<VecD<3>> geometryValues;
+  {
+    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
+    if (!r.template readDoubleVecD<3>(
+            this->functionSpace_->geometryField().name().c_str(), n,
+            geometryValues, "3D/")) {
+      return false;
+    }
+  }
+
   this->flowPotential_->setValues(flowPotential);
   this->fiberDirection_->setValues(fiberDirection);
   this->extraCellularPotential_->setValues(phi_e);
@@ -176,7 +186,11 @@ bool Multidomain<FunctionSpaceType>::restoreState(
     this->activeStress_[k]->setValues(activeStress[k]);
   }
 
-  // TODO(conni2461): restore geometry_
+  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
+  this->functionSpace_->geometryField().zeroGhostBuffer();
+  this->functionSpace_->geometryField().setRepresentationGlobal();
+  this->functionSpace_->geometryField().startGhostManipulation();
+
   return true;
 }
 

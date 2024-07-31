@@ -2,7 +2,7 @@
 
 namespace InputReader {
 template <int D>
-bool Generic::readDoubleVecD(const char *name, ssize_t maxSize,
+bool Generic::readDoubleVecD(const char *name, int maxSize,
                              std::vector<VecD<D>> &out,
                              const std::string &groupName) const {
   if (maxSize >= 0) {

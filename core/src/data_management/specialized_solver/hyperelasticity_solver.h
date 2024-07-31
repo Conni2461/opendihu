@@ -145,7 +145,8 @@ public:
       std::shared_ptr<DisplacementsFieldVariableType>, // materialTraction_
       std::shared_ptr<
           DisplacementsLinearFieldVariableType>, // displacementsLinearMesh_
-      std::shared_ptr<DisplacementsLinearFieldVariableType>, // velocitiesLinearMesh_
+      std::shared_ptr<
+          DisplacementsLinearFieldVariableType>, // velocitiesLinearMesh_
 
       std::shared_ptr<PressureFieldVariableType>, // pressure_
       // std::shared_ptr<DisplacementsFieldVariableType>, //
@@ -164,6 +165,7 @@ public:
   FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
 
   bool restoreState(const InputReader::Generic &r);
+
 protected:
   //! initializes the vectors with size
   void createPetscObjects() override;
