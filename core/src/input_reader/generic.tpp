@@ -2,35 +2,20 @@
 
 namespace InputReader {
 template <int D>
-bool Generic::readDoubleVecD(const char *name, int maxSize,
-                             std::vector<VecD<D>> &out,
+bool Generic::readDoubleVecD(const char *name,
+                             std::array<std::vector<double>, D> &out,
                              const std::string &groupName) const {
-  if (maxSize >= 0) {
-    if (maxSize % D != 0) {
-      return false;
-    }
-  }
-
   std::vector<double> values;
   bool ret = this->readDoubleVector(name, values, groupName);
   if (!ret) {
     return ret;
   }
-
-  if (maxSize < 0) {
-    maxSize = values.size();
-    if (maxSize % D != 0) {
-      return false;
-    }
+  for (size_t i = 0; i < D; i++) {
+    out[i] = std::vector<double>();
+    out[i].reserve(values.size() / D);
   }
-
-  out.reserve(maxSize / D);
-  for (size_t i = 0; i < maxSize; i += D) {
-    VecD<D> mat;
-    for (size_t j = 0; j < D; j++) {
-      mat[j] = values[i + j];
-    }
-    out.push_back(mat);
+  for (size_t i = 0; i < values.size(); i++) {
+    out[i % D].push_back(values[i]);
   }
 
   return true;

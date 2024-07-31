@@ -58,7 +58,6 @@ void MultipleInstances<FunctionSpaceType, BaseTimesteppingType>::
 template <typename FunctionSpaceType, typename BaseDataType>
 bool MultipleInstances<FunctionSpaceType, BaseDataType>::restoreState(
     const InputReader::Generic &r) {
-  LOG(INFO) << "here, restoring data";
   bool v = true;
   for (auto iter : instancesData_) {
     bool b = iter->restoreState(r);
