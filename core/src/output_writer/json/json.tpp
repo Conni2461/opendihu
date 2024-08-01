@@ -31,29 +31,37 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
   std::set<std::string> combined2DMeshes;
   std::set<std::string> combined3DMeshes;
 
-  if (combineFiles_) {
-    std::unique_ptr<JsonUtils::File> file;
+  std::unique_ptr<JsonUtils::File> file;
+  {
     if (!filename) {
-      // determine filename, broadcast from rank 0
-      std::stringstream filename;
-      filename << this->filenameBaseWithNo_ << "_c.json";
-      int filenameLength = filename.str().length();
+      std::string finalFileName;
+      if (combineFiles_) {
+        // determine filename, broadcast from rank 0
+        std::stringstream filename;
+        filename << this->filenameBaseWithNo_ << "_c.json";
+        int filenameLength = filename.str().length();
 
-      // broadcast length of filename
-      MPIUtility::handleReturnValue(
-          MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
-                    this->rankSubset_->mpiCommunicator()),
-          "MPI_Bcast");
+        // broadcast length of filename
+        MPIUtility::handleReturnValue(
+            MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
+                      this->rankSubset_->mpiCommunicator()),
+            "MPI_Bcast");
 
-      std::vector<char> receiveBuffer(filenameLength + 1, char(0));
-      strcpy(receiveBuffer.data(), filename.str().c_str());
-      MPIUtility::handleReturnValue(
-          MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
-                    this->rankSubset_->mpiCommunicator()),
-          "MPI_Bcast");
-      file = std::make_unique<JsonUtils::File>(receiveBuffer.data(), true);
+        std::vector<char> receiveBuffer(filenameLength + 1, char(0));
+        strcpy(receiveBuffer.data(), filename.str().c_str());
+        MPIUtility::handleReturnValue(
+            MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
+                      this->rankSubset_->mpiCommunicator()),
+            "MPI_Bcast");
+
+        finalFileName = std::string(receiveBuffer.data());
+      } else {
+        finalFileName = std::string(this->filename_ + "_p.h5");
+      }
+      file = std::make_unique<JsonUtils::File>(finalFileName.c_str(),
+                                               combineFiles_);
     } else {
-      file = std::make_unique<JsonUtils::File>(filename, true);
+      file = std::make_unique<JsonUtils::File>(filename, combineFiles_);
     }
 
     if (writeMeta_) {
@@ -107,6 +115,11 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
     Control::PerformanceMeasurement::stop("durationJson2D");
   }
 
+  // if we have a combined file, we are done with it
+  if (combineFiles_) {
+    file.reset();
+  }
+
   // output normal files, parallel or if combineFiles_, only the 2D and 3D
   // meshes, combined
 
@@ -147,17 +160,22 @@ void Json::innerWrite(const FieldVariablesForOutputWriterType &variables,
       s << this->filename_ << "_p.json";
     }
 
-    JsonUtils::File file = JsonUtils::File(s.str().c_str(), false);
-    if (writeMeta_) {
-      file.writeAttr("rawVersion", DihuContext::version());
-      file.writeAttr("version", DihuContext::versionText());
-      file.writeAttr("meta", DihuContext::metaText());
-      file.writeAttr("worldSize", DihuContext::nRanksCommWorld());
+    // if we have a combine file we create a new file, otherwise we can reuse
+    // the original file
+    if (combineFiles_) {
+      file = std::make_unique<JsonUtils::File>(s.str().c_str(), false);
+      if (writeMeta_) {
+        file->writeAttr("rawVersion", DihuContext::version());
+        file->writeAttr("version", DihuContext::versionText());
+        file->writeAttr("meta", DihuContext::metaText());
+        file->writeAttr("worldSize", DihuContext::nRanksCommWorld());
+      }
+      file->writeAttr("currentTime", this->currentTime_);
+      file->template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
     }
-    file.writeAttr("currentTime", this->currentTime_);
-    file.template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
+
     for (const std::string &meshName : meshesToOutput) {
-      JsonUtils::Group group = file.newGroup(meshName.c_str());
+      JsonUtils::Group group = file->newGroup(meshName.c_str());
       // loop over all field variables and output those that are associated with
       // the mesh given by meshName
       JsonLoopOverTuple::loopOutput(group, variables, variables, meshName,
