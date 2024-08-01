@@ -20,8 +20,8 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
         this->endTimeIfCouplingDisabled_ / this->timeStepWidth_;
     int timeStepNo = 0;
     if (checkpointing) {
-      checkpointing->restore(this->nestedSolver_.data(), timeStepNo,
-                             currentTime);
+      auto d = this->nestedSolver_.fullData();
+      checkpointing->restore(d, timeStepNo, currentTime);
     }
 
     for (; timeStepNo < nTimeSteps; timeStepNo++) {
@@ -45,8 +45,8 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
 
       if (checkpointing) {
         if (checkpointing->needCheckpoint()) {
-          checkpointing->createCheckpoint(this->nestedSolver_.data(),
-                                          timeStepNo, currentTime);
+          auto d = this->nestedSolver_.fullData();
+          checkpointing->createCheckpoint(d, timeStepNo, currentTime);
         }
 
         if (checkpointing->shouldExit()) {
@@ -81,7 +81,8 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
 
   int timeStepNo = 0;
   if (checkpointing) {
-    checkpointing->restore(this->nestedSolver_.data(), timeStepNo, currentTime);
+    auto d = this->nestedSolver_.fullData();
+    checkpointing->restore(d, timeStepNo, currentTime);
   }
 
   // perform the computation of this solver
@@ -129,8 +130,8 @@ template <typename NestedSolver> void PreciceAdapter<NestedSolver>::run() {
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->nestedSolver_.data(), timeStepNo,
-                                        currentTime);
+        auto d = this->nestedSolver_.fullData();
+        checkpointing->createCheckpoint(d, timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {
