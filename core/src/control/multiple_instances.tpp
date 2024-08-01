@@ -468,6 +468,13 @@ MultipleInstances<TimeSteppingScheme>::data() {
 }
 
 template <typename TimeSteppingScheme>
+::Data::MultipleInstances<typename TimeSteppingScheme::FunctionSpace,
+                          TimeSteppingScheme> &
+MultipleInstances<TimeSteppingScheme>::fullData() {
+  return data_;
+}
+
+template <typename TimeSteppingScheme>
 void MultipleInstances<TimeSteppingScheme>::reset() {
   for (int i = 0; i < nInstancesLocal_; i++) {
     reset();

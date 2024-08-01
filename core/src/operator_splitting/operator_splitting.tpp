@@ -234,6 +234,12 @@ OperatorSplitting<TimeStepping1, TimeStepping2>::data() {
   return data_;
 }
 
+template <typename TimeStepping1, typename TimeStepping2>
+typename OperatorSplitting<TimeStepping1, TimeStepping2>::Data &
+OperatorSplitting<TimeStepping1, TimeStepping2>::fullData() {
+  return data_;
+}
+
 //! get a reference to the first timestepping object
 template <typename TimeStepping1, typename TimeStepping2>
 TimeStepping1 &

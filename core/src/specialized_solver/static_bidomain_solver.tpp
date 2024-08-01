@@ -396,6 +396,15 @@ StaticBidomainSolver<FiniteElementMethodPotentialFlow,
   return data_;
 }
 
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusion>
+typename StaticBidomainSolver<FiniteElementMethodPotentialFlow,
+                              FiniteElementMethodDiffusion>::Data &
+StaticBidomainSolver<FiniteElementMethodPotentialFlow,
+                     FiniteElementMethodDiffusion>::fullData() {
+  return data_;
+}
+
 //! get the data that will be transferred in the operator splitting to the other
 //! term of the splitting the transfer is done by the
 //! slot_connector_data_transfer class

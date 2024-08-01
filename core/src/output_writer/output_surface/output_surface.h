@@ -13,6 +13,7 @@ template <typename Solver> class OutputSurface : public Runnable {
 public:
   typedef typename Solver::FunctionSpace FunctionSpace;
   typedef typename Solver::Data Data;
+  typedef Data FullData;
   typedef typename ::Data::OutputSurface<Data> DataSurface;
   typedef typename Solver::SlotConnectorDataType SlotConnectorDataType;
 
@@ -43,6 +44,10 @@ public:
 
   //! return the data object of the timestepping scheme
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the

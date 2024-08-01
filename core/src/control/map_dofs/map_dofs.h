@@ -64,6 +64,10 @@ public:
   //! return the data object of the timestepping scheme
   Data &data();
 
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
+
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done
   //! by the slot_connector_data_transfer class

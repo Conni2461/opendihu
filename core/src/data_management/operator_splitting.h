@@ -44,9 +44,9 @@ public:
   //! field variables that will be output by checkpointing
   typedef decltype(std::tuple_cat(
       std::declval<
-          typename TimeStepping1::Data::FieldVariablesForCheckpointing>(),
+          typename TimeStepping1::FullData::FieldVariablesForCheckpointing>(),
       std::declval<
-          typename TimeStepping2::Data::FieldVariablesForCheckpointing>()))
+          typename TimeStepping2::FullData::FieldVariablesForCheckpointing>()))
       FieldVariablesForCheckpointing;
 
   //! get pointers to all field variables that can be written by checkpointing

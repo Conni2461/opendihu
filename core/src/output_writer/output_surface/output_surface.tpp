@@ -227,6 +227,11 @@ typename OutputSurface<Solver>::Data &OutputSurface<Solver>::data() {
 }
 
 template <typename Solver>
+typename OutputSurface<Solver>::Data &OutputSurface<Solver>::fullData() {
+  return solver_.data();
+}
+
+template <typename Solver>
 std::shared_ptr<typename OutputSurface<Solver>::SlotConnectorDataType>
 OutputSurface<Solver>::getSlotConnectorData() {
   return solver_.getSlotConnectorData();

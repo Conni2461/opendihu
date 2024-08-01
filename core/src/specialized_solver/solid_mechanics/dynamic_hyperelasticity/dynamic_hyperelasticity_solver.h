@@ -64,6 +64,10 @@ public:
   //! get the data to create their output files
   Data &data();
 
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
+
   //! get a reference to the underlying HyperelasticitySolver which has the
   //! material formulation and the nonlinear solver
   HyperelasticitySolverType &hyperelasticitySolver();

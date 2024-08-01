@@ -67,6 +67,7 @@ public:
 
   typedef typename NestedSolversType::FunctionSpace FunctionSpace;
   typedef typename NestedSolversType::Data Data;
+  typedef Data FullData;
   typedef
       typename NestedSolversType::SlotConnectorDataType SlotConnectorDataType;
 
@@ -94,6 +95,10 @@ public:
 
   //! get a reference to the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! set a new time interval that will be simulated by next call to
   //! advanceTimeSpan.
