@@ -31,29 +31,37 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
   std::set<std::string> combined2DMeshes;
   std::set<std::string> combined3DMeshes;
 
-  if (combineFiles_) {
-    std::unique_ptr<HDF5Utils::File> file;
+  std::unique_ptr<HDF5Utils::File> file;
+  {
     if (!filename) {
-      // determine filename, broadcast from rank 0
-      std::stringstream filename;
-      filename << this->filenameBaseWithNo_ << "_c.h5";
-      int filenameLength = filename.str().length();
+      std::string finalFileName;
+      if (combineFiles_) {
+        // determine filename, broadcast from rank 0 if we have combined output
+        std::stringstream filename;
+        filename << this->filenameBaseWithNo_ << "_c.h5";
+        int filenameLength = filename.str().length();
 
-      // broadcast length of filename
-      MPIUtility::handleReturnValue(
-          MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
-                    this->rankSubset_->mpiCommunicator()),
-          "MPI_Bcast");
+        // broadcast length of filename
+        MPIUtility::handleReturnValue(
+            MPI_Bcast(&filenameLength, 1, MPI_INT, 0,
+                      this->rankSubset_->mpiCommunicator()),
+            "MPI_Bcast");
 
-      std::vector<char> receiveBuffer(filenameLength + 1, char(0));
-      strcpy(receiveBuffer.data(), filename.str().c_str());
-      MPIUtility::handleReturnValue(
-          MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
-                    this->rankSubset_->mpiCommunicator()),
-          "MPI_Bcast");
-      file = std::make_unique<HDF5Utils::File>(receiveBuffer.data(), true);
+        std::vector<char> receiveBuffer(filenameLength + 1, char(0));
+        strcpy(receiveBuffer.data(), filename.str().c_str());
+        MPIUtility::handleReturnValue(
+            MPI_Bcast(receiveBuffer.data(), filenameLength, MPI_CHAR, 0,
+                      this->rankSubset_->mpiCommunicator()),
+            "MPI_Bcast");
+        finalFileName = std::string(receiveBuffer.data());
+      } else {
+        finalFileName = std::string(this->filename_ + "_p.h5");
+      }
+
+      file = std::make_unique<HDF5Utils::File>(finalFileName.c_str(),
+                                               combineFiles_);
     } else {
-      file = std::make_unique<HDF5Utils::File>(filename, true);
+      file = std::make_unique<HDF5Utils::File>(filename, combineFiles_);
     }
 
     herr_t err;
@@ -114,6 +122,11 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
     Control::PerformanceMeasurement::stop("durationHDF52D");
   }
 
+  // if we have a combined file, we are done with it
+  if (combineFiles_) {
+    file.reset();
+  }
+
   // output normal files, parallel or if combineFiles_, only the 2D and 3D
   // meshes, combined
 
@@ -154,24 +167,29 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
       s << this->filename_ << "_p.h5";
     }
 
-    HDF5Utils::File file = HDF5Utils::File(s.str().c_str(), false);
-    herr_t err;
-    if (writeMeta_) {
-      err = file.writeAttr("rawVersion", DihuContext::version());
+    // if we have a combine file we create a new file, otherwise we can reuse
+    // the original file
+    if (combineFiles_) {
+      file = std::make_unique<HDF5Utils::File>(s.str().c_str(), false);
+      herr_t err;
+      if (writeMeta_) {
+        err = file->writeAttr("rawVersion", DihuContext::version());
+        assert(err >= 0);
+        err = file->writeAttr("version", DihuContext::versionText());
+        assert(err >= 0);
+        err = file->writeAttr("meta", DihuContext::metaText());
+        assert(err >= 0);
+        err = file->writeAttr("worldSize", DihuContext::nRanksCommWorld());
+        assert(err >= 0);
+      }
+      err = file->writeAttr("currentTime", this->currentTime_);
       assert(err >= 0);
-      err = file.writeAttr("version", DihuContext::versionText());
-      assert(err >= 0);
-      err = file.writeAttr("meta", DihuContext::metaText());
-      assert(err >= 0);
-      err = file.writeAttr("worldSize", DihuContext::nRanksCommWorld());
+      err = file->template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
       assert(err >= 0);
     }
-    err = file.writeAttr("currentTime", this->currentTime_);
-    assert(err >= 0);
-    err = file.template writeAttr<int32_t>("timeStepNo", this->timeStepNo_);
-    assert(err >= 0);
+
     for (const std::string &meshName : meshesToOutput) {
-      HDF5Utils::Group group = file.newGroup(meshName.c_str());
+      HDF5Utils::Group group = file->newGroup(meshName.c_str());
       // loop over all field variables and output those that are associated with
       // the mesh given by meshName
       HDF5LoopOverTuple::loopOutput(group, variables, variables, meshName,
