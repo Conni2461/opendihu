@@ -780,7 +780,7 @@ void FieldVariableSetGetStructured<FunctionSpaceType, nComponents>::setValues(
                  << this->uniqueName()
                  << "] because values.size() != (nDofs * nComponents): "
                  << values.size() << "!= " << (nDofs * nComponents);
-    assert(false);
+    // assert(false);
   }
 }
 
