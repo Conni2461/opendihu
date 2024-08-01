@@ -220,8 +220,6 @@ TimeStepping<FunctionSpaceType,
     additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
     LOG(INFO) << "additionalFieldVariables[" << i << "] | dofs without: "
               << additionalFieldVariables_[i]->nDofsLocalWithoutGhosts();
-              // << " nnodes without: "
-              // << additionalFieldVariables_[i]->nNodesLocalWithoutGhosts();
   }
   auto geometryField =
       std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
