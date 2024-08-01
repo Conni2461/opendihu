@@ -316,6 +316,12 @@ MapDofs<FunctionSpaceType, NestedSolverType>::data() {
   return data_;
 }
 
+template <typename FunctionSpaceType, typename NestedSolverType>
+typename MapDofs<FunctionSpaceType, NestedSolverType>::Data &
+MapDofs<FunctionSpaceType, NestedSolverType>::fullData() {
+  return data_;
+}
+
 //! Get the data that will be transferred in the operator splitting or coupling
 //! to the other term of the splitting/coupling. the transfer is done by the
 //! slot_connector_data_transfer class

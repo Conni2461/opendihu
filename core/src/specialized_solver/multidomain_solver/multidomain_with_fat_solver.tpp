@@ -1134,4 +1134,16 @@ MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
   return dataFat_;
 }
 
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusionMuscle,
+          typename FiniteElementMethodDiffusionFat>
+typename MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
+                                  FiniteElementMethodDiffusionMuscle,
+                                  FiniteElementMethodDiffusionFat>::FullData &
+MultidomainWithFatSolver<FiniteElementMethodPotentialFlow,
+                         FiniteElementMethodDiffusionMuscle,
+                         FiniteElementMethodDiffusionFat>::fullData() {
+  return dataFat_;
+}
+
 } // namespace TimeSteppingScheme

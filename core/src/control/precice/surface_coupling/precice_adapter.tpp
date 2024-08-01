@@ -160,4 +160,11 @@ PreciceAdapter<NestedSolver>::data() {
   return this->nestedSolver_.data();
 }
 
+template <typename NestedSolver>
+typename PreciceAdapter<NestedSolver>::Data &
+PreciceAdapter<NestedSolver>::fullData() {
+  // get a reference to the data object
+  return this->nestedSolver_.fullData();
+}
+
 } // namespace Control

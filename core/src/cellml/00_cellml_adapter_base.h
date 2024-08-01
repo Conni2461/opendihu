@@ -118,6 +118,10 @@ public:
   //! return reference to the data object that stores all field variables
   Data &data();
 
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
+
   //! get the python config object that contains all python settings for the
   //! CellML adapter
   PythonConfig specificSettings();

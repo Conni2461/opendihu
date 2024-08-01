@@ -72,6 +72,12 @@ typename RepeatedCallStatic<Solver>::Data &RepeatedCallStatic<Solver>::data() {
 }
 
 template <typename Solver>
+typename RepeatedCallStatic<Solver>::Data &
+RepeatedCallStatic<Solver>::fullData() {
+  return solver_.data();
+}
+
+template <typename Solver>
 std::shared_ptr<typename RepeatedCallStatic<Solver>::SlotConnectorDataType>
 RepeatedCallStatic<Solver>::getSlotConnectorData() {
   return solver_.getSlotConnectorData();

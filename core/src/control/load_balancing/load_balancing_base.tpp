@@ -108,6 +108,12 @@ LoadBalancingBase<TimeStepping>::data() {
   return timeSteppingScheme_.data();
 }
 
+template <typename TimeStepping>
+typename LoadBalancingBase<TimeStepping>::Data &
+LoadBalancingBase<TimeStepping>::fullData() {
+  return timeSteppingScheme_.fullData();
+}
+
 //! get the data that will be transferred in the operator splitting to the other
 //! term of the splitting the transfer is done by the
 //! slot_connector_data_transfer class

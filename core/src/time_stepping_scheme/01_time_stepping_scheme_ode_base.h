@@ -19,6 +19,7 @@ public:
   typedef FunctionSpaceType FunctionSpace;
   typedef typename Data::TimeStepping<FunctionSpaceType, nComponents>
       Data; // type of Data object
+  typedef Data FullData;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
 
   //! constructor
@@ -32,6 +33,10 @@ public:
 
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! output the given data for debugging
   // virtual std::string getString(std::shared_ptr<SlotConnectorDataType> data);

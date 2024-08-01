@@ -28,6 +28,12 @@ TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::data() {
 }
 
 template <typename FunctionSpaceType, int nComponents>
+typename Data::TimeStepping<FunctionSpaceType, nComponents> &
+TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::fullData() {
+  return *data_;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 void TimeSteppingSchemeOdeBase<FunctionSpaceType,
                                nComponents>::setInitialValues() {
   // set initial values as given in settings, or set to zero if not given

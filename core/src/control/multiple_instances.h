@@ -27,6 +27,7 @@ public:
   typedef typename ::Data::MultipleInstances<
       typename TimeSteppingScheme::FunctionSpace, TimeSteppingScheme>
       Data;
+  typedef Data FullData;
   typedef TimeSteppingScheme TimeSteppingSchemeType;
 
   //! constructor
@@ -47,6 +48,10 @@ public:
 
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the

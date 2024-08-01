@@ -685,6 +685,12 @@ DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::data() {
 }
 
 template <typename Term, bool withLargeOutput, typename MeshType>
+typename DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::Data &
+DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::fullData() {
+  return data_;
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
 Vec DynamicHyperelasticitySolver<Term, withLargeOutput,
                                  MeshType>::currentState() {
   return uvp_->valuesGlobal();
