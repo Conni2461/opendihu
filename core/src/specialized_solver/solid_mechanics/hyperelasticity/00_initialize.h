@@ -38,6 +38,7 @@ public:
                                            DisplacementsFunctionSpace, Term,
                                            withLargeOutput, Term>
       Data;
+  typedef Data FullData;
   typedef ::Data::QuasiStaticHyperelasticityPressureOutput<
       PressureFunctionSpace>
       PressureDataCopy;
@@ -75,6 +76,10 @@ public:
 
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! copy entries of combined vector x to u and p, if both u and p are nullptr,
   //! use this->data_.displacements() and this->data_.pressure(), if only p is

@@ -18,6 +18,7 @@ class OperatorSplitting
 public:
   typedef typename TimeStepping1::FunctionSpace FunctionSpace;
   typedef Data::OperatorSplitting<TimeStepping1, TimeStepping2> Data;
+  typedef Data FullData;
   typedef typename Data::SlotConnectorDataType
       SlotConnectorDataType; // needed when this class is itself part of an
                              // operator splitting
@@ -58,6 +59,10 @@ public:
 
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get a reference to the first timestepping object
   TimeStepping1 &timeStepping1();

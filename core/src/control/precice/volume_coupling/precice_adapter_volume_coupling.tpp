@@ -192,4 +192,11 @@ PreciceAdapterVolumeCoupling<NestedSolver>::data() {
   return this->nestedSolver_.data();
 }
 
+template <typename NestedSolver>
+typename PreciceAdapterVolumeCoupling<NestedSolver>::Data &
+PreciceAdapterVolumeCoupling<NestedSolver>::fullData() {
+  // get a reference to the data object
+  return this->nestedSolver_.fullData();
+}
+
 } // namespace Control

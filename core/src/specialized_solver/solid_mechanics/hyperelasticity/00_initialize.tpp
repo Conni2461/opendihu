@@ -1177,6 +1177,15 @@ HyperelasticityInitialize<Term, withLargeOutput, MeshType,
   return data_;
 }
 
+template <typename Term, bool withLargeOutput, typename MeshType,
+          int nDisplacementComponents>
+typename HyperelasticityInitialize<Term, withLargeOutput, MeshType,
+                                   nDisplacementComponents>::Data &
+HyperelasticityInitialize<Term, withLargeOutput, MeshType,
+                          nDisplacementComponents>::fullData() {
+  return data_;
+}
+
 //! get a pointer to the dirichlet boundary conditions object
 template <typename Term, bool withLargeOutput, typename MeshType,
           int nDisplacementComponents>

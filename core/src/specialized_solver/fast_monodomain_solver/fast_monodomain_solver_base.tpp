@@ -43,6 +43,14 @@ FastMonodomainSolverBase<nStates, nAlgebraics,
 }
 
 template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
+typename FastMonodomainSolverBase<nStates, nAlgebraics,
+                                  DiffusionTimeSteppingScheme>::Data &
+FastMonodomainSolverBase<nStates, nAlgebraics,
+                         DiffusionTimeSteppingScheme>::fullData() {
+  return nestedSolvers_.fullData();
+}
+
+template <int nStates, int nAlgebraics, typename DiffusionTimeSteppingScheme>
 void FastMonodomainSolverBase<
     nStates, nAlgebraics,
     DiffusionTimeSteppingScheme>::setTimeSpan(double startTime,

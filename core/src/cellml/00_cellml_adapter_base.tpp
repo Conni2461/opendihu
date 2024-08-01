@@ -812,6 +812,12 @@ CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::data() {
 }
 
 template <int nStates_, int nAlgebraics_, typename FunctionSpaceType>
+typename CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::Data &
+CellmlAdapterBase<nStates_, nAlgebraics_, FunctionSpaceType>::fullData() {
+  return this->data_;
+}
+
+template <int nStates_, int nAlgebraics_, typename FunctionSpaceType>
 CellmlSourceCodeGenerator &
 CellmlAdapterBase<nStates_, nAlgebraics_,
                   FunctionSpaceType>::cellmlSourceCodeGenerator() {

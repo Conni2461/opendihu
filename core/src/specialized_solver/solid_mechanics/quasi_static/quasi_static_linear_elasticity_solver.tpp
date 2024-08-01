@@ -308,6 +308,12 @@ QuasiStaticLinearElasticitySolver<FiniteElementMethod>::data() {
   return data_;
 }
 
+template <typename FiniteElementMethod>
+typename QuasiStaticLinearElasticitySolver<FiniteElementMethod>::Data &
+QuasiStaticLinearElasticitySolver<FiniteElementMethod>::fullData() {
+  return data_;
+}
+
 //! get the data that will be transferred in the operator splitting to the other
 //! term of the splitting the transfer is done by the
 //! slot_connector_data_transfer class

@@ -701,6 +701,13 @@ MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::data() {
   return data_;
 }
 
+template <typename MeshType, typename Term, bool withLargeOutputFiles>
+typename MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::FullData
+MuscleContractionSolver<MeshType, Term, withLargeOutputFiles>::fullData() {
+  return FullDynamicDataForCheckpointing<MeshType, Term, withLargeOutputFiles>(
+      this->data_, dynamicHyperelasticitySolver_);
+}
+
 //! get the data that will be transferred in the operator splitting to the other
 //! term of the splitting the transfer is done by the
 //! slot_connector_data_transfer class

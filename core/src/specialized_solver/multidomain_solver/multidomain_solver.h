@@ -40,6 +40,7 @@ public:
   typedef typename Data::Multidomain<
       typename FiniteElementMethodDiffusion::FunctionSpace>
       Data;
+  typedef Data FullData;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
 
   //! constructor
@@ -64,6 +65,10 @@ public:
 
   //! return the data object
   Data &data();
+
+  //! return reference to the full data object that stores everything for a
+  //! checkpoint
+  Data &fullData();
 
   //! get the data that will be transferred in the operator splitting to the
   //! other term of the splitting the transfer is done by the
