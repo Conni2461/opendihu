@@ -122,5 +122,96 @@ protected:
   bool initialized_; //< if initialize was already called
 };
 
+template <typename MeshType = Mesh::StructuredDeformableOfDimension<3>,
+          typename Term = Equation::SolidMechanics::
+              TransverselyIsotropicMooneyRivlinIncompressibleActive3D,
+          bool withLargeOutputFiles = true>
+class FullStaticDataForCheckpointing {
+public:
+  typedef ::TimeSteppingScheme::DynamicHyperelasticitySolver<
+      Term, withLargeOutputFiles, MeshType>
+      DynamicHyperelasticitySolverType;
+  typedef ::SpatialDiscretization::HyperelasticitySolver<
+      Term, withLargeOutputFiles, MeshType>
+      StaticHyperelasticitySolverType;
+  typedef typename DynamicHyperelasticitySolverType::DisplacementsFunctionSpace
+      FunctionSpace;
+  typedef typename Data::MuscleContractionSolver<FunctionSpace> Data;
+
+  FullStaticDataForCheckpointing(
+      Data &data, std::shared_ptr<StaticHyperelasticitySolverType>
+                      staticHyperelasticitySolver);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename StaticHyperelasticitySolverType::Data::
+                       FieldVariablesForCheckpointing>(),
+      std::declval<typename Data::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForOutputWriter getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  std::shared_ptr<StaticHyperelasticitySolverType>
+      staticHyperelasticitySolver_; //< the static hyperelasticity solver that
+                                    // can be used for quasi-static solution
+  Data &data_; //< the data object that holds all field variables
+};
+
+template <typename MeshType = Mesh::StructuredDeformableOfDimension<3>,
+          typename Term = Equation::SolidMechanics::
+              TransverselyIsotropicMooneyRivlinIncompressibleActive3D,
+          bool withLargeOutputFiles = true>
+class FullDynamicDataForCheckpointing {
+public:
+  typedef ::TimeSteppingScheme::DynamicHyperelasticitySolver<
+      Term, withLargeOutputFiles, MeshType>
+      DynamicHyperelasticitySolverType;
+  typedef typename DynamicHyperelasticitySolverType::DisplacementsFunctionSpace
+      FunctionSpace;
+  typedef typename Data::MuscleContractionSolver<FunctionSpace> Data;
+
+  FullDynamicDataForCheckpointing(
+      Data &data, std::shared_ptr<DynamicHyperelasticitySolverType>
+                      dynamicHyperelasticitySolver);
+
+  //! field variables that will be output by checkpointing
+  typedef decltype(std::tuple_cat(
+      std::declval<typename DynamicHyperelasticitySolverType::Data::
+                       FieldVariablesForCheckpointing>(),
+      std::declval<typename Data::FieldVariablesForCheckpointing>()))
+      FieldVariablesForCheckpointing;
+
+  //! get pointers to all field variables that can be written by checkpointing
+  FieldVariablesForCheckpointing getFieldVariablesForCheckpointing();
+
+  //! field variables that will be output by checkpointing
+  typedef FieldVariablesForCheckpointing FieldVariablesForOutputWriter;
+
+  //! Not needed for this implementation, shadowing checkpointing function
+  FieldVariablesForCheckpointing getFieldVariablesForOutputWriter();
+
+  bool restoreState(const InputReader::Generic &r);
+
+  const std::shared_ptr<FunctionSpace> functionSpace() const;
+
+private:
+  std::shared_ptr<DynamicHyperelasticitySolverType>
+      dynamicHyperelasticitySolver_; //< the dynamic hyperelasticity solver that
+                                     // solves for the dynamic contraction
+  Data &data_; //< the data object that holds all field variables
+};
+
 #include "specialized_solver/muscle_contraction_solver.tpp"
 #include "specialized_solver/muscle_contraction_solver_compute.tpp"
