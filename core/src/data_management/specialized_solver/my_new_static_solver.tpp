@@ -81,7 +81,9 @@ void MyNewStaticSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->fieldVariableB_ =
       this->functionSpace_->template createFieldVariable<1>("b");
-  this->fieldVariableB_->setUniqueName("my_new_static_solver_b");
+  this->fieldVariableB_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "my_new_static_solver_") +
+      "b");
 }
 
 // ... add a "getter" method for each fieldvariable with the same name as the

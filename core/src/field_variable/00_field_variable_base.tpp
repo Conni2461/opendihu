@@ -23,7 +23,14 @@ std::string FieldVariableBaseFunctionSpace<FunctionSpaceType>::name() const {
 template <typename FunctionSpaceType>
 std::string
 FieldVariableBaseFunctionSpace<FunctionSpaceType>::uniqueName() const {
-  return this->uniqueName_;
+  std::stringstream ss;
+  if (this->uniqueName_ == "") {
+    ss << this->name_;
+  } else {
+    ss << this->uniqueName_;
+  }
+  ss << "_" << this->nDofsGlobal();
+  return ss.str();
 }
 
 //! set the name of the field variable
@@ -35,8 +42,8 @@ void FieldVariableBaseFunctionSpace<FunctionSpaceType>::setName(
 
 template <typename FunctionSpaceType>
 void FieldVariableBaseFunctionSpace<FunctionSpaceType>::setUniqueName(
-    const std::string &name) {
-  this->uniqueName_ = name;
+    const std::string &uniqueName) {
+  this->uniqueName_ = uniqueName;
 }
 
 template <typename FunctionSpaceType>

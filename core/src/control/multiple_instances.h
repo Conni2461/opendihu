@@ -46,6 +46,9 @@ public:
   //! initialize time span from specificSettings_
   void initialize();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
 
@@ -101,6 +104,7 @@ protected:
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output write
   Data data_;               //< the data object
+  std::string uniqueDataPrefix_;
 
   std::shared_ptr<SlotConnectorDataType>
       slotConnectorData_; //< the slotConnectorData as vector of references o f

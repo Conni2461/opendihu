@@ -47,6 +47,9 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme
   Data &data();
 
@@ -65,6 +68,7 @@ protected:
 
   TimeStepping timeSteppingScheme_; //< the underlying timestepping method that
                                     // is controlled by this class, e.g. Heun
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace Control

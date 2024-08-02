@@ -51,11 +51,10 @@ void Json::writePolyDataFile(
       // check if this mesh should be combined with other meshes
       bool combineMesh = true;
 
-      // check if mesh can be merged into previous meshes
-      if (!piece1D_.properties.pointDataArrays
-               .empty()) // if properties are already assigned by an earlier
-                         // mesh
-      {
+      // check if mesh can be merged into previous meshes.
+      // if properties are already assigned by an earlier mesh and we dont have
+      // unique data
+      if (!piece1D_.properties.pointDataArrays.empty() && !useCheckpointData_) {
         if (piece1D_.properties.pointDataArrays.size() !=
             props.second.pointDataArrays.size()) {
           LOG(DEBUG) << "Mesh " << meshName << " cannot be combined with "
@@ -175,9 +174,61 @@ void Json::writePolyDataFile(
 
   // collect all data for the field variables, organized by field variable names
   std::map<std::string, std::vector<double>> fieldVariableValues;
+  std::vector<std::string> allFieldVariableNames;
   LoopOverTuple::loopGetNodalValues<FieldVariablesForOutputWriterType>(
       fieldVariables, piece1D_.meshNamesCombinedMeshes, fieldVariableValues,
       useUniqueName);
+
+  for (const auto &val : fieldVariableValues) {
+    allFieldVariableNames.push_back(val.first);
+  }
+
+  const int32_t ownLength = fieldVariableValues.size();
+  int32_t maxSize;
+  MPIUtility::handleReturnValue(
+      MPI_Allreduce(&ownLength, &maxSize, 1, MPI_INT, MPI_MAX,
+                    this->rankSubset_->mpiCommunicator()),
+      "MPI_Allreduce");
+
+  int32_t worldSize;
+  MPI_Comm_size(this->rankSubset_->mpiCommunicator(), &worldSize);
+
+  std::vector<int32_t> wordSizes, wordDisplacements;
+  std::vector<char> words;
+  wordSizes.resize(worldSize);
+  wordDisplacements.resize(worldSize);
+  for (size_t i = 0; i < maxSize; i++) {
+    const char *sendBuffer = nullptr;
+    int32_t sendSize = 0;
+    if (i < ownLength) {
+      sendBuffer = allFieldVariableNames[i].c_str();
+      sendSize = (int32_t)allFieldVariableNames[i].size();
+    }
+    MPIUtility::handleReturnValue(
+        MPI_Allgather(&sendSize, 1, MPI_INT, wordSizes.data(), 1, MPI_INT,
+                      this->rankSubset_->mpiCommunicator()),
+        "MPI_Allgather");
+    wordDisplacements[0] = 0;
+    for (size_t i = 1; i < worldSize; i++) {
+      wordDisplacements[i] = wordDisplacements[i - 1] + wordSizes[i - 1];
+    }
+    words.resize(std::accumulate(wordSizes.begin(), wordSizes.end(), 0ul));
+    MPIUtility::handleReturnValue(
+        MPI_Allgatherv(sendBuffer, sendSize, MPI_CHAR, words.data(),
+                       wordSizes.data(), wordDisplacements.data(), MPI_CHAR,
+                       this->rankSubset_->mpiCommunicator()),
+        "MPI_Allgatherv");
+    for (size_t i = 0; i < worldSize; i++) {
+      if (wordSizes[i] == 0) {
+        continue;
+      }
+      std::string v((const char *)(words.data() + wordDisplacements[i]),
+                    wordSizes[i]);
+      if (fieldVariableValues.find(v) == fieldVariableValues.end()) {
+        fieldVariableValues[v].resize(0);
+      }
+    }
+  }
 
   assert(!fieldVariableValues.empty());
   fieldVariableValues["partitioning"].resize(
@@ -251,24 +302,18 @@ void Json::writePolyDataFile(
   Control::PerformanceMeasurement::start("durationJson1DWrite");
 
   // write field variables
-  for (PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
-       piece1D_.properties.pointDataArrays) {
-    assert(fieldVariableValues.find(pointDataArray.name) !=
-           fieldVariableValues.end());
-
-    const std::vector<double> &dataToWrite =
-        fieldVariableValues[pointDataArray.name];
+  for (const auto &val : fieldVariableValues) {
     // write values
     // for partitioning, convert float values to integer values for output
-    if (pointDataArray.name == "partitioning") {
-      std::vector<int32_t> newVals(dataToWrite.size());
+    if (val.first == "partitioning") {
+      std::vector<int32_t> newVals(val.second.size());
 
-      for (const auto &v : dataToWrite) {
+      for (const auto &v : val.second) {
         newVals.push_back((int32_t)(round(v)));
       }
-      group.writeSimpleVec<int32_t>(newVals, pointDataArray.name.c_str());
+      group.writeSimpleVec<int32_t>(newVals, val.first.c_str());
     } else {
-      group.writeSimpleVec<double>(dataToWrite, pointDataArray.name.c_str());
+      group.writeSimpleVec<double>(val.second, val.first.c_str());
     }
   }
 

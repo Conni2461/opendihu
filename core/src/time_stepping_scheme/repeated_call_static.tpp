@@ -32,6 +32,8 @@ template <typename Solver> void RepeatedCallStatic<Solver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize underlying Solver object, also with time step width
+  solver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "repeated_call_static"));
   solver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -64,6 +66,12 @@ void RepeatedCallStatic<Solver>::callOutputWriter(int timeStepNo,
                                                   double currentTime,
                                                   int callCountIncrement) {
   this->solver_.callOutputWriter(timeStepNo, currentTime, callCountIncrement);
+}
+
+template <typename Solver>
+void RepeatedCallStatic<Solver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename Solver>

@@ -21,6 +21,8 @@ void Dummy::initialize() {
                        // with the first subsolver
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "dummy"));
   data_.initialize();
 
   // set the slotConnectorData for the solverStructureVisualizer to appear in
@@ -38,6 +40,10 @@ void Dummy::run() {
 //! currentTime, with callCountIncrement !=1 output timesteps can be skipped
 void Dummy::callOutputWriter(int timeStepNo, double currentTime,
                              int callCountIncrement) {}
+
+void Dummy::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
 
 void Dummy::reset() {}
 

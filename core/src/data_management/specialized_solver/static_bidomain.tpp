@@ -118,26 +118,39 @@ void StaticBidomain<FunctionSpaceType>::createPetscObjects() {
   this->transmembraneFlow_ =
       this->functionSpace_->template createFieldVariable<1>(
           "transmembraneFlow");
-  this->transmembraneFlow_->setUniqueName("static_bidomain_transmembraneFlow");
+  this->transmembraneFlow_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "transmembraneFlow");
   this->transmembranePotential_ =
       this->functionSpace_->template createFieldVariable<1>("Vm");
-  this->transmembranePotential_->setUniqueName("static_bidomain_Vm");
+  this->transmembranePotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "Vm");
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
-  this->flowPotential_->setUniqueName("static_bidomain_flowPotential");
+  this->flowPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "flowPotential");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
-  this->fiberDirection_->setUniqueName("static_bidomain_fiberDirection");
+  this->fiberDirection_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "fiberDirection");
   this->extraCellularPotential_ =
       this->functionSpace_->template createFieldVariable<1>("phi_e");
-  this->extraCellularPotential_->setUniqueName("static_bidomain_phi_e");
+  this->extraCellularPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "phi_e");
   this->zero_ = this->functionSpace_->template createFieldVariable<1>("zero");
-  this->zero_->setUniqueName("static_bidomain_zero");
+  this->zero_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "zero");
   this->jacobianConditionNumber_ =
       this->functionSpace_->template createFieldVariable<1>(
           "jacobianConditionNumber");
   this->jacobianConditionNumber_->setUniqueName(
-      "static_bidomain_jacobianConditionNumber");
+      StringUtility::getFirstNE(this->uniquePrefix_, "static_bidomain_") +
+      "jacobianConditionNumber");
 
   LOG(DEBUG) << "Vm field variable (" << this->transmembranePotential_ << ")";
 }

@@ -61,6 +61,9 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme, with the call to this
   //! method the output writers get the data to create their output files
   Data &data();
@@ -83,6 +86,7 @@ protected:
 
   Data data_; //< the data object that stores at least all field variables that
               // should be output by output writers.
+  std::string uniqueDataPrefix_;
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writers
 };

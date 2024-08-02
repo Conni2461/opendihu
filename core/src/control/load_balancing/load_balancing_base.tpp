@@ -78,6 +78,8 @@ void LoadBalancingBase<TimeStepping>::initialize() {
   LOG(TRACE) << "LoadBalancingBase::initialize()";
 
   TimeSteppingScheme::TimeSteppingScheme::initialize();
+  timeSteppingScheme_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "load_balancing"));
   timeSteppingScheme_.initialize();
 }
 
@@ -100,6 +102,12 @@ void LoadBalancingBase<TimeStepping>::callOutputWriter(int timeStepNo,
                                                        int callCountIncrement) {
   timeSteppingScheme_.callOutputWriter(timeStepNo, currentTime,
                                        callCountIncrement);
+}
+
+template <typename TimeStepping>
+void LoadBalancingBase<TimeStepping>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename TimeStepping>

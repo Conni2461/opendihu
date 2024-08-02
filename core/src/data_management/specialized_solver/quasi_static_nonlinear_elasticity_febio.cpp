@@ -91,33 +91,51 @@ void QuasiStaticNonlinearElasticityFebio::createPetscObjects() {
   activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
   activation_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_febio_activation");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "activation");
   displacements_ = this->functionSpace_->template createFieldVariable<3>("u");
-  displacements_->setUniqueName("quasi_static_nonlinear_elasticity_febio_u");
+  displacements_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "u");
   reactionForce_ =
       this->functionSpace_->template createFieldVariable<3>("reactionForce");
   reactionForce_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_febio_reactionForce");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "reactionForce");
   cauchyStress_ = this->functionSpace_->template createFieldVariable<6>(
       "sigma (Cauchy stress)");
   cauchyStress_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_febio_sigma (Cauchy stress)");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "sigma (Cauchy stress)");
   pk2Stress_ =
       this->functionSpace_->template createFieldVariable<6>("S (Pk2 stress)");
   pk2Stress_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_febio_S (Pk2 stress)");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "S (Pk2 stress)");
   greenLagrangeStrain_ = this->functionSpace_->template createFieldVariable<6>(
       "E (Green-Lagrange strain)");
   greenLagrangeStrain_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_febio_E (Green-Lagrange strain)");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "E (Green-Lagrange strain)");
   relativeVolume_ = this->functionSpace_->template createFieldVariable<1>("J");
-  relativeVolume_->setUniqueName("quasi_static_nonlinear_elasticity_febio_J");
+  relativeVolume_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "J");
 
   // copy initial geometry to referenceGeometry
   referenceGeometry_ = std::make_shared<FieldVariableTypeVector>(
       this->functionSpace_->geometryField(), "referenceGeometry");
   referenceGeometry_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_febio_referenceGeometry");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      "referenceGeometry");
 
   LOG(DEBUG) << "pointer referenceGeometry: "
              << referenceGeometry_->partitionedPetscVec();
@@ -213,8 +231,10 @@ QuasiStaticNonlinearElasticityFebio::getFieldVariablesForCheckpointing() {
   std::shared_ptr<FieldVariableTypeVector> geometryField =
       std::make_shared<FieldVariableTypeVector>(
           this->functionSpace_->geometryField());
-  geometryField->setUniqueName("quasi_static_nonlinear_elasticity_febio_" +
-                               geometryField->name());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_febio_") +
+      geometryField->name());
 
   return std::tuple_cat(
       std::tuple<std::shared_ptr<FieldVariableTypeVector>>(geometryField),

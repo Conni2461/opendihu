@@ -145,15 +145,20 @@ void FiniteElementsBase<FunctionSpaceType, nComponents>::createPetscObjects() {
   // create field variables on local partition
   this->rhs_ = this->functionSpace_->template createFieldVariable<nComponents>(
       "rightHandSide");
-  this->rhs_->setUniqueName("finite_elements_base_rightHandSide");
+  this->rhs_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "finite_elements_base_") +
+      "rightHandSide");
   this->solution_ =
       this->functionSpace_->template createFieldVariable<nComponents>(
           "solution");
-  this->solution_->setUniqueName("finite_elements_base_solution");
+  this->solution_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "finite_elements_base_") +
+      "solution");
   this->negativeRhsNeumannBoundaryConditions_ =
       this->functionSpace_->template createFieldVariable<nComponents>("zero");
   this->negativeRhsNeumannBoundaryConditions_->setUniqueName(
-      "finite_elements_base_zero");
+      StringUtility::getFirstNE(this->uniquePrefix_, "finite_elements_base_") +
+      "zero");
 
   // create PETSc matrix object
 

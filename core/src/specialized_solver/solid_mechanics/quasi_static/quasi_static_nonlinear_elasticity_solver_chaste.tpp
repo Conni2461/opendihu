@@ -486,6 +486,9 @@ void QuasiStaticNonlinearElasticitySolverChaste<D>::initialize() {
   // store mesh in data
   data_.setFunctionSpace(functionSpace_);
 
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_,
+      "quasi_static_nonlinear_elasticity_solver_chaste"));
   data_.initialize();
 
   LOG(DEBUG) << "initialization done";
@@ -494,6 +497,12 @@ void QuasiStaticNonlinearElasticitySolverChaste<D>::initialize() {
 
 template <int D> void QuasiStaticNonlinearElasticitySolverChaste<D>::reset() {
   this->initialized_ = false;
+}
+
+template <int D>
+void QuasiStaticNonlinearElasticitySolverChaste<D>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <int D>

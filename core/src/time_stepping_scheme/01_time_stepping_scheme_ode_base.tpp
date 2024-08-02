@@ -22,6 +22,12 @@ TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::
 }
 
 template <typename FunctionSpaceType, int nComponents>
+void TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, int nComponents>
 typename Data::TimeStepping<FunctionSpaceType, nComponents> &
 TimeSteppingSchemeOdeBase<FunctionSpaceType, nComponents>::data() {
   return *data_;

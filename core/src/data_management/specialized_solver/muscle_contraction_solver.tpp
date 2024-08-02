@@ -95,7 +95,9 @@ bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
   this->lambda_->setValues(lambda);
   this->lambdaDot_->setValues(lambdaDot);
   this->gamma_->setValues(gamma);
+  LOG(INFO) << "=> setting displacements in muscle contraction";
   this->displacements_->setValues(displacements);
+  LOG(INFO) << "=> setting displacements in muscle contraction done";
   this->velocities_->setValues(velocities);
   this->activePK2Stress_->setValues(activePK2Stress);
   this->pK2Stress_->setValues(pK2Stress);
@@ -118,12 +120,21 @@ void MuscleContractionSolver<FunctionSpaceType>::createPetscObjects() {
   // The string is the name of the field variable. It will also be used in the
   // VTK output files.
   this->gamma_ = this->functionSpace_->template createFieldVariable<1>("γ");
-  this->gamma_->setUniqueName("muscle_contraction_solver_γ");
+  this->gamma_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "muscle_contraction_solver_") +
+      "γ");
   this->lambda_ = this->functionSpace_->template createFieldVariable<1>("λ");
-  this->lambda_->setUniqueName("muscle_contraction_solver_λ");
+  this->lambda_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "muscle_contraction_solver_") +
+      "λ");
   this->lambdaDot_ =
       this->functionSpace_->template createFieldVariable<1>("λdot");
-  this->lambdaDot_->setUniqueName("muscle_contraction_solver_λdot");
+  this->lambdaDot_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "muscle_contraction_solver_") +
+      "λdot");
 }
 
 template <typename FunctionSpaceType>
@@ -260,8 +271,10 @@ MuscleContractionSolver<
       geometryField =
           std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
               this->functionSpace_->geometryField());
-  geometryField->setUniqueName("muscle_contraction_solver_" +
-                               geometryField->name());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "muscle_contraction_solver_") +
+      geometryField->name());
 
   return std::make_tuple(
       geometryField,

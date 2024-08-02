@@ -699,4 +699,15 @@ double HeunAdaptive<DiscretizableInTime>::currentHeunTime() {
   return currentTimeHeun_;
 }
 
+template <typename DiscretizableInTime>
+typename HeunAdaptive<DiscretizableInTime>::FullData
+HeunAdaptive<DiscretizableInTime>::fullData() {
+  return FullHeunDataForCheckpointing<DiscretizableInTime>(
+      std::static_pointer_cast<
+          Data::TimeSteppingHeun<typename DiscretizableInTime::FunctionSpace,
+                                 DiscretizableInTime::nComponents()>>(
+          this->data_),
+      this->discretizableInTime_.fullData());
+}
+
 } // namespace TimeSteppingScheme

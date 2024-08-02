@@ -74,6 +74,9 @@ public:
   //! reset state
   void reset();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
 
@@ -223,6 +226,7 @@ protected:
                                           // computation of several load
                                           // increments
   Data data_;                             //< data object
+  std::string uniqueDataPrefix_;
   PressureDataCopy pressureDataCopy_; //< a helper object that is used to write
                                       // the pressure function space based
                                       // variables with the output writers

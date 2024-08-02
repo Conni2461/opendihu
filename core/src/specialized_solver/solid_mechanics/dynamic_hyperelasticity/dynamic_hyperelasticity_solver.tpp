@@ -43,9 +43,13 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput,
   // initialized
   DihuContext::solverStructureVisualizer()->beginChild();
 
+  hyperelasticitySolver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "dynamic_hyperelasticity_solver"));
   hyperelasticitySolver_.initialize();
   data_.setFunctionSpace(
       hyperelasticitySolver_.data().displacementsFunctionSpace());
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "dynamic_hyperelasticity_solver"));
   data_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -679,15 +683,22 @@ void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::
 }
 
 template <typename Term, bool withLargeOutput, typename MeshType>
+void DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
 typename DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::Data &
 DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::data() {
   return data_;
 }
 
 template <typename Term, bool withLargeOutput, typename MeshType>
-typename DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::Data &
+typename DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::FullData
 DynamicHyperelasticitySolver<Term, withLargeOutput, MeshType>::fullData() {
-  return data_;
+  return FullDataForCheckpointing<Term, withLargeOutput, MeshType>(
+      this->hyperelasticitySolver_.fullData(), this->data_);
 }
 
 template <typename Term, bool withLargeOutput, typename MeshType>
@@ -702,6 +713,44 @@ typename DynamicHyperelasticitySolver<Term, withLargeOutput,
 DynamicHyperelasticitySolver<Term, withLargeOutput,
                              MeshType>::hyperelasticitySolver() {
   return hyperelasticitySolver_;
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
+FullDataForCheckpointing<Term, withLargeOutput, MeshType>::
+    FullDataForCheckpointing(HyperelasticityData &hyperelasticityData,
+                             Data &data)
+    : hyperelasticityData_(hyperelasticityData), data_(data) {}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
+typename FullDataForCheckpointing<Term, withLargeOutput,
+                                  MeshType>::FieldVariablesForCheckpointing
+FullDataForCheckpointing<Term, withLargeOutput,
+                         MeshType>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(
+      hyperelasticityData_.getFieldVariablesForCheckpointing(),
+      data_.getFieldVariablesForCheckpointing());
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
+typename FullDataForCheckpointing<Term, withLargeOutput,
+                                  MeshType>::FieldVariablesForOutputWriter
+FullDataForCheckpointing<Term, withLargeOutput,
+                         MeshType>::getFieldVariablesForOutputWriter() {
+  return getFieldVariablesForCheckpointing();
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
+bool FullDataForCheckpointing<Term, withLargeOutput, MeshType>::restoreState(
+    const InputReader::Generic &r) {
+  return hyperelasticityData_.restoreState(r) && data_.restoreState(r);
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType>
+const std::shared_ptr<typename FullDataForCheckpointing<
+    Term, withLargeOutput, MeshType>::FunctionSpace>
+FullDataForCheckpointing<Term, withLargeOutput, MeshType>::functionSpace()
+    const {
+  return data_.functionSpace();
 }
 
 } // namespace TimeSteppingScheme

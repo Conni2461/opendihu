@@ -39,6 +39,11 @@ getGeometryFieldNodalValues(
     CurrentFieldVariableType currentFieldVariable,
     const FieldVariablesForOutputWriterType &fieldVariables,
     std::set<std::string> meshNames, std::vector<double> &values) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   VLOG(1) << "getGeometryFieldNodalValues meshNames: " << meshNames
           << ", own: " << currentFieldVariable->functionSpace()->meshName()
           << ", fieldVariable name \"" << currentFieldVariable->name() << "\""

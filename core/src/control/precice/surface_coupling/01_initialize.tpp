@@ -40,6 +40,8 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested solver
+  nestedSolver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "precice_adapter"));
   nestedSolver_.initialize();
 
   // initialize function space

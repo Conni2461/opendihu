@@ -85,22 +85,30 @@ void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
     this->solution_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "solution");
-    this->solution_->setUniqueName("time_stepping_solution");
+    this->solution_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "solution");
     this->increment_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "increment");
-    this->increment_->setUniqueName("time_stepping_increment");
+    this->increment_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "increment");
   } else {
     // if there are component names stored, use them for construction of the
     // field variables
     this->solution_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "solution", componentNames_);
-    this->solution_->setUniqueName("time_stepping_solution");
+    this->solution_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "solution");
     this->increment_ =
         this->functionSpace_->template createFieldVariable<nComponents>(
             "increment", componentNames_);
-    this->increment_->setUniqueName("time_stepping_increment");
+    this->increment_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        "increment");
   }
 
   slotConnectorData_ = std::make_shared<SlotConnectorDataType>();
@@ -117,7 +125,9 @@ void TimeStepping<FunctionSpaceType, nComponents>::createPetscObjects() {
     name << "additionalFieldVariable" << i;
     additionalFieldVariables_[i] =
         this->functionSpace_->template createFieldVariable<1>(name.str());
-    additionalFieldVariables_[i]->setUniqueName("time_stepping_" + name.str());
+    additionalFieldVariables_[i]->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_") +
+        name.str());
 
     slotConnectorData_->addFieldVariable2(additionalFieldVariables_[i]);
     LOG(DEBUG) << "  add field variable " << name.str();
@@ -218,8 +228,6 @@ TimeStepping<FunctionSpaceType,
                << slotConnectorData_->variable2[i].values->name()
                << "\" for additionalFieldVariables_[" << i << "]";
     additionalFieldVariables_[i] = slotConnectorData_->variable2[i].values;
-    LOG(INFO) << "additionalFieldVariables[" << i << "] | dofs without: "
-              << additionalFieldVariables_[i]->nDofsLocalWithoutGhosts();
   }
   auto geometryField =
       std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(

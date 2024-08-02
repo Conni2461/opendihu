@@ -83,7 +83,7 @@ File::getFullDatasetName(const char *name, const std::string &groupName) const {
   std::replace(dsname.begin(), dsname.end(), '/', '|');
 
   for (const auto &e : datasets_) {
-    std::string sp = e.name.substr(e.name.find("/") + 1);
+    std::string sp = e.name.substr(e.name.find_last_of("/") + 1);
     if (sp == dsname) {
       if (groupName == "" || e.name.find(groupName) != std::string::npos) {
         // Return a pointer into the attributes set, this does not need to be

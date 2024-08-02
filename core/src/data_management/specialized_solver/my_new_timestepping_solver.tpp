@@ -85,10 +85,16 @@ void MyNewTimesteppingSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->fieldVariableA_ =
       this->functionSpace_->template createFieldVariable<1>("a");
-  this->fieldVariableA_->setUniqueName("my_new_timestepping_solver_a");
+  this->fieldVariableA_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "my_new_timestepping_solver_") +
+      "a");
   this->fieldVariableB_ =
       this->functionSpace_->template createFieldVariable<3>("b");
-  this->fieldVariableB_->setUniqueName("my_new_timestepping_solver_b");
+  this->fieldVariableB_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "my_new_timestepping_solver_") +
+      "b");
 }
 
 // ... add a "getter" method for each fieldvariable with the same name as the

@@ -184,6 +184,8 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested timestepping solver
+  finiteElementMethod_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "diffusion_advection_solver"));
   finiteElementMethod_.initialize();
   finiteElementMethod_.initializeForImplicitTimeStepping();
 
@@ -209,6 +211,8 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::initialize() {
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "diffusion_advection_solver"));
   data_.initialize();
 
   // set the slotConnectorData for the solverStructureVisualizer to appear in
@@ -527,6 +531,12 @@ void DiffusionAdvectionSolver<FiniteElementMethod>::executeMyHelperMethod() {
   // the values back.
   ierr = VecShift(fieldVariableA->valuesGlobal(), 1.0);
   CHKERRV(ierr);
+}
+
+template <typename FiniteElementMethod>
+void DiffusionAdvectionSolver<FiniteElementMethod>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename FiniteElementMethod>

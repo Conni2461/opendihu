@@ -31,6 +31,9 @@ public:
   //! run simulation
   virtual void run();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
 
@@ -75,6 +78,7 @@ protected:
 
   std::shared_ptr<Data>
       data_; //< data object that holds all PETSc vectors and matrices
+  std::string uniqueDataPrefix_;
 
   bool initialized_; //< if initialize() was already called
   std::string name_; //< the name given to this time stepping scheme

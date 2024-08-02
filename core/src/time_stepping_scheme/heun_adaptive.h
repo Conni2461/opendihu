@@ -7,6 +7,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "time_stepping_scheme/full_heun_data.h"
+
 namespace TimeSteppingScheme {
 
 /** The adaptive method to perform calculation with Heun method
@@ -15,6 +17,9 @@ template <typename DiscretizableInTime>
 class HeunAdaptive : public TimeSteppingExplicit<DiscretizableInTime>,
                      public Runnable {
 public:
+  typedef typename DiscretizableInTime::FunctionSpace FunctionSpace;
+  typedef FullHeunDataForCheckpointing<DiscretizableInTime> FullData;
+
   //! constructor
   HeunAdaptive(DihuContext context);
 
@@ -37,6 +42,8 @@ public:
 
   //! run the simulation
   void run();
+
+  FullData fullData();
 
 private:
   // allowed tolerance

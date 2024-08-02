@@ -149,15 +149,19 @@ public:
           DisplacementsLinearFieldVariableType>, // velocitiesLinearMesh_
 
       std::shared_ptr<PressureFieldVariableType>, // pressure_
-      // std::shared_ptr<DisplacementsFieldVariableType>, //
-      // pressurePreviousTimestep_ TODO
-      std::shared_ptr<StressFieldVariableType>, // pK2Stress_
-      std::shared_ptr<StressFieldVariableType>, // activePK2Stress_
+      std::shared_ptr<PressureFieldVariableType>, // pressurePreviousTimestep_
+      std::shared_ptr<StressFieldVariableType>,   // pK2Stress_
+      std::shared_ptr<StressFieldVariableType>,   // activePK2Stress_
 
       std::shared_ptr<
           DeformationGradientFieldVariableType>, // deformationGradient_
       std::shared_ptr<
-          DeformationGradientFieldVariableType> // deformationGradientTimeDerivative_
+          DeformationGradientFieldVariableType>, // deformationGradientTimeDerivative_
+
+      std::shared_ptr<DeformationGradientFieldVariableType>, // pK1Stress_
+      std::shared_ptr<DeformationGradientFieldVariableType>, // cauchyStress_
+      std::shared_ptr<FieldVariable::FieldVariable<
+          DisplacementsFunctionSpace, 1>> // deformationGradientDeterminant_
       >
       FieldVariablesForCheckpointing;
 

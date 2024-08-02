@@ -64,6 +64,14 @@ FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
 
 template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
           typename Term>
+void FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
+                             Term>::setUniqueDataPrefix(const std::string
+                                                            &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, typename QuadratureType, int nComponents,
+          typename Term>
 Data::FiniteElements<FunctionSpaceType, nComponents, Term> &
 FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
                         Term>::data() {
@@ -94,6 +102,8 @@ void FiniteElementMethodBase<FunctionSpaceType, QuadratureType, nComponents,
   if (initialized_)
     return;
 
+  data_.setUniquePrefix(StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                                      "finite_element_method"));
   data_.initialize();
 
   if (specificSettings_.hasKey("updatePrescribedValuesFromSolution")) {

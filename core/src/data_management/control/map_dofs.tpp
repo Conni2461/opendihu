@@ -76,7 +76,9 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::createPetscObjects() {
     name << "additionalFieldVariable" << i;
     std::shared_ptr<FieldVariableType> additionalFieldVariable =
         this->functionSpace_->template createFieldVariable<1>(name.str());
-    additionalFieldVariable->setUniqueName("control_map_dofs_" + name.str());
+    additionalFieldVariable->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "control_map_dofs_") +
+        name.str());
 
     additionalFieldVariables_.push_back(additionalFieldVariable);
   }

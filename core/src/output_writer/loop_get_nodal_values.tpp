@@ -40,6 +40,11 @@ getNodalValues(CurrentFieldVariableType currentFieldVariable,
                std::set<std::string> meshNames,
                std::map<std::string, std::vector<double>> &values,
                bool useUniqueName) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   VLOG(1) << "field variable "
           << StringUtility::demangle(typeid(currentFieldVariable).name())
           << " name \"" << currentFieldVariable->name()

@@ -52,6 +52,8 @@ void MyNewStaticSolver<NestedSolver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested solver
+  nestedSolver_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "my_new_static_solver"));
   nestedSolver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -75,6 +77,8 @@ void MyNewStaticSolver<NestedSolver>::initialize() {
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                                      "my_new_static_solver"));
   data_.initialize();
 
   // it is also possible to pass some field variables from the data of the
@@ -161,6 +165,12 @@ void MyNewStaticSolver<NestedSolver>::executeMyHelperMethod() {
   // e.g. add identity to m
   ierr = MatShift(m, 1.0);
   CHKERRV(ierr);
+}
+
+template <typename NestedSolver>
+void MyNewStaticSolver<NestedSolver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename NestedSolver>

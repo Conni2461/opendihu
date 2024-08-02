@@ -11,6 +11,7 @@
 #include "control/dihu_context.h"
 #include "partition/rank_subset.h"
 #include "input_reader/generic.h"
+#include "utility/string_utility.h"
 
 namespace Data {
 
@@ -55,6 +56,8 @@ public:
   //! restore from Reader, by default return false, because nothing is restored
   virtual bool restoreState(const InputReader::Generic &r) { return false; }
 
+  void setUniquePrefix(const std::string &prefix);
+
 protected:
   //! initializes the vectors and stiffness matrix with size
   virtual void createPetscObjects() = 0;
@@ -70,6 +73,7 @@ protected:
                    // this object
 
   bool initialized_ = false;
+  std::string uniquePrefix_;
 };
 
 } // namespace Data

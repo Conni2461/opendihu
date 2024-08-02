@@ -52,11 +52,15 @@ void StreamlineTracer<DiscretizableInTimeType>::initialize() {
   LOG(TRACE) << "StreamlineTracer::initialize";
 
   // initialize the problem
+  problem_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "streamline_tracer"));
   problem_.initialize();
 
   // initialize streamline tracer data object
   data_.setBaseData(std::make_shared<typename DiscretizableInTimeType::Data>(
       problem_.data()));
+  data_.setUniquePrefix(StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                                      "streamline_tracer"));
   data_.initialize();
 
   // initialize values in base class
