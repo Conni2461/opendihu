@@ -55,6 +55,9 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
 
@@ -100,6 +103,7 @@ protected:
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writer
   Data data_;               //< data object
+  std::string uniqueDataPrefix_;
 
   std::string durationLogKey_; //< key with with the duration of the computation
                                // is written to the performance measurement log

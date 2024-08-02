@@ -57,15 +57,21 @@ void QuasiStaticNonlinearElasticityChaste<FunctionSpace>::createPetscObjects() {
   this->activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
   this->activation_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_chaste_activation");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_chaste_") +
+      "activation");
   this->activeStress_ =
       this->functionSpace_->template createFieldVariable<9>("activeStress");
   this->activeStress_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_chaste_activeStress");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_chaste_") +
+      "activeStress");
   this->displacement_ =
       this->functionSpace_->template createFieldVariable<3>("displacement");
   this->displacement_->setUniqueName(
-      "quasi_static_nonlinear_elasticity_chaste_displacement");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_nonlinear_elasticity_chaste_") +
+      "displacement");
 }
 
 template <typename FunctionSpace>

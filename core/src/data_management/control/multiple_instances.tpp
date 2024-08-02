@@ -60,9 +60,7 @@ bool MultipleInstances<FunctionSpaceType, BaseDataType>::restoreState(
     const InputReader::Generic &r) {
   bool v = true;
   for (auto iter : instancesData_) {
-    bool b = iter->restoreState(r);
-    LOG(INFO) << "b: " << b;
-    v = v && b;
+    v = v && iter->restoreState(r);
   }
   return v;
 }
@@ -104,11 +102,9 @@ MultipleInstances<FunctionSpaceType,
       instancesFieldVariablesForCheckpointing;
   instancesFieldVariablesForCheckpointing.reserve(instancesData_.size());
 
-  for (typename std::vector<std::shared_ptr<BaseDataType>>::const_iterator
-           iter = instancesData_.begin();
-       iter != instancesData_.end(); iter++) {
+  for (const auto &x : instancesData_) {
     instancesFieldVariablesForCheckpointing.push_back(
-        (*iter)->getFieldVariablesForCheckpointing());
+        x->getFieldVariablesForCheckpointing());
   }
 
   return std::make_tuple(instancesFieldVariablesForCheckpointing);

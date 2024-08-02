@@ -210,8 +210,9 @@ void Multidomain<FunctionSpaceType>::createPetscObjects() {
     {
       auto var = this->functionSpace_->template createFieldVariable<1>(
           transmembranePotentialSolutionName.str());
-      var->setUniqueName("multidomain_" +
-                         transmembranePotentialSolutionName.str());
+      var->setUniqueName(
+          StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+          transmembranePotentialSolutionName.str());
       this->transmembranePotentialSolution_.push_back(var);
     }
 
@@ -220,7 +221,9 @@ void Multidomain<FunctionSpaceType>::createPetscObjects() {
     {
       auto var = this->functionSpace_->template createFieldVariable<1>(
           transmembranePotentialName.str());
-      var->setUniqueName("multidomain_" + transmembranePotentialName.str());
+      var->setUniqueName(
+          StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+          transmembranePotentialName.str());
       this->transmembranePotential_.push_back(var);
     }
 
@@ -229,7 +232,9 @@ void Multidomain<FunctionSpaceType>::createPetscObjects() {
     {
       auto var = this->functionSpace_->template createFieldVariable<1>(
           compartmentRelativeFactorName.str());
-      var->setUniqueName("multidomain_" + compartmentRelativeFactorName.str());
+      var->setUniqueName(
+          StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+          compartmentRelativeFactorName.str());
       this->compartmentRelativeFactor_.push_back(var);
     }
 
@@ -238,29 +243,40 @@ void Multidomain<FunctionSpaceType>::createPetscObjects() {
     {
       auto var = this->functionSpace_->template createFieldVariable<1>(
           activeStressName.str());
-      var->setUniqueName("multidomain_" + activeStressName.str());
+      var->setUniqueName(
+          StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+          activeStressName.str());
       this->activeStress_.push_back(var);
     }
   }
 
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
-  this->flowPotential_->setUniqueName("multidomain_flowPotential");
+  this->flowPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+      "flowPotential");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
-  this->fiberDirection_->setUniqueName("multidomain_fiberDirection");
+  this->fiberDirection_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+      "fiberDirection");
   this->extraCellularPotential_ =
       this->functionSpace_->template createFieldVariable<1>("phi_e");
-  this->extraCellularPotential_->setUniqueName("multidomain_phi_e");
+  this->extraCellularPotential_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") + "phi_e");
   this->zero_ = this->functionSpace_->template createFieldVariable<1>("zero");
-  this->zero_->setUniqueName("multidomain_zero");
+  this->zero_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") + "zero");
   this->relativeFactorTotal_ =
       this->functionSpace_->template createFieldVariable<1>("Σf_r");
-  this->relativeFactorTotal_->setUniqueName("multidomain_Σf_r");
+  this->relativeFactorTotal_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") * "Σf_r");
   this->activeStressTotal_ =
       this->functionSpace_->template createFieldVariable<1>(
           "activeStressTotal");
-  this->activeStressTotal_->setUniqueName("multidomain_activeStressTotal");
+  this->activeStressTotal_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") +
+      "activeStressTotal");
 }
 
 template <typename FunctionSpaceType>

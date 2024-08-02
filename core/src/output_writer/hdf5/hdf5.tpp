@@ -97,6 +97,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
       HDF5Utils::Group group = file->newGroup("1D");
       writePolyDataFile<FieldVariablesForOutputWriterType>(
           group, variables, combined1DMeshes, useCheckpointData_);
+      MPI_Barrier(this->rankSubset_->mpiCommunicator());
     }
 
     Control::PerformanceMeasurement::stop("durationHDF51D");
@@ -107,6 +108,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
       HDF5Utils::Group group = file->newGroup("3D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
           group, variables, combined3DMeshes, true, useCheckpointData_);
+      MPI_Barrier(this->rankSubset_->mpiCommunicator());
     }
 
     Control::PerformanceMeasurement::stop("durationHDF53D");
@@ -117,6 +119,7 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
       HDF5Utils::Group group = file->newGroup("2D");
       writeCombinedUnstructuredGridFile<FieldVariablesForOutputWriterType>(
           group, variables, combined2DMeshes, false, useCheckpointData_);
+      MPI_Barrier(this->rankSubset_->mpiCommunicator());
     }
 
     Control::PerformanceMeasurement::stop("durationHDF52D");
@@ -156,7 +159,8 @@ void HDF5::innerWrite(const FieldVariablesForOutputWriterType &variables,
                       combined2DMeshes.begin(), combined2DMeshes.end(),
                       std::inserter(meshesToOutput, meshesToOutput.end()));
 
-  if (meshesToOutput.size() > 0) {
+  if ((!combineFiles_) || (meshesToOutput.size() > 0 && !useCheckpointData_)) {
+    LOG(WARNING) << "need to write more meshes";
     std::stringstream s;
     if (filename) {
       s << filename;
@@ -239,19 +243,31 @@ template <typename T>
 herr_t Group::writeSimpleVec(const std::vector<T> &data,
                              const std::string &dsname) {
   // make sure we only write a item only once
-  LOG(INFO) << "writing: " << dsname;
   if (this->exists(dsname)) {
     LOG(INFO) << "would override: " << dsname;
     return 0;
   }
+  if (strcmp(typeid(T).name(), "i") != 0 &&
+      strcmp(typeid(T).name(), "d") != 0) {
+    LOG(FATAL) << "writing illegal type: " << dsname << " " << typeid(T).name();
+  }
 
   if (file_->isMPIIO()) {
     if (std::is_same<T, int32_t>::value) {
-      return writeVectorMPIIO(data.data(), dsname, data.size(), H5T_STD_I32LE,
-                              H5T_NATIVE_INT, sizeof(int32_t));
+      auto x = writeVectorMPIIO(data.data(), dsname, data.size(), H5T_STD_I32LE,
+                                H5T_NATIVE_INT, sizeof(int32_t));
+      if (x < 0) {
+        LOG(WARNING) << "Failed to write: " << dsname;
+      }
+      return x;
     } else if (std::is_same<T, double>::value) {
-      return writeVectorMPIIO(data.data(), dsname, data.size(), H5T_IEEE_F64LE,
-                              H5T_NATIVE_DOUBLE, sizeof(double));
+      auto x =
+          writeVectorMPIIO(data.data(), dsname, data.size(), H5T_IEEE_F64LE,
+                           H5T_NATIVE_DOUBLE, sizeof(double));
+      if (x < 0) {
+        LOG(WARNING) << "Failed to write: " << dsname;
+      }
+      return x;
     }
   } else {
     if (std::is_same<T, int32_t>::value) {

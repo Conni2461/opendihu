@@ -61,6 +61,9 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme
   Data &data();
 
@@ -184,6 +187,8 @@ protected:
                                   // advanceTimeSpan
 
   Data data_; //< the data object that stores the additional field variables
+  std::string uniqueDataPrefix_;
+
   std::vector<std::string> slotNames_; //< names of all slots
 
   std::vector<DofsMappingType>

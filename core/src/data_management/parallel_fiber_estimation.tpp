@@ -70,16 +70,23 @@ void ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
-  this->gradient->setUniqueName("parallel_fiber_estimation_gradient");
+  this->gradient->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "parallel_fiber_estimation_") +
+      "gradient");
   this->dirichletValues_ =
       this->functionSpace_->template createFieldVariable<1>("dirichletValues");
   this->dirichletValues_->setUniqueName(
-      "parallel_fiber_estimation_dirichletValues");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "parallel_fiber_estimation_") +
+      "dirichletValues");
   this->jacobianConditionNumber_ =
       this->functionSpace_->template createFieldVariable<1>(
           "jacobianConditionNumber");
   this->jacobianConditionNumber_->setUniqueName(
-      "parallel_fiber_estimation_jacobianConditionNumber");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "parallel_fiber_estimation_") +
+      "jacobianConditionNumber");
 }
 
 template <typename FunctionSpaceType>

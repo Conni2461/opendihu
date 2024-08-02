@@ -42,6 +42,9 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme
   Data &data();
 
@@ -70,8 +73,9 @@ protected:
                         // and solverManager
   Solver solver_;       //< the contained solver object
 
-  bool initialized_ = false;     //< if this object is initialized
-  DataSurface data_;             //< data object
+  bool initialized_ = false; //< if this object is initialized
+  DataSurface data_;         //< data object
+  std::string uniqueDataPrefix_;
   bool ownRankInvolvedInOutput_; //< if the own rank should call the output
                                  // writer, because surface meshes are output,
                                  // it can be that the surface is only contained

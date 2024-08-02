@@ -317,6 +317,9 @@ void MultidomainSolver<FiniteElementMethodPotentialFlow,
 
   // initialize the potential flow finite element method, this also creates the
   // function space
+  finiteElementMethodPotentialFlow_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                    "multidomain_solver"));
   finiteElementMethodPotentialFlow_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -1143,6 +1146,14 @@ void MultidomainSolver<
     ierr = VecAXPY(activeStressTotal->valuesGlobal(), 1.0,
                    activeStressCompartment->valuesGlobal());
   }
+}
+
+template <typename FiniteElementMethodPotentialFlow,
+          typename FiniteElementMethodDiffusion>
+void MultidomainSolver<FiniteElementMethodPotentialFlow,
+                       FiniteElementMethodDiffusion>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename FiniteElementMethodPotentialFlow,

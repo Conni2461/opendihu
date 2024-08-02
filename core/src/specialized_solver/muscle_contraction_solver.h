@@ -31,7 +31,7 @@ public:
 
   //! field variables that will be output by checkpointing
   typedef decltype(std::tuple_cat(
-      std::declval<typename StaticHyperelasticitySolverType::Data::
+      std::declval<typename StaticHyperelasticitySolverType::FullData::
                        FieldVariablesForCheckpointing>(),
       std::declval<typename Data::FieldVariablesForCheckpointing>()))
       FieldVariablesForCheckpointing;
@@ -75,7 +75,7 @@ public:
 
   //! field variables that will be output by checkpointing
   typedef decltype(std::tuple_cat(
-      std::declval<typename DynamicHyperelasticitySolverType::Data::
+      std::declval<typename DynamicHyperelasticitySolverType::FullData::
                        FieldVariablesForCheckpointing>(),
       std::declval<typename Data::FieldVariablesForCheckpointing>()))
       FieldVariablesForCheckpointing;
@@ -164,6 +164,9 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object of the timestepping scheme, with the call to this
   //! method the output writers get the data to create their output files
   Data &data();
@@ -203,6 +206,7 @@ protected:
                                     // can be used for quasi-static solution
 
   Data data_; //< the data object that holds all field variables
+  std::string uniqueDataPrefix_;
   OutputWriter::Manager
       outputWriterManager_; //< manager object holding all output writers
 

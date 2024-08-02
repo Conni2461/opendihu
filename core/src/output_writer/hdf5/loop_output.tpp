@@ -49,6 +49,11 @@ output(HDF5Utils::Group &group, CurrentFieldVariableType currentFieldVariable,
        const FieldVariablesForOutputWriterType &fieldVariables,
        const std::string &meshName, const PythonConfig &specificSettings,
        double currentTime) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   // if mesh name is the specified meshName
   if (currentFieldVariable->functionSpace()->meshName() == meshName) {
     // here we have the type of the mesh with meshName (which is typedef to

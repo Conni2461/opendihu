@@ -32,6 +32,8 @@ template <typename Solver> void RepeatedCall<Solver>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // initialize underlying Solver object, also with time step width
+  solver_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(uniqueDataPrefix_, "repeated_call"));
   solver_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -59,7 +61,7 @@ void RepeatedCall<Solver>::advanceTimeSpan(
   double currentTime = this->startTime_;
   int timeStepNo = 0;
   if (checkpointing) {
-    checkpointing->restore(this->solver_.data(), timeStepNo, currentTime);
+    checkpointing->restore(this->solver_.fullData(), timeStepNo, currentTime);
   }
 
   for (; timeStepNo < this->numberTimeSteps_;) {
@@ -85,7 +87,7 @@ void RepeatedCall<Solver>::advanceTimeSpan(
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->solver_.data(), timeStepNo,
+        checkpointing->createCheckpoint(this->solver_.fullData(), timeStepNo,
                                         currentTime);
       }
 
@@ -112,6 +114,11 @@ template <typename Solver>
 void RepeatedCall<Solver>::callOutputWriter(int timeStepNo, double currentTime,
                                             int callCountIncrement) {
   this->solver_.callOutputWriter(timeStepNo, currentTime, callCountIncrement);
+}
+
+template <typename Solver>
+void RepeatedCall<Solver>::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 } // namespace TimeSteppingScheme

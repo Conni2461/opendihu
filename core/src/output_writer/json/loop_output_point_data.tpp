@@ -45,6 +45,11 @@ outputPointData(JsonUtils::Group &group,
                 CurrentFieldVariableType currentFieldVariable,
                 const FieldVariablesForOutputWriterType &fieldVariables,
                 const std::string &meshName, bool onlyParallelDatasetElement) {
+  // if the field variable is a null pointer, return but do not break iteration
+  if (!currentFieldVariable) {
+    return false;
+  }
+
   // if mesh name is the specified meshName
   if (currentFieldVariable->functionSpace()->meshName() == meshName &&
       !currentFieldVariable->isGeometryField()) {

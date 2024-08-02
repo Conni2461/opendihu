@@ -63,6 +63,9 @@ public:
   virtual void callOutputWriter(int timeStepNo, double currentTime,
                                 int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! return the data object
   Data &data();
 
@@ -115,6 +118,7 @@ protected:
 
   Data dataMultidomain_; //< the data object of the multidomain solver which
                          // stores all field variables and matrices
+  std::string uniqueDataPrefix_;
 
   FiniteElementMethodPotentialFlow
       finiteElementMethodPotentialFlow_; //< the finite element object that is

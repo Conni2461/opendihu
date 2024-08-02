@@ -65,11 +65,10 @@ void HDF5::writeCombinedUnstructuredGridFile(
       // check if this mesh should be combined with other meshes
       bool combineMesh = true;
 
-      // check if mesh can be merged into previous meshes
-      if (!piece3D_.properties.pointDataArrays
-               .empty()) // if properties are already assigned by an earlier
-                         // mesh
-      {
+      // check if mesh can be merged into previous meshes.
+      // if properties are already assigned by an earlier mesh and we dont have
+      // unique data
+      if (!piece3D_.properties.pointDataArrays.empty()) {
         if (piece3D_.properties.pointDataArrays.size() !=
             polyDataPropertiesForMesh.pointDataArrays.size()) {
           LOG(DEBUG) << "Mesh " << meshName << " cannot be combined with "
@@ -527,8 +526,60 @@ void HDF5::writeCombinedUnstructuredGridFile(
 
   // collect all data for the field variables, organized by field variable names
   std::map<std::string, std::vector<double>> fieldVariableValues;
+  std::vector<std::string> allFieldVariableNames;
   LoopOverTuple::loopGetNodalValues<FieldVariablesForOutputWriterType>(
       fieldVariables, meshNamesSet, fieldVariableValues, useUniqueName);
+
+  for (const auto &val : fieldVariableValues) {
+    allFieldVariableNames.push_back(val.first);
+  }
+
+  const int32_t ownLength = fieldVariableValues.size();
+  int32_t maxSize;
+  MPIUtility::handleReturnValue(
+      MPI_Allreduce(&ownLength, &maxSize, 1, MPI_INT, MPI_MAX,
+                    this->rankSubset_->mpiCommunicator()),
+      "MPI_Allreduce");
+
+  int32_t worldSize;
+  MPI_Comm_size(this->rankSubset_->mpiCommunicator(), &worldSize);
+
+  std::vector<int32_t> wordSizes, wordDisplacements;
+  std::vector<char> words;
+  wordSizes.resize(worldSize);
+  wordDisplacements.resize(worldSize);
+  for (size_t i = 0; i < maxSize; i++) {
+    const char *sendBuffer = nullptr;
+    int32_t sendSize = 0;
+    if (i < ownLength) {
+      sendBuffer = allFieldVariableNames[i].c_str();
+      sendSize = (int32_t)allFieldVariableNames[i].size();
+    }
+    MPIUtility::handleReturnValue(
+        MPI_Allgather(&sendSize, 1, MPI_INT, wordSizes.data(), 1, MPI_INT,
+                      this->rankSubset_->mpiCommunicator()),
+        "MPI_Allgather");
+    wordDisplacements[0] = 0;
+    for (size_t i = 1; i < worldSize; i++) {
+      wordDisplacements[i] = wordDisplacements[i - 1] + wordSizes[i - 1];
+    }
+    words.resize(std::accumulate(wordSizes.begin(), wordSizes.end(), 0ul));
+    MPIUtility::handleReturnValue(
+        MPI_Allgatherv(sendBuffer, sendSize, MPI_CHAR, words.data(),
+                       wordSizes.data(), wordDisplacements.data(), MPI_CHAR,
+                       this->rankSubset_->mpiCommunicator()),
+        "MPI_Allgatherv");
+    for (size_t i = 0; i < worldSize; i++) {
+      if (wordSizes[i] == 0) {
+        continue;
+      }
+      std::string v((const char *)(words.data() + wordDisplacements[i]),
+                    wordSizes[i]);
+      if (fieldVariableValues.find(v) == fieldVariableValues.end()) {
+        fieldVariableValues[v].resize(0);
+      }
+    }
+  }
 
   if (!meshPropertiesInitialized) {
     // if next assertion fails, output why for debugging
@@ -608,41 +659,31 @@ void HDF5::writeCombinedUnstructuredGridFile(
   VLOG(1) << "meshNames: " << meshNames << ", rank "
           << this->rankSubset_->ownRankNo()
           << ", n geometryFieldValues: " << geometryFieldValues.size();
-  if (geometryFieldValues.size() == 0) {
-    LOG(FATAL)
-        << "There is no geometry field. You have to provide a geomteryField in "
-           "the field variables returned by getFieldVariablesForOutputWriter!";
-  }
 
   Control::PerformanceMeasurement::start("durationHDF53DWrite");
 
   herr_t err;
   // write field variables
-  for (PolyDataPropertiesForMesh::DataArrayName &pointDataArray :
-       polyDataPropertiesForMesh.pointDataArrays) {
-    assert(fieldVariableValues.find(pointDataArray.name) !=
-           fieldVariableValues.end());
-
-    const std::vector<double> &dataToWrite =
-        fieldVariableValues[pointDataArray.name];
+  for (const auto &val : fieldVariableValues) {
     // write values
     // for partitioning, convert float values to integer values for output
-    if (pointDataArray.name == "partitioning") {
-      std::vector<int32_t> newVals(dataToWrite.size());
+    if (val.first == "partitioning") {
+      std::vector<int32_t> newVals(val.second.size());
 
-      for (const auto &v : dataToWrite) {
+      for (const auto &v : val.second) {
         newVals.push_back((int32_t)(round(v)));
       }
-      err = group.writeSimpleVec<int32_t>(newVals, pointDataArray.name.c_str());
+      err = group.writeSimpleVec<int32_t>(newVals, val.first.c_str());
     } else {
-      err = group.writeSimpleVec<double>(dataToWrite,
-                                         pointDataArray.name.c_str());
+      err = group.writeSimpleVec<double>(val.second, val.first.c_str());
     }
     assert(err >= 0);
   }
 
-  err = group.writeSimpleVec<double>(geometryFieldValues, "geometry");
-  assert(err >= 0);
+  if (geometryFieldValues.size() > 0) {
+    err = group.writeSimpleVec<double>(geometryFieldValues, "geometry");
+    assert(err >= 0);
+  }
   err = group.writeSimpleVec<int32_t>(connectivityValues, "connectivity");
   assert(err >= 0);
   err = group.writeSimpleVec<int32_t>(offsetValues, "offsets");

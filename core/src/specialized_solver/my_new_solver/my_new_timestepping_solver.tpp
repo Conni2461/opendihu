@@ -152,6 +152,8 @@ void MyNewTimesteppingSolver<TimeStepping>::initialize() {
   DihuContext::solverStructureVisualizer()->beginChild();
 
   // call initialize of the nested timestepping solver
+  timeSteppingScheme_.setUniqueDataPrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "my_new_timestepping_solver"));
   timeSteppingScheme_.initialize();
 
   // indicate in solverStructureVisualizer that the child solver initialization
@@ -175,6 +177,8 @@ void MyNewTimesteppingSolver<TimeStepping>::initialize() {
   data_.setFunctionSpace(functionSpace);
 
   // now call initialize, data will then create all variables (Petsc Vec's)
+  data_.setUniquePrefix(StringUtility::optionalConcat(
+      this->uniqueDataPrefix_, "my_new_timestepping_solver"));
   data_.initialize();
 
   // set the slotConnectorData for the solverStructureVisualizer to appear in
@@ -246,6 +250,12 @@ void MyNewTimesteppingSolver<TimeStepping>::executeMyHelperMethod() {
   // the values back.
   ierr = VecShift(fieldVariableA->valuesGlobal(), 1.0);
   CHKERRV(ierr);
+}
+
+template <typename TimeStepping>
+void MyNewTimesteppingSolver<TimeStepping>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename TimeStepping>

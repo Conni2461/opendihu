@@ -46,7 +46,8 @@ void TimeSteppingHeun<FunctionSpaceType, nComponents>::createPetscObjects() {
       this->functionSpace_->template createFieldVariable<nComponents>(
           "algebraicIncrement");
   this->algebraicIncrement_->setUniqueName(
-      "time_stepping_heun_algebraicIncrement");
+      StringUtility::getFirstNE(this->uniquePrefix_, "time_stepping_heun_") +
+      "algebraicIncrement");
 }
 
 template <typename FunctionSpaceType, int nComponents>
@@ -77,4 +78,14 @@ void TimeSteppingHeun<FunctionSpaceType, nComponents>::
   VLOG(4) << "======================";
 }
 
+template <typename FunctionSpaceType, int nComponents>
+typename TimeSteppingHeun<FunctionSpaceType,
+                          nComponents>::FieldVariablesForCheckpointing
+TimeSteppingHeun<FunctionSpaceType,
+                 nComponents>::getFieldVariablesForCheckpointing() {
+  return std::tuple_cat(
+      TimeStepping<FunctionSpaceType,
+                   nComponents>::getFieldVariablesForCheckpointing(),
+      std::tuple<std::shared_ptr<FieldVariableType>>(algebraicIncrement_));
+}
 } // namespace Data

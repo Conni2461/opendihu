@@ -104,7 +104,7 @@ void Component<FunctionSpaceType, nComponents>::setName(
 template <typename FunctionSpaceType, int nComponents>
 void Component<FunctionSpaceType, nComponents>::setUniqueName(
     const std::string &uniqueName) {
-  this->name_ = uniqueName;
+  this->uniqueName_ = uniqueName;
 }
 
 template <typename FunctionSpaceType, int nComponents>
@@ -228,10 +228,14 @@ std::string Component<FunctionSpaceType, nComponents>::name() const {
 
 template <typename FunctionSpaceType, int nComponents>
 std::string Component<FunctionSpaceType, nComponents>::uniqueName() const {
+  std::stringstream ss;
   if (this->uniqueName_ == "") {
-    return this->name_;
+    ss << this->name_;
+  } else {
+    ss << this->uniqueName_;
   }
-  return this->uniqueName_;
+  ss << "_" << this->nDofsGlobal();
+  return ss.str();
 }
 
 template <typename FunctionSpaceType, int nComponents>

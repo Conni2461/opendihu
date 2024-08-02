@@ -341,6 +341,8 @@ void MultipleInstances<TimeSteppingScheme>::initialize() {
 
     // call initialize on the current instance
     LOG(DEBUG) << "instance " << i << " initialize";
+    instancesLocal_[i].setUniqueDataPrefix(StringUtility::optionalConcat(
+        uniqueDataPrefix_, "multiple_instances_i[" + std::to_string(i) + "]"));
     instancesLocal_[i].initialize();
 
     // indicate that the initialize of the child is finished
@@ -390,6 +392,12 @@ void MultipleInstances<TimeSteppingScheme>::initialize() {
   // #ifdef HAVE_PAT
   // PAT_region_end(1);    // end region "initialization", id 1
   // #endif
+}
+
+template <typename TimeSteppingScheme>
+void MultipleInstances<TimeSteppingScheme>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename TimeSteppingScheme>

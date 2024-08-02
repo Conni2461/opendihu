@@ -94,27 +94,41 @@ void QuasiStaticLinearElasticity<
   // create all field variables that are needed
   this->activation_ =
       this->functionSpace_->template createFieldVariable<1>("activation");
-  this->activation_->setUniqueName("quasi_static_linear_elasticity_activation");
+  this->activation_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "activation");
   this->activeStress_ = this->functionSpace_->template createFieldVariable<9>(
       "activeStress", componentNames);
   this->activeStress_->setUniqueName(
-      "quasi_static_linear_elasticity_activeStress");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "activeStress");
   this->strain_ = this->functionSpace_->template createFieldVariable<9>(
       "strain", componentNames);
-  this->strain_->setUniqueName("quasi_static_linear_elasticity_strain");
+  this->strain_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "strain");
   this->flowPotential_ =
       this->functionSpace_->template createFieldVariable<1>("flowPotential");
   this->flowPotential_->setUniqueName(
-      "quasi_static_linear_elasticity_flowPotential");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "flowPotential");
   this->rightHandSideActive_ =
       this->functionSpace_->template createFieldVariable<3>(
           "rightHandSideActive");
   this->rightHandSideActive_->setUniqueName(
-      "quasi_static_linear_elasticity_rightHandSideActive");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "rightHandSideActive");
   this->fiberDirection_ =
       this->functionSpace_->template createFieldVariable<3>("fiberDirection");
   this->fiberDirection_->setUniqueName(
-      "quasi_static_linear_elasticity_fiberDirection");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "quasi_static_linear_elasticity_") +
+      "fiberDirection");
 }
 
 template <typename DataLinearElasticityType>

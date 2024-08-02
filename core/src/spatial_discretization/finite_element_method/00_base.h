@@ -58,6 +58,9 @@ public:
   //! get the stored functionSpace
   std::shared_ptr<FunctionSpaceType> functionSpace();
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
   //! get the data object
   Data &data();
 
@@ -98,6 +101,8 @@ protected:
                         // current context and the global singletons meshManager
                         // and solverManager
   Data data_; //< data object that holds all PETSc vectors and matrices
+  std::string uniqueDataPrefix_;
+
   PythonConfig specificSettings_; //< python object containing the value of the
                                   // python config dict with corresponding key
   OutputWriter::Manager

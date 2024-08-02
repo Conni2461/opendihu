@@ -139,6 +139,8 @@ void HyperelasticityInitialize<Term, withLargeOutput, MeshType,
   data_.setDisplacementsFunctionSpace(displacementsFunctionSpace_);
   data_.setPressureFunctionSpace(pressureFunctionSpace_);
 
+  data_.setUniquePrefix(StringUtility::optionalConcat(this->uniqueDataPrefix_,
+                                                      "hyperelasticity"));
   data_.initialize();
   pressureDataCopy_.initialize(data_.pressure(),
                                data_.displacementsLinearMesh(),
@@ -1166,6 +1168,14 @@ template <typename Term, bool withLargeOutput, typename MeshType,
 void HyperelasticityInitialize<Term, withLargeOutput, MeshType,
                                nDisplacementComponents>::reset() {
   this->initialized_ = false;
+}
+
+template <typename Term, bool withLargeOutput, typename MeshType,
+          int nDisplacementComponents>
+void HyperelasticityInitialize<
+    Term, withLargeOutput, MeshType,
+    nDisplacementComponents>::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename Term, bool withLargeOutput, typename MeshType,

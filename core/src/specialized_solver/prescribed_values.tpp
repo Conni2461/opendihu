@@ -367,6 +367,12 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
 }
 
 template <typename FunctionSpaceType, int nComponents1, int nComponents2>
+void PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
+    setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, int nComponents1, int nComponents2>
 typename PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::Data &
 PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::data() {
   // get a reference to the data object

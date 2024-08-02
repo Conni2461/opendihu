@@ -134,10 +134,16 @@ void DiffusionAdvectionSolver<FunctionSpaceType>::createPetscObjects() {
   // field variable. It will also be used in the VTK output files.
   this->solution_ =
       this->functionSpace_->template createFieldVariable<1>("solution");
-  this->solution_->setUniqueName("diffusion_advection_solver_solution");
+  this->solution_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "diffusion_advection_solver_") +
+      "solution");
   this->increment_ =
       this->functionSpace_->template createFieldVariable<1>("increment");
-  this->increment_->setUniqueName("diffusion_advection_solver_increment");
+  this->increment_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "diffusion_advection_solver_") +
+      "increment");
 
   // create PETSc matrix object
 
@@ -218,8 +224,10 @@ DiffusionAdvectionSolver<
       geometryField =
           std::make_shared<FieldVariable::FieldVariable<FunctionSpaceType, 3>>(
               this->functionSpace_->geometryField());
-  geometryField->setUniqueName("diffusion_advection_solver_" +
-                               geometryField->name());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "diffusion_advection_solver_") +
+      geometryField->name());
 
   return std::make_tuple(geometryField, this->solution_, this->increment_
 

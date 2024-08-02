@@ -75,6 +75,12 @@ void MapDofs<FunctionSpaceType, NestedSolverType>::callOutputWriter(
 }
 
 template <typename FunctionSpaceType, typename NestedSolverType>
+void MapDofs<FunctionSpaceType, NestedSolverType>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename FunctionSpaceType, typename NestedSolverType>
 void MapDofs<FunctionSpaceType, NestedSolverType>::performMappings(
     std::vector<DofsMappingType> &mappings, double currentTime) {
   int ownRankNo =

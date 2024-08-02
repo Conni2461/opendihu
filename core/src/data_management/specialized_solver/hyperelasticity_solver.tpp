@@ -52,8 +52,10 @@ QuasiStaticHyperelasticityBase<
   auto geometryField = std::shared_ptr<DisplacementsFieldVariableType>(
       std::make_shared<typename DisplacementsFunctionSpace::GeometryFieldType>(
           this->displacementsFunctionSpace_->geometryField()));
-  geometryField->setUniqueName("hyperelasticity_solver_" +
-                               geometryField->name());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      geometryField->name());
 
   return std::make_tuple(
       geometryField,
@@ -75,6 +77,8 @@ QuasiStaticHyperelasticityBase<
       std::shared_ptr<DisplacementsLinearFieldVariableType>(
           this->velocitiesLinearMesh_),
       std::shared_ptr<PressureFieldVariableType>(this->pressure_),
+      std::shared_ptr<PressureFieldVariableType>(
+          this->pressurePreviousTimestep_),
 
       std::shared_ptr<StressFieldVariableType>(this->pK2Stress_),
       std::shared_ptr<StressFieldVariableType>(this->activePK2Stress_),
@@ -82,7 +86,14 @@ QuasiStaticHyperelasticityBase<
       std::shared_ptr<DeformationGradientFieldVariableType>(
           this->deformationGradient_),
       std::shared_ptr<DeformationGradientFieldVariableType>(
-          this->deformationGradientTimeDerivative_));
+          this->deformationGradientTimeDerivative_),
+
+      std::shared_ptr<DeformationGradientFieldVariableType>(this->pK1Stress_),
+      std::shared_ptr<DeformationGradientFieldVariableType>(
+          this->cauchyStress_),
+      std::shared_ptr<
+          FieldVariable::FieldVariable<DisplacementsFunctionSpace, 1>>(
+          this->deformationGradientDeterminant_));
 }
 
 template <typename PressureFunctionSpace, typename DisplacementsFunctionSpace,
@@ -236,56 +247,80 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
   displacements_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "u", displacementsComponentNames);
-  displacements_->setUniqueName("hyperelasticity_solver_u");
+  displacements_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "u");
   displacementsPreviousTimestep_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "u_previous", displacementsComponentNames);
   displacementsPreviousTimestep_->setUniqueName(
-      "hyperelasticity_solver_u_previous");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "u_previous");
 
   velocities_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "v", displacementsComponentNames);
-  velocities_->setUniqueName("hyperelasticity_solver_v");
+  velocities_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "v");
   velocitiesPreviousTimestep_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "v_previous", displacementsComponentNames);
   velocitiesPreviousTimestep_->setUniqueName(
-      "hyperelasticity_solver_v_previous");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "v_previous");
 
   fiberDirection_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "fiberDirection", displacementsComponentNames);
-  fiberDirection_->setUniqueName("hyperelasticity_solver_fiberDirection");
+  fiberDirection_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "fiberDirection");
   traction_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "t (current traction)", displacementsComponentNames);
-  traction_->setUniqueName("hyperelasticity_solver_t (current traction)");
+  traction_->setUniqueName(StringUtility::getFirstNE(
+                               this->uniquePrefix_, "hyperelasticity_solver_") +
+                           "t (current traction)");
   materialTraction_ =
       this->displacementsFunctionSpace_->template createFieldVariable<3>(
           "T (material traction)", displacementsComponentNames);
   materialTraction_->setUniqueName(
-      "hyperelasticity_solver_T (material traction)");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "T (material traction)");
   displacementsLinearMesh_ =
       this->pressureFunctionSpace_->template createFieldVariable<3>(
           "uLin", displacementsComponentNames); //< u, the displacements
   displacementsLinearMesh_->setUniqueName(
-      "hyperelasticity_solver_uLin"); //< u, the displacements
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "uLin"); //< u, the displacements
   velocitiesLinearMesh_ =
       this->pressureFunctionSpace_->template createFieldVariable<3>(
           "vLin", displacementsComponentNames); //< v, the velocities
   velocitiesLinearMesh_->setUniqueName(
-      "hyperelasticity_solver_vLin"); //< v, the velocities
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "vLin"); //< v, the velocities
   pressure_ = this->pressureFunctionSpace_->template createFieldVariable<1>(
       "p"); //<  p, the pressure variable
-  pressure_->setUniqueName(
-      "hyperelasticity_solver_p"); //<  p, the pressure variable
+  pressure_->setUniqueName(StringUtility::getFirstNE(
+                               this->uniquePrefix_, "hyperelasticity_solver_") +
+                           "p"); //<  p, the pressure variable
   if (Term::isIncompressible) {
     pressurePreviousTimestep_ =
         this->pressureFunctionSpace_->template createFieldVariable<1>(
             "p_previous"); //<  p, the pressure variable
     pressurePreviousTimestep_->setUniqueName(
-        "hyperelasticity_solver_p_previous"); //<  p, the pressure variable
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "p_previous"); //<  p, the pressure variable
   } else {
     pressurePreviousTimestep_ = nullptr;
   }
@@ -297,26 +332,36 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
       this->displacementsFunctionSpace_->template createFieldVariable<6>(
           "PK2-Stress (Voigt)", componentNamesS); //<  the symmetric PK2 stress
                                                   // tensor in Voigt notation
-  pK2Stress_->setUniqueName("hyperelasticity_solver_PK2-Stress (Voigt)");
+  pK2Stress_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "PK2-Stress (Voigt)");
   activePK2Stress_ =
       this->displacementsFunctionSpace_->template createFieldVariable<6>(
           "active PK2-Stress (Voigt)",
           componentNamesS); //<  the symmetric active PK2 stress tensor in Voigt
                             // notation
   activePK2Stress_->setUniqueName(
-      "hyperelasticity_solver_active PK2-Stress (Voigt)");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "active PK2-Stress (Voigt)");
 
   std::vector<std::string> componentNamesF{
       "F_11", "F_12", "F_13", "F_21", "F_22", "F_23", "F_31", "F_32", "F_33"};
   deformationGradient_ =
       this->displacementsFunctionSpace_->template createFieldVariable<9>(
           "F", componentNamesF);
-  deformationGradient_->setUniqueName("hyperelasticity_solver_F");
+  deformationGradient_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "F");
   deformationGradientTimeDerivative_ =
       this->displacementsFunctionSpace_->template createFieldVariable<9>(
           "Fdot", componentNamesF);
   deformationGradientTimeDerivative_->setUniqueName(
-      "hyperelasticity_solver_Fdot");
+      StringUtility::getFirstNE(this->uniquePrefix_,
+                                "hyperelasticity_solver_") +
+      "Fdot");
 
   if (withLargeOutput) {
     std::vector<std::string> componentNamesP{
@@ -324,17 +369,26 @@ void QuasiStaticHyperelasticityBase<PressureFunctionSpace,
     pK1Stress_ =
         this->displacementsFunctionSpace_->template createFieldVariable<9>(
             "P (PK1 stress)", componentNamesP);
-    pK1Stress_->setUniqueName("hyperelasticity_solver_P (PK1 stress)");
+    pK1Stress_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "P (PK1 stress)");
     std::vector<std::string> componentNamesSigma{
         "σ_11", "σ_12", "σ_13", "σ_21", "σ_22", "σ_23", "σ_31", "σ_32", "σ_33"};
     cauchyStress_ =
         this->displacementsFunctionSpace_->template createFieldVariable<9>(
             "σ (Cauchy stress)", componentNamesSigma);
-    cauchyStress_->setUniqueName("hyperelasticity_solver_σ (Cauchy stress)");
+    cauchyStress_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "σ (Cauchy stress)");
     deformationGradientDeterminant_ =
         this->displacementsFunctionSpace_->template createFieldVariable<1>(
             "J"); // J=det(F)
-    deformationGradientDeterminant_->setUniqueName("hyperelasticity_solver_J");
+    deformationGradientDeterminant_->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_,
+                                  "hyperelasticity_solver_") +
+        "J");
   }
 }
 
@@ -986,8 +1040,10 @@ QuasiStaticHyperelasticityPressureOutput<
   auto geometryField =
       std::make_shared<typename PressureFunctionSpace::GeometryFieldType>(
           this->functionSpace_->geometryField());
-  geometryField->setUniqueName("quasi_static_hyperelasticity_pressure_output" +
-                               geometryField->name());
+  geometryField->setUniqueName(
+      StringUtility::getFirstNE(
+          this->uniquePrefix_, "quasi_static_hyperelasticity_pressure_output") +
+      geometryField->name());
 
   return std::tuple_cat(
       std::tuple<std::shared_ptr<DisplacementsLinearFieldVariableType>>(

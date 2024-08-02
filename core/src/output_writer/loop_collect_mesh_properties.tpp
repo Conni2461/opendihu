@@ -57,6 +57,7 @@ collectMeshProperties(
                << StringUtility::demangle(
                       typeid(CurrentFieldVariableType).name())
                << " fieldVariables: " << fieldVariables << ", i: " << i;
+    return false;
   }
   assert(currentFieldVariable != nullptr);
   if (!currentFieldVariable->functionSpace()) {

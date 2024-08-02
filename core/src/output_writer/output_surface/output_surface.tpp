@@ -16,8 +16,12 @@ template <typename Solver> void OutputSurface<Solver>::initialize() {
     return;
 
   // initialize solvers
+  solver_.setUniqueDataPrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "output_surface"));
   solver_.initialize();
   data_.setData(solver_.data());
+  data_.setUniquePrefix(
+      StringUtility::optionalConcat(this->uniqueDataPrefix_, "output_surface"));
   data_.initialize();
   ownRankInvolvedInOutput_ = data_.ownRankInvolvedInOutput();
 
@@ -219,6 +223,11 @@ void OutputSurface<Solver>::callOutputWriter(int timeStepNo, double currentTime,
     outputWriterManager_.writeOutput(data_, timeStepNo, currentTime,
                                      callCountIncrement);
   }
+}
+
+template <typename Solver>
+void OutputSurface<Solver>::setUniqueDataPrefix(const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename Solver>

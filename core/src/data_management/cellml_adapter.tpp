@@ -315,7 +315,9 @@ void CellmlAdapter<nStates, nAlgebraics,
   this->algebraics_ =
       this->functionSpace_->template createFieldVariable<nAlgebraics>(
           "algebraics", algebraicNames_);
-  this->algebraics_->setUniqueName("cellml_adapter_algebraics");
+  this->algebraics_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "cellml_adapter_") +
+      "algebraics");
   this->algebraics_->setRepresentationContiguous();
 
   std::vector<std::string> parameterNames;
@@ -344,7 +346,9 @@ void CellmlAdapter<nStates, nAlgebraics,
   this->parameters_ =
       this->functionSpace_->template createFieldVariable<nAlgebraics>(
           "parameters", parameterNames);
-  this->parameters_->setUniqueName("cellml_adapter_parameters");
+  this->parameters_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "cellml_adapter_") +
+      "parameters");
 }
 
 //! return a reference to the parameters vector

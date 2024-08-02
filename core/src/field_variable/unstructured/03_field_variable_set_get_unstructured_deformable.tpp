@@ -456,14 +456,17 @@ void FieldVariableSetGetUnstructured<FunctionSpaceType, nComponents>::setValues(
     const std::vector<double> &values) {
   // get number of dofs
   assert(this->functionSpace_);
-  const dof_no_t nDofs = this->functionSpace_->nDofsLocalWithGhosts();
+  const dof_no_t nDofs =
+      this->functionSpace_->meshPartition()->nDofsLocalWithGhosts();
 
   if (nDofs == values.size()) {
     for (int componentIndex = 0; componentIndex < nComponents;
          componentIndex++) {
       this->setValuesWithGhosts(componentIndex, values, INSERT_VALUES);
     }
-  } else if (values.size() == (nDofs * nComponents)) {
+  } else if ((values.size() >= (nDofs * nComponents) &&
+              values.size() % nComponents == 0) ||
+             values.size() == (nDofs * (nComponents + 1))) {
     std::vector<double> t;
     t.resize(nDofs);
     for (int componentIndex = 0; componentIndex < nComponents;
@@ -477,7 +480,8 @@ void FieldVariableSetGetUnstructured<FunctionSpaceType, nComponents>::setValues(
     LOG(WARNING) << "Failed to set values in fieldVariable ["
                  << this->uniqueName()
                  << "] because values.size() != (nDofs * nComponents): "
-                 << values.size() << "!= " << (nDofs * nComponents);
+                 << values.size() << " != " << (nDofs * nComponents)
+                 << " | nDofs: " << nDofs << " | nComponents: " << nComponents;
     // assert(false);
   }
 }

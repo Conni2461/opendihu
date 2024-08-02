@@ -61,7 +61,9 @@ void StreamlineTracer<FunctionSpaceType, BaseDataType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
-  this->gradient_->setUniqueName("StreamlineTracerGradient");
+  this->gradient_->setUniqueName(
+      StringUtility::getFirstNE(this->uniquePrefix_, "streamline_tracer") +
+      "_gradient");
 }
 
 template <typename FunctionSpaceType, typename BaseDataType>

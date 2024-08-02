@@ -33,9 +33,13 @@ public:
   void callOutputWriter(int timeStepNo, double currentTime,
                         int callCountIncrement = 1);
 
+  //! set unique data prefix
+  void setUniqueDataPrefix(const std::string &prefix);
+
 private:
   Solver
       solver_; //< the underlying solver object that will be stepped repeatedly
+  std::string uniqueDataPrefix_;
 };
 
 } // namespace TimeSteppingScheme

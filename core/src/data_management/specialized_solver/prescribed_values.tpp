@@ -117,7 +117,9 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
     std::string name = fieldVariable1Names_[fieldVariable1No];
     auto var =
         this->functionSpace_->template createFieldVariable<nComponents1>(name);
-    var->setUniqueName("prescribed_values_" + name);
+    var->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "prescribed_values_") +
+        name);
     this->fieldVariables1_.push_back(var);
   }
 
@@ -128,7 +130,9 @@ void PrescribedValues<FunctionSpaceType, nComponents1,
     std::string name = fieldVariable2Names_[fieldVariable2No];
     auto var =
         this->functionSpace_->template createFieldVariable<nComponents2>(name);
-    var->setUniqueName("prescribed_values_" + name);
+    var->setUniqueName(
+        StringUtility::getFirstNE(this->uniquePrefix_, "prescribed_values_") +
+        name);
     this->fieldVariables2_.push_back(var);
   }
 }

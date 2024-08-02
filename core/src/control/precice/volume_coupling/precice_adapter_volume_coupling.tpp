@@ -19,7 +19,7 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
         this->endTimeIfCouplingDisabled_ / this->timeStepWidth_;
     int timeStepNo = 0;
     if (checkpointing) {
-      checkpointing->restore(this->nestedSolver_.data(), timeStepNo,
+      checkpointing->restore(this->nestedSolver_.fullData(), timeStepNo,
                              currentTime);
     }
 
@@ -44,7 +44,7 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
       if (checkpointing) {
         if (checkpointing->needCheckpoint()) {
-          checkpointing->createCheckpoint(this->nestedSolver_.data(),
+          checkpointing->createCheckpoint(this->nestedSolver_.fullData(),
                                           timeStepNo, currentTime);
         }
 
@@ -78,7 +78,8 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
   int timeStepNo = 0;
   if (checkpointing) {
-    checkpointing->restore(this->nestedSolver_.data(), timeStepNo, currentTime);
+    checkpointing->restore(this->nestedSolver_.fullData(), timeStepNo,
+                           currentTime);
   }
 
   // perform the computation of this solver
@@ -127,8 +128,8 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::run() {
 
     if (checkpointing) {
       if (checkpointing->needCheckpoint()) {
-        checkpointing->createCheckpoint(this->nestedSolver_.data(), timeStepNo,
-                                        currentTime);
+        checkpointing->createCheckpoint(this->nestedSolver_.fullData(),
+                                        timeStepNo, currentTime);
       }
 
       if (checkpointing->shouldExit()) {
@@ -183,6 +184,12 @@ void PreciceAdapterVolumeCoupling<NestedSolver>::reset() {
 
   this->initialized_ = false;
   // "uninitialize" everything
+}
+
+template <typename NestedSolver>
+void PreciceAdapterVolumeCoupling<NestedSolver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
 }
 
 template <typename NestedSolver>
