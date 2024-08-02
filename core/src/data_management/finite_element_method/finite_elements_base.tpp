@@ -123,10 +123,10 @@ bool FiniteElementsBase<FunctionSpaceType, nComponents>::restoreState(
   this->negativeRhsNeumannBoundaryConditions_->setValues(
       negativeRhsNeumannBoundaryConditions);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   // TODO: restore stiffnessMatrix, stiffnessMatrixWithoutBc ???
   return true;

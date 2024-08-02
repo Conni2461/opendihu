@@ -102,10 +102,10 @@ bool MuscleContractionSolver<FunctionSpaceType>::restoreState(
   this->fiberDirection_->setValues(fiberDirection);
   this->materialTraction_->setValues(materialTraction);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }

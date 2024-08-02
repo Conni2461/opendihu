@@ -295,10 +295,10 @@ bool CellmlAdapter<nStates, nAlgebraics, FunctionSpaceType>::restoreState(
   this->states_->setValues(states);
   this->parameters_->setValues(parameters);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }

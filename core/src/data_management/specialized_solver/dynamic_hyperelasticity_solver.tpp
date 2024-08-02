@@ -46,10 +46,10 @@ bool DynamicHyperelasticitySolver<FunctionSpaceType>::restoreState(
   accelerationTerm_->setValues(accelerationTerm);
   externalVirtualWorkDead_->setValues(externalVirtualWorkDead);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }

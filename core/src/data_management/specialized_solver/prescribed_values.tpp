@@ -97,10 +97,10 @@ bool PrescribedValues<FunctionSpaceType, nComponents1, nComponents2>::
     fieldVariables2_[i]->setValues(data2[i]);
   }
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }

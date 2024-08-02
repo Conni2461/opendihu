@@ -112,10 +112,10 @@ bool DiffusionAdvectionSolver<FunctionSpaceType>::restoreState(
   this->solution_->setValues(solution);
   this->increment_->setValues(increment);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   // TODO: restore vMatrix (???)
   return true;
