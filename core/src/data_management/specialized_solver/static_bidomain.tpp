@@ -87,13 +87,10 @@ bool StaticBidomain<FunctionSpaceType>::restoreState(
   }
 
   std::vector<VecD<3>> geometryValues;
-  {
-    int n = this->functionSpace_->geometryField().nDofsLocalWithoutGhosts();
-    if (!r.template readDoubleVecD<3>(
-            this->functionSpace_->geometryField().name().c_str(), n,
-            geometryValues, "3D/")) {
-      return false;
-    }
+  if (!r.template readDoubleVecD<3>(
+          this->functionSpace_->geometryField().name().c_str(), geometryValues,
+          "3D/")) {
+    return false;
   }
 
   this->transmembraneFlow_->setValues(transmembraneFlow);
@@ -104,10 +101,10 @@ bool StaticBidomain<FunctionSpaceType>::restoreState(
   this->zero_->setValues(zero);
   this->jacobianConditionNumber_->setValues(jacobianConditionNumber);
 
-  this->functionSpace_->geometryField().setValuesWithoutGhosts(geometryValues);
-  this->functionSpace_->geometryField().zeroGhostBuffer();
-  this->functionSpace_->geometryField().setRepresentationGlobal();
-  this->functionSpace_->geometryField().startGhostManipulation();
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }

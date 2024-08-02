@@ -64,10 +64,10 @@ bool MyNewStaticSolver<FunctionSpaceType>::restoreState(
     return false;
   }
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }

@@ -74,10 +74,10 @@ bool QuasiStaticNonlinearElasticityFebio::restoreState(
   this->greenLagrangeStrain_->setValues(greenLagrangeStrain);
   this->relativeVolume_->setValues(relativeVolume);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   // Note we do not need to hande referenceGeometry here
   return true;

@@ -212,10 +212,10 @@ bool QuasiStaticHyperelasticityBase<
         deformationGradientDeterminant);
   }
 
-  for (size_t i = 0; i < 3; i++) {
-    this->displacementsFunctionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->displacementsFunctionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }
@@ -1026,10 +1026,10 @@ bool QuasiStaticHyperelasticityPressureOutput<
   this->velocitiesLinearMesh_->setValues(velocitiesLinearMesh);
   this->pressure_->setValues(pressure);
 
-  for (size_t i = 0; i < 3; i++) {
-    this->functionSpace_->geometryField().setValuesWithGhosts(
-        i, geometryValues[i], INSERT_VALUES);
-  }
+  // for (size_t i = 0; i < 3; i++) {
+  //   this->functionSpace_->geometryField().setValuesWithGhosts(
+  //       i, geometryValues[i], INSERT_VALUES);
+  // }
 
   return true;
 }
