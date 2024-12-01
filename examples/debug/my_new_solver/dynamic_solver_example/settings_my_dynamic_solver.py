@@ -1,15 +1,29 @@
 # Modified diffusion 1D
 # Compute
 
+import sys
+import argparse
+
+rank_no = (int)(sys.argv[-2])
+n_ranks = (int)(sys.argv[-1])
+
+parser = argparse.ArgumentParser(description='settings_my_dynamic_solver')
+
+parser.add_argument("--enable_checkpointing", help="Enable checkpointing", default=False, action="store_true")
+parser.add_argument("--checkpointing_dir", help="Set a Checkpointing directory, only used if Checkpointing is enabled", default="states")
+parser.add_argument("--checkpointing_interval", help="Set a specific Checkpointing Timestep Interval, only used if Checkpointing is enabled", default=10)
+parser.add_argument("--checkpointing_system", help="Set a specific Checkpointing System, only used if Checkpointing is enabled", default="hdf5-combined")
+parser.add_argument("--checkpointing_autorestore", help="Enable automatic restore if a Checkpoint is found, only used if Checkpointing is enabled", default=False, action="store_true")
+parser.add_argument("--checkpointing_restore_checkpoint", help="Restore a specific Checkpoint, only used if Checkpointing is enabled", default=None)
+
+args, other_args = parser.parse_known_args(args=sys.argv[:-2])
+if len(other_args) != 0 and rank_no == 0:
+    print("Warning: These arguments were not parsed by the settings python file\n  " + "\n  ".join(other_args), file=sys.stderr)
+
 n = 5   # number of elements
 
 config = {
   "logFormat": "csv",
-  "checkpointing": {
-    "interval": 10,
-    "directory": "states",
-    "checkpointToRestore": "timestep.0010",
-  },
   "Solvers": {
     "linearSolver": {
       "solverType": "gmres",          # the solver type, refer to PETSc documentation about implemented solvers and preconditioners (https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/KSP/KSPType.html)
@@ -60,3 +74,12 @@ config = {
     ]
   }
 }
+
+if args.enable_checkpointing:
+    config["checkpointing"] = {
+        "directory": args.checkpointing_dir,
+        "interval": args.checkpointing_interval,
+        "type": args.checkpointing_system,
+        "autoRestore": args.checkpointing_autorestore,
+        "checkpointToRestore": args.checkpointing_restore_checkpoint,
+    }
