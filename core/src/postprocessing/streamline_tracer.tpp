@@ -84,6 +84,12 @@ void StreamlineTracer<DiscretizableInTimeType>::run() {
 }
 
 template <typename DiscretizableInTimeType>
+void StreamlineTracer<DiscretizableInTimeType>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
+template <typename DiscretizableInTimeType>
 void StreamlineTracer<DiscretizableInTimeType>::traceStreamlines() {
   LOG(TRACE) << "traceStreamlines";
 

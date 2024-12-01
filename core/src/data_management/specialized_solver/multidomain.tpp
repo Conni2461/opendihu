@@ -270,7 +270,7 @@ void Multidomain<FunctionSpaceType>::createPetscObjects() {
   this->relativeFactorTotal_ =
       this->functionSpace_->template createFieldVariable<1>("Σf_r");
   this->relativeFactorTotal_->setUniqueName(
-      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") * "Σf_r");
+      StringUtility::getFirstNE(this->uniquePrefix_, "multidomain_") + "Σf_r");
   this->activeStressTotal_ =
       this->functionSpace_->template createFieldVariable<1>(
           "activeStressTotal");

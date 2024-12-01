@@ -494,7 +494,7 @@ void ParallelFiberEstimation<BasisFunctionType>::generateParallelMeshRecursion(
       problem_->setDirichletBoundaryConditions(dirichletBoundaryConditions);
     }
 
-    problem_.setUniqueDataPrefix(StringUtility::optionalConcat(
+    problem_->setUniqueDataPrefix(StringUtility::optionalConcat(
         this->uniqueDataPrefix_, "parallel_fiber_estimation"));
     problem_->initialize();
 

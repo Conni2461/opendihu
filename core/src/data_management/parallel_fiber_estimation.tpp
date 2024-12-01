@@ -70,7 +70,7 @@ void ParallelFiberEstimation<FunctionSpaceType>::createPetscObjects() {
   // create field variables on local partition
   this->gradient_ =
       this->functionSpace_->template createFieldVariable<3>("gradient");
-  this->gradient->setUniqueName(
+  this->gradient_->setUniqueName(
       StringUtility::getFirstNE(this->uniquePrefix_,
                                 "parallel_fiber_estimation_") +
       "gradient");
