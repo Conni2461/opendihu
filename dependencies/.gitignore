@@ -29,7 +29,6 @@
 /xbraid
 /chaste
 /hdf5
-/hdf5volasync
 /mpi_debug
 /opencor
 /vtk
