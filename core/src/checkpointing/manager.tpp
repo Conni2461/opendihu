@@ -36,18 +36,6 @@ void Handle::createCheckpoint(DataType &problemData, int timeStepNo,
     std::shared_ptr<Json::Independent> obj =
         std::static_pointer_cast<Json::Independent>(checkpointing_);
     obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<Paraview::Combined>(checkpointing_) !=
-             nullptr) {
-    LogScope s("WriteCheckpointJsonIndependent");
-    std::shared_ptr<Paraview::Combined> obj =
-        std::static_pointer_cast<Paraview::Combined>(checkpointing_);
-    obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
-  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing_) !=
-             nullptr) {
-    LogScope s("WriteCheckpointPythonIndependent");
-    std::shared_ptr<Python::Independent> obj =
-        std::static_pointer_cast<Python::Independent>(checkpointing_);
-    obj->createCheckpoint<DataType>(problemData, timeStepNo, currentTime);
   }
   Control::TimingMeasurement::stop(timeStepNo, "checkpointing");
 }
@@ -84,20 +72,6 @@ bool Handle::restore(DataType &problemData, int &timeStepNo,
     LogScope s("RestoreCheckpointJsonIndependent");
     std::shared_ptr<Json::Independent> obj =
         std::static_pointer_cast<Json::Independent>(checkpointing_);
-    return obj->restore<DataType>(problemData, timeStepNo, currentTime,
-                                  this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<Paraview::Combined>(checkpointing_) !=
-             nullptr) {
-    LogScope s("RestoreCheckpointParaviewCombined");
-    std::shared_ptr<Paraview::Combined> obj =
-        std::static_pointer_cast<Paraview::Combined>(checkpointing_);
-    return obj->restore<DataType>(problemData, timeStepNo, currentTime,
-                                  this->autoRestore_, ss.str());
-  } else if (std::dynamic_pointer_cast<Python::Independent>(checkpointing_) !=
-             nullptr) {
-    LogScope s("RestoreCheckpointPythonIndependent");
-    std::shared_ptr<Python::Independent> obj =
-        std::static_pointer_cast<Python::Independent>(checkpointing_);
     return obj->restore<DataType>(problemData, timeStepNo, currentTime,
                                   this->autoRestore_, ss.str());
   }
