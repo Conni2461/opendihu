@@ -42,7 +42,7 @@ void StaticBidomain<FunctionSpaceType>::initialize() {
     name << "additionalFieldVariable" << i;
     additionalFieldVariables_[i] =
         this->functionSpace_->template createFieldVariable<1>(name.str());
-    additionalFieldVariables_[i]->setUnqiueName("static_bidomain_" +
+    additionalFieldVariables_[i]->setUniqueName("static_bidomain_" +
                                                 name.str());
 
     slotConnectorData_->addFieldVariable2(additionalFieldVariables_[i]);
@@ -86,7 +86,7 @@ bool StaticBidomain<FunctionSpaceType>::restoreState(
     return false;
   }
 
-  std::vector<VecD<3>> geometryValues;
+  std::array<std::vector<double>, 3> geometryValues;
   if (!r.template readDoubleVecD<3>(
           this->functionSpace_->geometryField().name().c_str(), geometryValues,
           "3D/")) {

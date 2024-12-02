@@ -43,7 +43,7 @@ config = {
     "OutputWriter" : [
       {"format": "Paraview", "filename": "out2d_p2", "outputInterval": 1, "binary": False},
       {"format": "PythonFile", "filename": "out2d_p2", "outputInterval": 1, "binary": False},
-      {"format": "HDF5", "filename": "out2d_p2", "outputInterval": 1, "combineFiles": True},
+      {"format": "HDF5", "filename": "out2d_p2", "outputInterval": 1, "combineFiles": False},
     ]
   }
 }
@@ -98,19 +98,30 @@ config = {
     assertFileMatchesContent("out2d_p2.0.py", referenceOutput0);
     assertFileMatchesContent("out2d_p2.1.py", referenceOutput1);
 
-    InputReader::HDF5::FullDataset r("out2d_p2_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    std::vector<double> geometry, solution;
-    r.readDoubleVector("geometry", geometry);
-    r.readDoubleVector("solution", solution);
-    compareArray(geometry, {0, 0, 0, 2, 0, 0, 4, 0, 0, 0, 2, 0, 2, 2, 0,
-                            4, 2, 0, 0, 4, 0, 2, 4, 0, 4, 4, 0, 4, 0, 0,
-                            6, 0, 0, 4, 2, 0, 6, 2, 0, 4, 4, 0, 6, 4, 0});
-    compareArray(solution,
-                 {0, 1, 2, 4.2428571428571438, 5.97143, 10.5286, 0, 10, 20, 2,
-                  3, 10.5286, 12.2571, 20, 30},
-                 0.0001);
+    InputReader::HDF5::FullDataset r1("out2d_p2.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out2d_p2.1_p.h5");
+    {
+      ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r1.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r1.readDoubleVector("geometry", geometry);
+      r1.readDoubleVector("solution", solution);
+      compareArray(geometry, {0, 0, 0, 2, 0, 0, 4, 0, 0, 0, 2, 0, 2, 2,
+                              0, 4, 2, 0, 0, 4, 0, 2, 4, 0, 4, 4, 0});
+      compareArray(solution,
+                   {0, 1, 2, 4.2428571428571438, 5.97143, 10.5286, 0, 10, 20},
+                   0.0001);
+    }
+    {
+      ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r2.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r2.readDoubleVector("geometry", geometry);
+      r2.readDoubleVector("solution", solution);
+      compareArray(geometry,
+                   {4, 0, 0, 6, 0, 0, 4, 2, 0, 6, 2, 0, 4, 4, 0, 6, 4, 0});
+      compareArray(solution, {2, 3, 10.5286, 12.2571, 20, 30}, 0.0001);
+    }
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -153,7 +164,7 @@ config = {
         "OutputWriter" : [
           {"format": "Paraview", "filename": "out2d_p1", "outputInterval": 1, "binary": False},
           {"format": "PythonFile", "filename": "out2d_p1", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out2d_p1", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out2d_p1", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -195,19 +206,30 @@ config = {
   if (settings.ownRankNo() == 0) {
     assertFileMatchesContent("out2d_p1.py", referenceOutput0);
 
-    InputReader::HDF5::FullDataset r("out2d_p2_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    std::vector<double> geometry, solution;
-    r.readDoubleVector("geometry", geometry);
-    r.readDoubleVector("solution", solution);
-    compareArray(geometry,
-                 {0, 0, 0, 2, 0, 0, 4, 0, 0, 6, 0, 0, 0, 2, 0, 2, 2, 0,
-                  4, 2, 0, 6, 2, 0, 0, 4, 0, 2, 4, 0, 4, 4, 0, 6, 4, 0});
-    compareArray(solution,
-                 {0, 1, 2.0, 3.0, 4.242857142857142, 5.971428571428571,
-                  10.52857142857143, 12.257142857142851, 0.0, 9.999999999999996,
-                  19.999999999999993, 30.000000000000004});
+    InputReader::HDF5::FullDataset r1("out2d_p2.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out2d_p2.1_p.h5");
+    {
+      ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r1.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r1.readDoubleVector("geometry", geometry);
+      r1.readDoubleVector("solution", solution);
+      compareArray(geometry, {0, 0, 0, 2, 0, 0, 4, 0, 0, 0, 2, 0, 2, 2,
+                              0, 4, 2, 0, 0, 4, 0, 2, 4, 0, 4, 4, 0});
+      compareArray(solution, {0, 1, 2.0, 4.242857142857142, 5.971428571428571,
+                              10.52857142857143, 0, 10, 20});
+    }
+    {
+      ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+      ASSERT_TRUE(r2.hasAttribute("currentTime"));
+      std::vector<double> geometry, solution;
+      r2.readDoubleVector("geometry", geometry);
+      r2.readDoubleVector("solution", solution);
+      compareArray(geometry,
+                   {4, 0, 0, 6, 0, 0, 4, 2, 0, 6, 2, 0, 4, 4, 0, 6, 4, 0});
+      compareArray(solution,
+                   {2, 3, 10.52857142857143, 12.257142857142851, 20, 30});
+    }
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -256,7 +278,7 @@ config = {
         "OutputWriter" : [
           {"format": "Paraview", "filename": "out2d_p1", "outputInterval": 1, "binary": False},
           {"format": "PythonFile", "filename": "out2d_p1", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out2d_p1", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out2d_p1", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -320,7 +342,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out8", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out8", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out8", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -377,7 +399,7 @@ config = {
         "OutputWriter" : [
           {"format": "Paraview", "filename": "out8", "outputInterval": 1, "binary": False},
           {"format": "PythonFile", "filename": "out8", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out8", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out8", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -400,10 +422,14 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5::FullDataset r("out8_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    ASSERT_TRUE(r.hasDataset("solution"));
+    InputReader::HDF5::FullDataset r1("out8.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out8.1_p.h5");
+    ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r1.hasAttribute("currentTime"));
+    ASSERT_TRUE(r1.hasDataset("solution"));
+    ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r2.hasAttribute("currentTime"));
+    ASSERT_TRUE(r2.hasDataset("solution"));
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -446,7 +472,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out9", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out9", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out9", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -501,7 +527,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out9", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out9", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out9", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -520,10 +546,14 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5::FullDataset r("out9_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    ASSERT_TRUE(r.hasDataset("solution"));
+    InputReader::HDF5::FullDataset r1("out9.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out9.1_p.h5");
+    ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r1.hasAttribute("currentTime"));
+    ASSERT_TRUE(r1.hasDataset("solution"));
+    ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r2.hasAttribute("currentTime"));
+    ASSERT_TRUE(r2.hasDataset("solution"));
   }
 
   nFails += ::testing::Test::HasFailure();
@@ -618,7 +648,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out10", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out10", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out10", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -722,7 +752,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out10", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out10", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out10", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -741,10 +771,14 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5::FullDataset r("out10_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    ASSERT_TRUE(r.hasDataset("solution"));
+    InputReader::HDF5::FullDataset r1("out10.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out10.1_p.h5");
+    ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r1.hasAttribute("currentTime"));
+    ASSERT_TRUE(r1.hasDataset("solution"));
+    ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r2.hasAttribute("currentTime"));
+    ASSERT_TRUE(r2.hasDataset("solution"));
   } else {
     std::this_thread::sleep_for(std::chrono::milliseconds(
         200)); // pause execution, such that output files can be closed
@@ -795,7 +829,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out11", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out11", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out11", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -854,7 +888,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out11", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out11", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out11", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -877,10 +911,14 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5::FullDataset r("out11_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    ASSERT_TRUE(r.hasDataset("solution"));
+    InputReader::HDF5::FullDataset r1("out11.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out11.1_p.h5");
+    ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r1.hasAttribute("currentTime"));
+    ASSERT_TRUE(r1.hasDataset("solution"));
+    ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r2.hasAttribute("currentTime"));
+    ASSERT_TRUE(r2.hasDataset("solution"));
   } else {
     std::this_thread::sleep_for(std::chrono::milliseconds(
         200)); // pause execution, such that output files can be closed
@@ -926,7 +964,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out12", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out12", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out12", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -980,7 +1018,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out12", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out12", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out12", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -999,10 +1037,14 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5::FullDataset r("out12_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    ASSERT_TRUE(r.hasDataset("solution"));
+    InputReader::HDF5::FullDataset r1("out12.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out12.1_p.h5");
+    ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r1.hasAttribute("currentTime"));
+    ASSERT_TRUE(r1.hasDataset("solution"));
+    ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r2.hasAttribute("currentTime"));
+    ASSERT_TRUE(r2.hasDataset("solution"));
   } else {
     std::this_thread::sleep_for(std::chrono::milliseconds(
         200)); // pause execution, such that output files can be closed
@@ -1100,7 +1142,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out13", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out13", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out13", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -1207,7 +1249,7 @@ config = {
         "preconditionerType": "sor",
         "OutputWriter" : [
           {"format": "PythonFile", "filename": "out13", "outputInterval": 1, "binary": False},
-          {"format": "HDF5", "filename": "out13", "outputInterval": 1, "combineFiles": True},
+          {"format": "HDF5", "filename": "out13", "outputInterval": 1, "combineFiles": False},
         ]
       }
     }]
@@ -1226,10 +1268,14 @@ config = {
   if (ownRankNo == 0) {
     assertParallelEqualsSerialOutputFiles(outputFilesToCheck);
 
-    InputReader::HDF5::FullDataset r("out13_c.h5");
-    ASSERT_TRUE(r.hasAttribute("timeStepNo"));
-    ASSERT_TRUE(r.hasAttribute("currentTime"));
-    ASSERT_TRUE(r.hasDataset("solution"));
+    InputReader::HDF5::FullDataset r1("out13.0_p.h5");
+    InputReader::HDF5::FullDataset r2("out13.1_p.h5");
+    ASSERT_TRUE(r1.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r1.hasAttribute("currentTime"));
+    ASSERT_TRUE(r1.hasDataset("solution"));
+    ASSERT_TRUE(r2.hasAttribute("timeStepNo"));
+    ASSERT_TRUE(r2.hasAttribute("currentTime"));
+    ASSERT_TRUE(r2.hasDataset("solution"));
   }
 
   nFails += ::testing::Test::HasFailure();

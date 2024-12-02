@@ -121,6 +121,12 @@ void PreciceAdapterInitialize<NestedSolver>::initialize() {
 #endif
 }
 
+template <typename NestedSolver>
+void PreciceAdapterInitialize<NestedSolver>::setUniqueDataPrefix(
+    const std::string &prefix) {
+  uniqueDataPrefix_ = prefix;
+}
+
 #ifdef HAVE_PRECICE
 template <typename NestedSolver>
 void PreciceAdapterInitialize<NestedSolver>::initializePreciceMeshes() {

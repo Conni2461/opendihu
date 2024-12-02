@@ -27,6 +27,7 @@ public:
   //! define the type of the data object,
   typedef ::Data::MapDofs<FunctionSpaceType, NestedSolverType> Data;
   typedef typename Data::SlotConnectorDataType SlotConnectorDataType;
+  typedef Data FullData;
 
   //! constructor, gets the DihuContext object which contains all python
   //! settings
@@ -69,7 +70,7 @@ public:
 
   //! return reference to the full data object that stores everything for a
   //! checkpoint
-  Data &fullData();
+  FullData &fullData();
 
   //! Get the data that will be transferred in the operator splitting or
   //! coupling to the other term of the splitting/coupling. the transfer is done

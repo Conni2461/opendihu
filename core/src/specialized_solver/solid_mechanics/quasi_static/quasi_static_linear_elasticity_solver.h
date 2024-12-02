@@ -35,10 +35,10 @@ public:
   //! field variables that will be output by checkpointing
   typedef decltype(std::tuple_cat(
       std::declval<typename Data::FieldVariablesForCheckpointing>(),
-      std::declval<typename FiniteElementMethodPotentialFlow::
+      std::declval<typename FiniteElementMethodPotentialFlow::FullData::
                        FieldVariablesForCheckpointing>(),
-      std::declval<
-          typename FiniteElementMethod::FieldVariablesForCheckpointing>()))
+      std::declval<typename FiniteElementMethod::FullData::
+                       FieldVariablesForCheckpointing>()))
       FieldVariablesForCheckpointing;
 
   //! get pointers to all field variables that can be written by checkpointing
