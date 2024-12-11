@@ -46,7 +46,7 @@ _____________
 Implementation
 ______________
 
-The checkpointing implementation consistens of 3 Main components, the :doc:`output_writer`, input reader (currently only used for checkpointing) and in manager interface bringing both together.
+The checkpointing implementation consists of 3 main components, the :doc:`output_writer`, the input reader (currently only used for checkpointing), and the manager interface bringing both together.
 
 For any output_writer to work it needs to be extended by a possibility to use the `uniqueName()` of the field variables, which reflects the full chain of nested solvers.
 For reference see the HDF5 or JSON implementation.
