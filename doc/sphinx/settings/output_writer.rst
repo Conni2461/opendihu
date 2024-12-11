@@ -222,7 +222,7 @@ This output writer is mainly used for :doc:`checkpointing` but can also used in 
 Iternally this output writer can be enabled to write every field variable with a unique name (required for checkpointing), but this is currently not exposed via the python interface.
 
 The structure of the JSON output writer is as follows.
-The ``__attributes`` object for field variables is currently only present if the combined output writer was used, but could be used in future for the independent writer as well if more metadata needs to be written for the Field variables.
+The ``__attributes`` object for field variables is currently only present if the combined output writer is used. It could become relevant for the independent output writer too in the future, e.g., if the fields variables are extended to include more metadata.
 
 .. code-block:: json
   {
