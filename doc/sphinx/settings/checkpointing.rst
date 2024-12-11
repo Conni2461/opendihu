@@ -4,7 +4,7 @@ Checkpointing
 OpenDiHu ships with a builtin Checkpointing framework with different
 implementation backend that allow to switch OutputWriter and InputReader.
 
-This framework is not yet enabled by default and is only enabled if the ``checkpointing`` object is present in the ``config``.
+Checkpointing is not enabled by default and is only enabled if the ``checkpointing`` object is present in the ``config``.
 
 Configuration
 _____________
