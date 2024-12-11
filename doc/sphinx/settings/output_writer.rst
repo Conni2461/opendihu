@@ -212,7 +212,7 @@ JSON
 Uses `JSON <https://www.json.org/json-en.html/>`_ for writing output files and supports combined.
 JSON is a data format, mostly used in webapplications.
 
-When combined is enabled it uses MPI to collect all data on rank 0 which will then write this data alone into the json datastructure and in the end writes the file alone to disk.
+If the combined option is enabled, MPI is used to collect all data on rank 0, which will then write this data into the json datastructure and will then write the file to disk.
 It stores the offset to the data for each rank in an additional object.
 When combined is disabled it writes each ranks state in a separate file.
 
