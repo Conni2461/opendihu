@@ -214,7 +214,7 @@ JSON is a data format, mostly used in webapplications.
 
 If the combined option is enabled, MPI is used to collect all data on rank 0, which will then write this data into the json datastructure and will then write the file to disk.
 It stores the offset to the data for each rank in an additional object.
-When combined is disabled it writes each ranks state in a separate file.
+When combined is disabled, then each ranks' state is written in a separate file.
 
 General metadata, like the used OpenDiHu version is stored in an ``__attributes`` object on the root object.
 
