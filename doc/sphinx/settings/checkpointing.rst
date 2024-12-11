@@ -52,6 +52,6 @@ For any output_writer to work it needs to be extended by a possibility to use th
 For reference see the HDF5 or JSON implementation.
 
 Input reader also need to be implementated for each output writer which should be used.
-For this are two different types for each output writer type (HDF5, JSON) of input readers in use, the partial and the full_dataset input readers.
+For each output writer type (HDF5, JSON), there are two types of input readers available, the partial and the full_dataset input readers.
 The partial only reads the dataset for their own rank into a int or double vector, using the ``chunkDims`` attribute (see :doc:`output_writer`) so it should only be used in combination with the combined output writer.
 The full_dataset input reader, will always read the full dataset into a vector.
