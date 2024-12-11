@@ -203,7 +203,7 @@ When combined is disabled it writes each ranks state in a separate file.
 
 Additional Metadata, like the used OpenDiHu Version is stored as Attributes on the root node.
 
-This output writer is mainly used for :doc:`checkpointing` but can also used in isolation as a normal output writer.
+This output writer is mainly used for :doc:`checkpointing` but can also be used without checkpointing as a normal output writer.
 Iternally this output writer can be enabled to write every field variable with a unique name (required for checkpointing), but this is currently not exposed via the python interface.
 
 JSON
